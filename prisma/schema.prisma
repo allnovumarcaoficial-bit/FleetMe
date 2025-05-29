@@ -20,15 +20,28 @@ model Vehicle {
   estado                            String
   gps                               Boolean
   listado_municipios                String   // Stored as JSON string for SQLite
-  idtipo                            Int
-  tipoVehiculo                      VehicleType @relation(fields: [idtipo], references: [id])
+  tipoNombre                        String? // Store vehicle type as a string
   vehicleDrivers                    VehicleDriver[] // Explicit many-to-many relation
 }
 
 model VehicleType {
-  id     Int      @id @default(autoincrement())
-  nombre String   @unique
-  vehicles Vehicle[]
+  id                        Int      @id @default(autoincrement())
+  nombre                    String   @unique
+  cantidad_neumaticos       Int
+  tipo_neumaticos           String
+  capacidad_carga           String // e.g., "1000 kg" or "5 personas"
+  cantidad_conductores      Int
+  ciclo_mantenimiento_km    Int
+  es_electrico              Boolean
+  // Campos para vehículos eléctricos
+  cantidad_baterias         Int?
+  tipo_bateria              String?
+  amperage                  Float?
+  voltage                   Float?
+  // Campos para vehículos no eléctricos
+  tipo_combustible          String?
+  capacidad_tanque          Float?
+  indice_consumo            Float?
 }
 
 model Driver {

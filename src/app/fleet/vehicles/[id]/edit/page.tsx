@@ -5,7 +5,6 @@ import VehicleForm from "@/components/Fleet/VehicleForm";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
-
 interface EditVehiclePageProps {
   params: {
     id: string;
@@ -18,10 +17,12 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { id: paramId } = params;
+
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const response = await fetch(`/api/vehicles/${params.id}`);
+        const response = await fetch(`/api/vehicles/${paramId}`); // Use paramId here
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -34,7 +35,7 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
       }
     };
     fetchVehicle();
-  }, [params.id]);
+  }, [paramId]);
 
   const handleSuccess = () => {
     console.log('Vehicle updated successfully!');

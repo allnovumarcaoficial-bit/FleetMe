@@ -4,8 +4,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
-import { format } from 'date-fns'; // For date formatting
-
+import { format } from 'date-fns';
 interface VehicleDetailsPageProps {
   params: {
     id: string;
@@ -18,10 +17,12 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { id: paramId } = params;
+
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const response = await fetch(`/api/vehicles/${params.id}`);
+        const response = await fetch(`/api/vehicles/${paramId}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -34,17 +35,17 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
       }
     };
     fetchVehicle();
-  }, [params.id]);
-
-  if (loading) return <p>Cargando detalles del vehículo...</p>;
-  if (error) return <p className="text-red-500">Error al cargar detalles del vehículo: {error}</p>;
-  if (!vehicle) return <p>Vehículo no encontrado.</p>;
+  }, [paramId]);
 
   const handleEdit = () => {
-    router.push(`/fleet/vehicles/${vehicle.id}/edit`);
+    if (vehicle) {
+      router.push(`/fleet/vehicles/${vehicle.id}/edit`);
+    }
   };
 
   const handleDelete = async () => {
+    if (!vehicle) return;
+
     if (window.confirm('¿Estás seguro de que quieres eliminar este vehículo?')) {
       try {
         const response = await fetch(`/api/vehicles/${vehicle.id}`, {
@@ -54,12 +55,45 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         alert('Vehículo eliminado exitosamente.');
-        router.push('/fleet/vehicles'); // Redirect to list after deletion
+        router.push('/fleet/vehicles');
       } catch (e: any) {
         alert(`Error al eliminar vehículo: ${e.message}`);
       }
     }
   };
+
+  if (loading) {
+    return (
+      <>
+        <Breadcrumb pageName="Detalles del Vehículo" />
+        <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
+          <p>Cargando detalles del vehículo...</p>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Breadcrumb pageName="Detalles del Vehículo" />
+        <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
+          <p className="text-red-500">Error: {error}</p>
+        </div>
+      </>
+    );
+  }
+
+  if (!vehicle) {
+    return (
+      <>
+        <Breadcrumb pageName="Detalles del Vehículo" />
+        <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
+          <p>No se encontró el vehículo.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -86,15 +120,14 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
           <p><strong>Modelo:</strong> {vehicle.modelo}</p>
           <p><strong>VIN:</strong> {vehicle.vin}</p>
           <p><strong>Matrícula:</strong> {vehicle.matricula}</p>
-          <p><strong>Fecha de Compra:</strong> {format(new Date(vehicle.fecha_compra), 'dd/MM/yyyy')}</p>
-          <p><strong>Vencimiento Licencia Operativa:</strong> {format(new Date(vehicle.fecha_vencimiento_licencia_operativa), 'dd/MM/yyyy')}</p>
-          <p><strong>Vencimiento Circulación:</strong> {format(new Date(vehicle.fecha_vencimiento_circulacion), 'dd/MM/yyyy')}</p>
-          <p><strong>Vencimiento Somatón:</strong> {format(new Date(vehicle.fecha_vencimiento_somaton), 'dd/MM/yyyy')}</p>
+          <p><strong>Fecha de Compra:</strong> {vehicle.fecha_compra ? format(new Date(vehicle.fecha_compra), 'dd/MM/yyyy') : 'N/A'}</p>
+          <p><strong>Vencimiento Licencia Operativa:</strong> {vehicle.fecha_vencimiento_licencia_operativa ? format(new Date(vehicle.fecha_vencimiento_licencia_operativa), 'dd/MM/yyyy') : 'N/A'}</p>
+          <p><strong>Vencimiento Circulación:</strong> {vehicle.fecha_vencimiento_circulacion ? format(new Date(vehicle.fecha_vencimiento_circulacion), 'dd/MM/yyyy') : 'N/A'}</p>
+          <p><strong>Vencimiento Somatón:</strong> {vehicle.fecha_vencimiento_somaton ? format(new Date(vehicle.fecha_vencimiento_somaton), 'dd/MM/yyyy') : 'N/A'}</p>
           <p><strong>Estado:</strong> {vehicle.estado}</p>
           <p><strong>GPS:</strong> {vehicle.gps ? 'Sí' : 'No'}</p>
-          <p><strong>Municipios:</strong> {JSON.parse(vehicle.listado_municipios || '[]').join(', ')}</p>
-          <p><strong>Tipo de Vehículo:</strong> {vehicle.tipoVehiculo?.nombre || 'N/A'}</p>
-          <p><strong>Conductores Asignados (IDs):</strong> {vehicle.listado_idconductores?.join(', ') || 'Ninguno'}</p>
+          <p><strong>Municipios:</strong> {typeof vehicle.listado_municipios === 'string' ? JSON.parse(vehicle.listado_municipios || '[]').join(', ') : 'N/A'}</p>
+          <p><strong>Tipo de Vehículo:</strong> {vehicle.tipoNombre || 'N/A'}</p>
         </div>
       </div>
     </>

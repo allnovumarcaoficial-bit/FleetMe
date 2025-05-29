@@ -4,21 +4,32 @@ export interface Vehicle {
   modelo: string;
   vin: string;
   matricula: string;
-  fecha_compra: Date;
-  fecha_vencimiento_licencia_operativa: Date;
-  fecha_vencimiento_circulacion: Date;
-  fecha_vencimiento_somaton: Date;
+  fecha_compra: Date | null;
+  fecha_vencimiento_licencia_operativa: Date | null;
+  fecha_vencimiento_circulacion: Date | null;
+  fecha_vencimiento_somaton: Date | null;
   estado: string;
   gps: boolean;
   listado_municipios: string; // JSON string
-  idtipo: number;
-  tipoVehiculo?: VehicleType; // Optional, can be included via relation
-  listado_idconductores?: number[]; // Array of driver IDs, handled in application logic
+  tipoNombre?: string | null; // Store vehicle type as a string
 }
 
 export interface VehicleType {
   id: number;
   nombre: string;
+  cantidad_neumaticos: number;
+  tipo_neumaticos: string;
+  capacidad_carga: string;
+  cantidad_conductores: number;
+  ciclo_mantenimiento_km: number;
+  es_electrico: boolean;
+  cantidad_baterias?: number;
+  tipo_bateria?: string;
+  amperage?: number;
+  voltage?: number;
+  tipo_combustible?: string;
+  capacidad_tanque?: number;
+  indice_consumo?: number;
 }
 
 export interface Driver {

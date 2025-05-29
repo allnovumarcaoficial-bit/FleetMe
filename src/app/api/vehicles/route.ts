@@ -33,9 +33,7 @@ export async function GET(request: Request) {
       take: limit,
       where,
       orderBy,
-      include: {
-        tipoVehiculo: true, // Include related VehicleType
-      },
+      // Removed include: { tipoVehiculo: true } as there's no direct relation anymore
     });
 
     const totalVehicles = await prisma.vehicle.count({ where });
@@ -71,7 +69,7 @@ export async function POST(request: Request) {
       estado,
       gps,
       listado_municipios, // This will be a JSON string
-      idtipo,
+      tipoNombre, // Changed from tipoVehiculoId
       listado_idconductores, // This will be an array of numbers
     } = body;
 
@@ -95,7 +93,7 @@ export async function POST(request: Request) {
         estado,
         gps,
         listado_municipios, // Stored as JSON string
-        idtipo,
+        tipoNombre, // Changed from tipoVehiculoId
         listado_idconductores, // Stored as array of numbers
       },
     });

@@ -60,7 +60,11 @@ export const NAV_DATA = [
             title: "Vehículos",
             url: "/fleet/vehicles",
           },
-          // Add other fleet modules here later (Contracts, Maintenance, etc.)
+          // New: Add Vehicle Types link here
+          {
+            title: "Tipos de Vehículos",
+            url: "/fleet/vehicle-types",
+          },
         ],
       },
       {

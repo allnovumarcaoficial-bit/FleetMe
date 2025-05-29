@@ -5,16 +5,14 @@ const prisma = new PrismaClient();
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid vehicle ID' }, { status: 400 });
     }
 
     const vehicle = await prisma.vehicle.findUnique({
       where: { id },
-      include: {
-        tipoVehiculo: true,
-      },
     });
 
     if (!vehicle) {
@@ -30,7 +28,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid vehicle ID' }, { status: 400 });
     }
@@ -48,8 +47,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       estado,
       gps,
       listado_municipios,
-      idtipo,
-      listado_idconductores,
     } = body;
 
     const parsedFechaCompra = new Date(fecha_compra);
@@ -71,8 +68,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         estado,
         gps,
         listado_municipios,
-        idtipo,
-        listado_idconductores,
       },
     });
 
@@ -88,7 +83,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const id = parseInt(params.id);
+    const { id: paramId } = await params;
+    const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid vehicle ID' }, { status: 400 });
     }

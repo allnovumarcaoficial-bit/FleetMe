@@ -15,20 +15,26 @@ interface VehicleFormProps {
 
 const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<Partial<Vehicle>>(initialData || {
+  const [formData, setFormData] = useState<Partial<Vehicle>>(initialData ? {
+    ...initialData,
+    fecha_compra: initialData.fecha_compra ? new Date(initialData.fecha_compra) : null,
+    fecha_vencimiento_licencia_operativa: initialData.fecha_vencimiento_licencia_operativa ? new Date(initialData.fecha_vencimiento_licencia_operativa) : null,
+    fecha_vencimiento_circulacion: initialData.fecha_vencimiento_circulacion ? new Date(initialData.fecha_vencimiento_circulacion) : null,
+    fecha_vencimiento_somaton: initialData.fecha_vencimiento_somaton ? new Date(initialData.fecha_vencimiento_somaton) : null,
+    listado_municipios: initialData.listado_municipios || '[]',
+  } : {
     marca: '',
     modelo: '',
     vin: '',
     matricula: '',
-    fecha_compra: new Date(),
-    fecha_vencimiento_licencia_operativa: new Date(),
-    fecha_vencimiento_circulacion: new Date(),
-    fecha_vencimiento_somaton: new Date(),
+    fecha_compra: null,
+    fecha_vencimiento_licencia_operativa: null,
+    fecha_vencimiento_circulacion: null,
+    fecha_vencimiento_somaton: null,
     estado: '',
     gps: false,
     listado_municipios: '[]',
-    idtipo: 0,
-    listado_idconductores: [],
+    tipoNombre: null, // Changed from tipoVehiculoId: null
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
@@ -63,12 +69,11 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
     if (initialData) {
       setFormData({
         ...initialData,
-        fecha_compra: new Date(initialData.fecha_compra),
-        fecha_vencimiento_licencia_operativa: new Date(initialData.fecha_vencimiento_licencia_operativa),
-        fecha_vencimiento_circulacion: new Date(initialData.fecha_vencimiento_circulacion),
-        fecha_vencimiento_somaton: new Date(initialData.fecha_vencimiento_somaton),
+        fecha_compra: initialData.fecha_compra ? new Date(initialData.fecha_compra) : null,
+        fecha_vencimiento_licencia_operativa: initialData.fecha_vencimiento_licencia_operativa ? new Date(initialData.fecha_vencimiento_licencia_operativa) : null,
+        fecha_vencimiento_circulacion: initialData.fecha_vencimiento_circulacion ? new Date(initialData.fecha_vencimiento_circulacion) : null,
+        fecha_vencimiento_somaton: initialData.fecha_vencimiento_somaton ? new Date(initialData.fecha_vencimiento_somaton) : null,
         listado_municipios: initialData.listado_municipios || '[]',
-        listado_idconductores: initialData.listado_idconductores || [],
       });
     }
   }, [initialData]);
@@ -89,8 +94,8 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
         if (!value) error = 'Este campo es requerido.';
         if (value && value.length < 6) error = 'Matrícula debe tener al menos 6 caracteres.';
         break;
-      case 'idtipo':
-        if (!value || value === 0) error = 'Debe seleccionar un tipo de vehículo.';
+      case 'tipoNombre': // Changed from tipoVehiculoId
+        if (!value) error = 'Debe seleccionar un tipo de vehículo.'; // No value === 0 check for string
         break;
       case 'fecha_compra':
       case 'fecha_vencimiento_licencia_operativa':
@@ -117,10 +122,14 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
       newValue = (e.target as HTMLInputElement).checked;
     } else if (type === 'date') {
       newValue = new Date(value);
+    } else if (name === 'tipoNombre') { // Changed from tipoVehiculoId
+      newValue = value; // No parseInt needed for string
     }
 
     setFormData(prev => ({ ...prev, [name]: newValue }));
-    setErrors(prev => ({ ...prev, [name]: validateField(name, newValue) }));
+    const fieldError = validateField(name, newValue);
+    setErrors(prev => ({ ...prev, [name]: fieldError }));
+    console.log(`handleChange: ${name} = ${newValue}, error = ${fieldError}`);
   };
 
   const handleMultiSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -131,8 +140,6 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
 
     if (name === 'listado_municipios') {
       setFormData(prev => ({ ...prev, [name]: JSON.stringify(selectedValues) }));
-    } else if (name === 'listado_idconductores') {
-      setFormData(prev => ({ ...prev, [name]: selectedValues.map(id => parseInt(id)) }));
     }
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
@@ -141,13 +148,15 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
     let newErrors: Record<string, string> = {};
     let isValid = true;
     for (const key in formData) {
-      const error = validateField(key, (formData as any)[key]);
+      const value = (formData as any)[key]; // Get value from formData
+      const error = validateField(key, value); // Pass value to validateField
       if (error) {
         newErrors[key] = error;
         isValid = false;
       }
     }
     setErrors(newErrors);
+    console.log('validateForm: newErrors', newErrors);
     return isValid;
   };
 
@@ -155,10 +164,13 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
     e.preventDefault();
     setFormStatus({ type: '', message: '' });
 
+    console.log('handleSubmit: formData before validation', formData);
     if (!validateForm()) {
+      console.log('handleSubmit: Validation failed, errors:', errors);
       setFormStatus({ type: 'error', message: 'Por favor, corrige los errores del formulario.' });
       return;
     }
+    console.log('handleSubmit: Validation passed');
 
     setLoading(true);
     try {
@@ -492,11 +504,12 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
               id="municipios"
               name="listado_municipios"
               multiple
+              size={8} // Add this attribute to force multiple visible rows
               value={formData.listado_municipios ? JSON.parse(formData.listado_municipios) : []}
               onChange={handleMultiSelectChange}
               className={cn(
                 "w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
-                "h-32" // Adjust height for multi-select
+                "h-32" // Keep height, but size attribute is more direct for visual rows
               )}
             >
               {municipalityOptions.map(option => (
@@ -508,47 +521,24 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
             {errors.listado_municipios && <p className="text-red-500 text-sm mt-1">{errors.listado_municipios}</p>}
           </div>
           <div>
-            <label htmlFor="idtipo" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
+            <label htmlFor="tipoNombre" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
               Tipo de Vehículo
             </label>
             <select
-              id="idtipo"
-              name="idtipo"
-              value={formData.idtipo?.toString() || ''}
+              id="tipoNombre"
+              name="tipoNombre"
+              value={formData.tipoNombre || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
             >
               <option value="" disabled>Selecciona un tipo</option>
               {vehicleTypes.map(type => (
-                <option key={type.id} value={type.id.toString()}>
+                <option key={type.id} value={type.nombre}>
                   {type.nombre}
                 </option>
               ))}
             </select>
-            {errors.idtipo && <p className="text-red-500 text-sm mt-1">{errors.idtipo}</p>}
-          </div>
-          <div>
-            <label htmlFor="conductores" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-              Conductores Asignados
-            </label>
-            <select
-              id="conductores"
-              name="listado_idconductores"
-              multiple
-              value={formData.listado_idconductores?.map(String) || []}
-              onChange={handleMultiSelectChange}
-              className={cn(
-                "w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
-                "h-32" // Adjust height for multi-select
-              )}
-            >
-              {drivers.map(driver => (
-                <option key={driver.id} value={driver.id.toString()}>
-                  {driver.nombre}
-                </option>
-              ))}
-            </select>
-            {errors.listado_idconductores && <p className="text-red-500 text-sm mt-1">{errors.listado_idconductores}</p>}
+            {errors.tipoNombre && <p className="text-red-500 text-sm mt-1">{errors.tipoNombre}</p>}
           </div>
         </div>
 
