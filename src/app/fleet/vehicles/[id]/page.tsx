@@ -1,14 +1,14 @@
 'use client';
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
 import { format } from 'date-fns';
 interface VehicleDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
@@ -17,7 +17,7 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { id: paramId } = params;
+  const { id: paramId } = React.use(params);
 
   useEffect(() => {
     const fetchVehicle = async () => {
