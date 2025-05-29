@@ -3,12 +3,12 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import VehicleForm from "@/components/Fleet/VehicleForm";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
 interface EditVehiclePageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
@@ -17,7 +17,7 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { id: paramId } = params;
+  const { id: paramId } = React.use(params);
 
   useEffect(() => {
     const fetchVehicle = async () => {
