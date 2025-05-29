@@ -51,6 +51,18 @@ export const NAV_DATA = [
           },
         ],
       },
+      // New Fleet Management Section
+      {
+        title: "Gestión de Flota",
+        icon: Icons.Table, // Using Table icon as a placeholder for now
+        items: [
+          {
+            title: "Vehículos",
+            url: "/fleet/vehicles",
+          },
+          // Add other fleet modules here later (Contracts, Maintenance, etc.)
+        ],
+      },
       {
         title: "Pages",
         icon: Icons.Alphabet,
