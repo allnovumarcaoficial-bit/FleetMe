@@ -9,6 +9,9 @@ type PropsType = {
   items: { value: string; label: string }[];
   prefixIcon?: React.ReactNode;
   className?: string;
+  value: string; // Add value prop
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; // Add onChange prop
+  name: string; // Add name prop
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -21,6 +24,9 @@ export function Select({
   placeholder,
   prefixIcon,
   className,
+  value, // Destructure value
+  onChange, // Destructure onChange
+  name, // Destructure name
 }: PropsType) {
   const id = useId();
 
@@ -44,11 +50,15 @@ export function Select({
 
         <select
           id={id}
-          defaultValue={defaultValue || ""}
-          onChange={() => setIsOptionSelected(true)}
+          name={name} // Pass name prop
+          value={value} // Use value prop
+          onChange={(e) => {
+            setIsOptionSelected(true);
+            onChange(e); // Pass event to external onChange handler
+          }}
           className={cn(
             "w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
-            isOptionSelected && "text-dark dark:text-white",
+            isOptionSelected || value ? "text-dark dark:text-white" : "", // Adjust text color based on value or selection
             prefixIcon && "pl-11.5",
           )}
         >

@@ -12,12 +12,15 @@ import { RadioInput } from "@/components/FormElements/radio";
 import { Select } from "@/components/FormElements/select";
 import { Switch } from "@/components/FormElements/switch";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
+import { useState } from "react"; // Import useState
 
 export const metadata: Metadata = {
   title: "Form Elements",
 };
 
 export default function FormElementsPage() {
+  const [selectedCountry, setSelectedCountry] = useState("USA"); // State for the Select component
+
   return (
     <>
       <Breadcrumb pageName="Form Elements" />
@@ -107,6 +110,9 @@ export default function FormElementsPage() {
                 { label: "Canada", value: "Canada" },
               ]}
               defaultValue="USA"
+              value={selectedCountry} // Pass value prop
+              onChange={(e) => setSelectedCountry(e.target.value)} // Pass onChange prop
+              name="country" // Pass name prop
               prefixIcon={<GlobeIcon />}
             />
             <MultiSelect

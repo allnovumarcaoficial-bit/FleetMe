@@ -8,6 +8,8 @@ export interface Driver {
   vehicleId?: number | null; // Add this for form handling
 }
 
+export type VehicleStatus = 'Activo' | 'Inactivo' | 'En Mantenimiento' | 'Baja';
+
 export interface Vehicle {
   id: number;
   marca: string;
@@ -18,13 +20,14 @@ export interface Vehicle {
   fecha_vencimiento_licencia_operativa: Date | null;
   fecha_vencimiento_circulacion: Date | null;
   fecha_vencimiento_somaton: Date | null;
-  estado: string;
+  estado: VehicleStatus;
   gps: boolean;
   listado_municipios: string[]; // Array of strings
   tipoNombre?: string | null; // Store vehicle type as a string
   driverId?: number | null; // 1-to-1 relation with Driver
   driver?: Driver | null;
   mantenimientos?: Mantenimiento[];
+  servicios?: Servicio[];
 }
 
 export interface VehicleType {
@@ -66,6 +69,33 @@ export interface Mantenimiento {
   descripcion: string;
   lista_de_piezas: Piece[]; // Changed to array of Piece objects
   cambio_de_pieza: boolean; // Added top-level field
+  vehicleId: number;
+  vehicle?: Vehicle;
+}
+
+export enum ServicioTipo {
+  EntregaDePedidos = "Entrega de Pedidos",
+  Logistico = "Logistico",
+  Administrativo = "Administrativo",
+}
+
+export enum ServicioEstado {
+  Pendiente = "Pendiente",
+  Terminado = "Terminado",
+}
+
+export interface Servicio {
+  id: number;
+  tipoServicio: ServicioTipo;
+  fecha: Date | null;
+  odometroInicial: number;
+  odometroFinal?: number | null;
+  cantidadPedidos?: number | null;
+  origen?: string | null;
+  destino?: string | null;
+  descripcion?: string | null;
+  kilometrosRecorridos: number;
+  estado: ServicioEstado;
   vehicleId: number;
   vehicle?: Vehicle;
 }

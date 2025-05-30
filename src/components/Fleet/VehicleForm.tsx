@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Vehicle, VehicleType, Driver } from '@/types/fleet';
+import { Vehicle, VehicleType, Driver, VehicleStatus } from '@/types/fleet';
 import InputGroup from '@/components/FormElements/InputGroup';
-import MultiSelect from '@/components/FormElements/MultiSelect'; // Import MultiSelect
+import MultiSelect from '@/components/FormElements/MultiSelect';
+import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
 // import { cn } from '@/lib/utils'; // For styling native select/multiselect - Re-add if needed for other elements, otherwise remove.
@@ -37,7 +38,7 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
       fecha_vencimiento_licencia_operativa: null,
       fecha_vencimiento_circulacion: null,
       fecha_vencimiento_somaton: null,
-      estado: '',
+      estado: 'Activo', // Default to 'Activo'
       gps: false,
       listado_municipios: [],
       tipoNombre: null,
@@ -478,13 +479,18 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
             {errors.fecha_vencimiento_somaton && <p className="text-red-500 text-sm mt-1">{errors.fecha_vencimiento_somaton}</p>}
           </div>
           <div>
-            <InputGroup
+            <Select
               label="Estado"
+              items={[
+                { value: 'Activo', label: 'Activo' },
+                { value: 'Inactivo', label: 'Inactivo' },
+                { value: 'En Mantenimiento', label: 'En Mantenimiento' },
+                { value: 'Baja', label: 'Baja' },
+              ]}
+              value={formData.estado || ''} // Use value prop
+              placeholder="Selecciona un estado"
+              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
               name="estado"
-              type="text"
-              placeholder="Introduce el estado"
-              value={formData.estado || ''}
-              handleChange={handleChange}
             />
             {errors.estado && <p className="text-red-500 text-sm mt-1">{errors.estado}</p>}
           </div>

@@ -24,6 +24,7 @@ model Vehicle {
   driverId                          Int?     @unique // 1-to-1 relation with Driver
   driver                            Driver?  @relation(fields: [driverId], references: [id])
   mantenimientos                    Mantenimiento[]
+  servicios                         Servicio[]
 }
 
 model VehicleType {
@@ -67,4 +68,20 @@ model Mantenimiento {
   numero_serie_nueva        String?
   vehicleId                 Int
   vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model Servicio {
+  id                  Int      @id @default(autoincrement())
+  tipoServicio        String
+  fecha               DateTime
+  odometroInicial     Int
+  odometroFinal       Int?
+  cantidadPedidos     Int?
+  origen              String?
+  destino             String?
+  descripcion         String?
+  kilometrosRecorridos Int
+  estado              String
+  vehicleId           Int
+  vehicle             Vehicle  @relation(fields: [vehicleId], references: [id])
 }
