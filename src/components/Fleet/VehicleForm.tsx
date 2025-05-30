@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Vehicle, VehicleType, Driver } from '@/types/fleet';
-import InputGroup from '@/components/FormElements/InputGroup'; // Corrected import
-import { Alert } from '@/components/ui-elements/alert'; // Corrected import
+import InputGroup from '@/components/FormElements/InputGroup';
+import MultiSelect from '@/components/FormElements/MultiSelect'; // Import MultiSelect
+import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils'; // For styling native select/multiselect
+// import { cn } from '@/lib/utils'; // For styling native select/multiselect - Re-add if needed for other elements, otherwise remove.
 
+// Minor change to trigger type re-evaluation
 interface VehicleFormProps {
   initialData?: Vehicle;
   onSuccess?: () => void;
@@ -15,26 +17,31 @@ interface VehicleFormProps {
 
 const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<Partial<Vehicle>>(initialData ? {
-    ...initialData,
-    fecha_compra: initialData.fecha_compra ? new Date(initialData.fecha_compra) : null,
-    fecha_vencimiento_licencia_operativa: initialData.fecha_vencimiento_licencia_operativa ? new Date(initialData.fecha_vencimiento_licencia_operativa) : null,
-    fecha_vencimiento_circulacion: initialData.fecha_vencimiento_circulacion ? new Date(initialData.fecha_vencimiento_circulacion) : null,
-    fecha_vencimiento_somaton: initialData.fecha_vencimiento_somaton ? new Date(initialData.fecha_vencimiento_somaton) : null,
-    listado_municipios: initialData.listado_municipios || '[]',
-  } : {
-    marca: '',
-    modelo: '',
-    vin: '',
-    matricula: '',
-    fecha_compra: null,
-    fecha_vencimiento_licencia_operativa: null,
-    fecha_vencimiento_circulacion: null,
-    fecha_vencimiento_somaton: null,
-    estado: '',
-    gps: false,
-    listado_municipios: '[]',
-    tipoNombre: null, // Changed from tipoVehiculoId: null
+  const [formData, setFormData] = useState<Partial<Vehicle>>(() => {
+    if (initialData) {
+      return {
+        ...initialData,
+        fecha_compra: initialData.fecha_compra ? new Date(initialData.fecha_compra) : null,
+        fecha_vencimiento_licencia_operativa: initialData.fecha_vencimiento_licencia_operativa ? new Date(initialData.fecha_vencimiento_licencia_operativa) : null,
+        fecha_vencimiento_circulacion: initialData.fecha_vencimiento_circulacion ? new Date(initialData.fecha_vencimiento_circulacion) : null,
+        fecha_vencimiento_somaton: initialData.fecha_vencimiento_somaton ? new Date(initialData.fecha_vencimiento_somaton) : null,
+        listado_municipios: initialData.listado_municipios ? JSON.parse(initialData.listado_municipios as unknown as string) : [],
+      };
+    }
+    return {
+      marca: '',
+      modelo: '',
+      vin: '',
+      matricula: '',
+      fecha_compra: null,
+      fecha_vencimiento_licencia_operativa: null,
+      fecha_vencimiento_circulacion: null,
+      fecha_vencimiento_somaton: null,
+      estado: '',
+      gps: false,
+      listado_municipios: [],
+      tipoNombre: null,
+    };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
@@ -67,14 +74,15 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
+      setFormData(prev => ({
+        ...prev, // Keep existing state for fields not in initialData
         ...initialData,
         fecha_compra: initialData.fecha_compra ? new Date(initialData.fecha_compra) : null,
         fecha_vencimiento_licencia_operativa: initialData.fecha_vencimiento_licencia_operativa ? new Date(initialData.fecha_vencimiento_licencia_operativa) : null,
         fecha_vencimiento_circulacion: initialData.fecha_vencimiento_circulacion ? new Date(initialData.fecha_vencimiento_circulacion) : null,
         fecha_vencimiento_somaton: initialData.fecha_vencimiento_somaton ? new Date(initialData.fecha_vencimiento_somaton) : null,
-        listado_municipios: initialData.listado_municipios || '[]',
-      });
+        listado_municipios: initialData.listado_municipios ? JSON.parse(initialData.listado_municipios as unknown as string) : [],
+      }));
     }
   }, [initialData]);
 
@@ -104,10 +112,8 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
         if (!value || isNaN(new Date(value).getTime())) error = 'Fecha inválida.';
         break;
       case 'listado_municipios':
-        try {
-          if (value && value !== '[]') JSON.parse(value);
-        } catch {
-          error = 'Formato JSON inválido para municipios.';
+        if (!Array.isArray(value) || value.length === 0) {
+          error = 'Debe seleccionar al menos un municipio.';
         }
         break;
     }
@@ -122,8 +128,8 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
       newValue = (e.target as HTMLInputElement).checked;
     } else if (type === 'date') {
       newValue = new Date(value);
-    } else if (name === 'tipoNombre') { // Changed from tipoVehiculoId
-      newValue = value; // No parseInt needed for string
+    } else if (name === 'tipoNombre') {
+      newValue = value;
     }
 
     setFormData(prev => ({ ...prev, [name]: newValue }));
@@ -132,16 +138,11 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
     console.log(`handleChange: ${name} = ${newValue}, error = ${fieldError}`);
   };
 
-  const handleMultiSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, options } = e.target;
-    const selectedValues = Array.from(options)
-      .filter(option => option.selected)
-      .map(option => option.value);
-
-    if (name === 'listado_municipios') {
-      setFormData(prev => ({ ...prev, [name]: JSON.stringify(selectedValues) }));
-    }
-    setErrors(prev => ({ ...prev, [name]: '' }));
+  const handleMunicipiosChange = (selectedMunicipios: string[]) => {
+    setFormData(prev => ({ ...prev, listado_municipios: selectedMunicipios }));
+    const fieldError = validateField('listado_municipios', selectedMunicipios);
+    setErrors(prev => ({ ...prev, listado_municipios: fieldError }));
+    console.log(`handleMunicipiosChange: listado_municipios = ${selectedMunicipios}, error = ${fieldError}`);
   };
 
   const validateForm = () => {
@@ -187,6 +188,7 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
           fecha_vencimiento_licencia_operativa: formData.fecha_vencimiento_licencia_operativa?.toISOString(),
           fecha_vencimiento_circulacion: formData.fecha_vencimiento_circulacion?.toISOString(),
           fecha_vencimiento_somaton: formData.fecha_vencimiento_somaton?.toISOString(),
+          listado_municipios: JSON.stringify(formData.listado_municipios), // Stringify array back to JSON string
         }),
       });
 
@@ -497,27 +499,12 @@ const VehicleForm = ({ initialData, onSuccess, onCancel }: VehicleFormProps) => 
             <label htmlFor="gps" className="text-dark dark:text-white">GPS</label>
           </div>
           <div>
-            <label htmlFor="municipios" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-              Municipios
-            </label>
-            <select
-              id="municipios"
-              name="listado_municipios"
-              multiple
-              size={8} // Add this attribute to force multiple visible rows
-              value={formData.listado_municipios ? JSON.parse(formData.listado_municipios) : []}
-              onChange={handleMultiSelectChange}
-              className={cn(
-                "w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
-                "h-32" // Keep height, but size attribute is more direct for visual rows
-              )}
-            >
-              {municipalityOptions.map(option => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <MultiSelect
+              label="Municipios"
+              options={municipalityOptions}
+              selectedValues={formData.listado_municipios as string[] || []}
+              onChange={handleMunicipiosChange}
+            />
             {errors.listado_municipios && <p className="text-red-500 text-sm mt-1">{errors.listado_municipios}</p>}
           </div>
           <div>

@@ -20,7 +20,7 @@ export interface Vehicle {
   fecha_vencimiento_somaton: Date | null;
   estado: string;
   gps: boolean;
-  listado_municipios: string; // JSON string
+  listado_municipios: string[]; // Array of strings
   tipoNombre?: string | null; // Store vehicle type as a string
   driverId?: number | null; // 1-to-1 relation with Driver
   driver?: Driver | null;

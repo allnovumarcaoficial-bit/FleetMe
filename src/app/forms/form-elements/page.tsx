@@ -109,7 +109,16 @@ export default function FormElementsPage() {
               defaultValue="USA"
               prefixIcon={<GlobeIcon />}
             />
-            <MultiSelect id="multiSelect" />
+            <MultiSelect
+              label="MultiSelect Dropdown"
+              options={[
+                { value: "option1", label: "Option 1" },
+                { value: "option2", label: "Option 2" },
+                { value: "option3", label: "Option 3" },
+              ]}
+              selectedValues={["option1"]}
+              onChange={(values) => console.log("Selected:", values)}
+            />
           </ShowcaseSection>
 
           <ShowcaseSection
