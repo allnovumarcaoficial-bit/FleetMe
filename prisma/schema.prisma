@@ -23,6 +23,7 @@ model Vehicle {
   tipoNombre                        String? // Store vehicle type as a string
   driverId                          Int?     @unique // 1-to-1 relation with Driver
   driver                            Driver?  @relation(fields: [driverId], references: [id])
+  mantenimientos                    Mantenimiento[]
 }
 
 model VehicleType {
@@ -52,4 +53,18 @@ model Driver {
   fecha_vencimiento_licencia        DateTime
   carnet_peritage                   Boolean
   vehicle                           Vehicle? // 1-to-1 relation with Vehicle
+}
+
+model Mantenimiento {
+  id                        Int      @id @default(autoincrement())
+  tipo                      String // "Correctivo" o "Preventivo"
+  fecha                     DateTime
+  costo                     Float
+  descripcion               String
+  lista_de_piezas           String // Stored as JSON string
+  cambio_de_pieza           Boolean
+  numero_serie_anterior     String?
+  numero_serie_nueva        String?
+  vehicleId                 Int
+  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id])
 }

@@ -24,6 +24,7 @@ export interface Vehicle {
   tipoNombre?: string | null; // Store vehicle type as a string
   driverId?: number | null; // 1-to-1 relation with Driver
   driver?: Driver | null;
+  mantenimientos?: Mantenimiento[];
 }
 
 export interface VehicleType {
@@ -42,4 +43,29 @@ export interface VehicleType {
   tipo_combustible?: string;
   capacidad_tanque?: number;
   indice_consumo?: number;
+}
+
+export enum MantenimientoTipo {
+  Correctivo = "Correctivo",
+  Preventivo = "Preventivo",
+}
+
+export interface Piece {
+  id: number; // Added for React list rendering
+  name: string;
+  cambio_de_pieza: boolean;
+  numero_serie_anterior?: string | null;
+  numero_serie_nueva?: string | null;
+}
+
+export interface Mantenimiento {
+  id: number;
+  tipo: MantenimientoTipo;
+  fecha: Date | null;
+  costo: number;
+  descripcion: string;
+  lista_de_piezas: Piece[]; // Changed to array of Piece objects
+  cambio_de_pieza: boolean; // Added top-level field
+  vehicleId: number;
+  vehicle?: Vehicle;
 }

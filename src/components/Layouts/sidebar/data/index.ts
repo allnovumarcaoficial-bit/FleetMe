@@ -69,6 +69,10 @@ export const NAV_DATA = [
             title: "Conductores",
             url: "/fleet/drivers",
           },
+          {
+            title: "Mantenimientos",
+            url: "/fleet/mantenimientos",
+          },
         ],
       },
       {
