@@ -56,42 +56,14 @@ const ServicesPage = () => {
         </div>
       )}
 
-      <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-        <div className="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="w-full md:w-1/3">
-            <label htmlFor="selectVehicle" className="mb-2 block text-body-sm font-medium text-dark dark:text-white">
-              Filtrar por Vehículo:
-            </label>
-            <select
-              id="selectVehicle"
-              name="selectVehicle"
-              value={selectedVehicleId || ''}
-              onChange={handleVehicleChange}
-              className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
-            >
-              <option value="">Todos los Vehículos</option>
-              {loadingVehicles ? (
-                <option disabled>Cargando vehículos...</option>
-              ) : errorVehicles ? (
-                <option disabled>Error al cargar vehículos</option>
-              ) : (
-                vehicles.map(vehicle => (
-                  <option key={vehicle.id} value={vehicle.id}>
-                    {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-          <Link href={selectedVehicleId ? `/fleet/services/new?vehicleId=${selectedVehicleId}` : "/fleet/services/new"}>
-            <button className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-              Añadir Servicio
-            </button>
-          </Link>
-        </div>
-
-        <ServiceTable vehicleId={selectedVehicleId} />
-      </div>
+      <ServiceTable
+        vehicleId={selectedVehicleId}
+        vehicles={vehicles}
+        loadingVehicles={loadingVehicles}
+        errorVehicles={errorVehicles}
+        handleVehicleChange={handleVehicleChange}
+      />
+     
     </>
   );
 };
