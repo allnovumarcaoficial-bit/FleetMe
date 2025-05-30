@@ -65,6 +65,10 @@ export const NAV_DATA = [
             title: "Tipos de Vehículos",
             url: "/fleet/vehicle-types",
           },
+          {
+            title: "Conductores",
+            url: "/fleet/drivers",
+          },
         ],
       },
       {

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { VehicleType } from "@/types/fleet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
+import { PreviewIcon } from "@/components/Tables/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui-elements/alert";
@@ -155,21 +157,17 @@ const VehicleTypesPage = () => {
                 </TableCell>
                 <TableCell className="xl:pr-7.5">
                   <div className="flex items-center justify-end gap-x-3.5">
-                    <Link href={`/fleet/vehicle-types/${type.id}`}>
-                      <button className="hover:text-primary">
-                        <span className="sr-only">Ver Tipo</span>
-                        👁️
-                      </button>
+                    <Link href={`/fleet/vehicle-types/${type.id}`} className="hover:text-primary">
+                      <span className="sr-only">Ver Tipo</span>
+                      <PreviewIcon />
                     </Link>
-                    <Link href={`/fleet/vehicle-types/${type.id}/edit`}>
-                      <button className="hover:text-primary">
-                        <span className="sr-only">Editar Tipo</span>
-                        ✏️
-                      </button>
+                    <Link href={`/fleet/vehicle-types/${type.id}/edit`} className="hover:text-primary">
+                      <span className="sr-only">Editar Tipo</span>
+                      <PencilSquareIcon />
                     </Link>
-                    <button onClick={() => handleDelete(type.id)} className="hover:text-red-500">
+                    <button onClick={() => handleDelete(type.id)} className="hover:text-primary">
                       <span className="sr-only">Eliminar Tipo</span>
-                      🗑️
+                      <TrashIcon />
                     </button>
                   </div>
                 </TableCell>

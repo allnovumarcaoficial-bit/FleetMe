@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
+import { PreviewIcon } from "@/components/Tables/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui-elements/alert";
@@ -161,21 +163,17 @@ const VehiclesPage = () => {
                 </TableCell>
                 <TableCell className="xl:pr-7.5">
                   <div className="flex items-center justify-end gap-x-3.5">
-                    <Link href={`/fleet/vehicles/${vehicle.id}`}>
-                      <button className="hover:text-primary">
-                        <span className="sr-only">Ver Vehículo</span>
-                        👁️
-                      </button>
+                    <Link href={`/fleet/vehicles/${vehicle.id}`} className="hover:text-primary">
+                      <span className="sr-only">Ver Vehículo</span>
+                      <PreviewIcon />
                     </Link>
-                    <Link href={`/fleet/vehicles/${vehicle.id}/edit`}>
-                      <button className="hover:text-primary">
-                        <span className="sr-only">Editar Vehículo</span>
-                        ✏️
-                      </button>
+                    <Link href={`/fleet/vehicles/${vehicle.id}/edit`} className="hover:text-primary">
+                      <span className="sr-only">Editar Vehículo</span>
+                      <PencilSquareIcon />
                     </Link>
-                    <button onClick={() => handleDelete(vehicle.id)} className="hover:text-red-500">
+                    <button onClick={() => handleDelete(vehicle.id)} className="hover:text-primary">
                       <span className="sr-only">Eliminar Vehículo</span>
-                      🗑️
+                      <TrashIcon />
                     </button>
                   </div>
                 </TableCell>

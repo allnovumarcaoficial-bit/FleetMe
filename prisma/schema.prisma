@@ -21,7 +21,8 @@ model Vehicle {
   gps                               Boolean
   listado_municipios                String   // Stored as JSON string for SQLite
   tipoNombre                        String? // Store vehicle type as a string
-  vehicleDrivers                    VehicleDriver[] // Explicit many-to-many relation
+  driverId                          Int?     @unique // 1-to-1 relation with Driver
+  driver                            Driver?  @relation(fields: [driverId], references: [id])
 }
 
 model VehicleType {
@@ -45,18 +46,10 @@ model VehicleType {
 }
 
 model Driver {
-  id       Int      @id @default(autoincrement())
-  nombre   String
-  licencia String   @unique
-  vehicleDrivers    VehicleDriver[] // Explicit many-to-many relation
-}
-
-// Join table for many-to-many relationship between Vehicle and Driver
-model VehicleDriver {
-  vehicleId Int
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
-  driverId  Int
-  driver    Driver  @relation(fields: [driverId], references: [id])
-
-  @@id([vehicleId, driverId]) // Composite primary key
+  id                                Int      @id @default(autoincrement())
+  nombre                            String
+  licencia                          String   @unique
+  fecha_vencimiento_licencia        DateTime
+  carnet_peritage                   Boolean
+  vehicle                           Vehicle? // 1-to-1 relation with Vehicle
 }

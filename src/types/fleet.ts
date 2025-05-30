@@ -1,3 +1,13 @@
+export interface Driver {
+  id: number;
+  nombre: string;
+  licencia: string;
+  fecha_vencimiento_licencia: Date | null;
+  carnet_peritage: boolean;
+  vehicle?: Vehicle | null; // 1-to-1 relation with Vehicle
+  vehicleId?: number | null; // Add this for form handling
+}
+
 export interface Vehicle {
   id: number;
   marca: string;
@@ -12,6 +22,8 @@ export interface Vehicle {
   gps: boolean;
   listado_municipios: string; // JSON string
   tipoNombre?: string | null; // Store vehicle type as a string
+  driverId?: number | null; // 1-to-1 relation with Driver
+  driver?: Driver | null;
 }
 
 export interface VehicleType {
@@ -30,10 +42,4 @@ export interface VehicleType {
   tipo_combustible?: string;
   capacidad_tanque?: number;
   indice_consumo?: number;
-}
-
-export interface Driver {
-  id: number;
-  nombre: string;
-  licencia: string;
 }
