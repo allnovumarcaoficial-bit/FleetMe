@@ -25,6 +25,7 @@ model Vehicle {
   driver                            Driver?  @relation(fields: [driverId], references: [id])
   mantenimientos                    Mantenimiento[]
   servicios                         Servicio[]
+  fuelOperations                    FuelOperation[] // Add relation to FuelOperation
 }
 
 model VehicleType {
@@ -81,6 +82,7 @@ model FuelCard {
   esReservorio              Boolean
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
+  fuelOperations            FuelOperation[] // Add relation to FuelOperation
 }
 
 model Servicio {
@@ -97,4 +99,21 @@ model Servicio {
   estado              String
   vehicleId           Int
   vehicle             Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model FuelOperation {
+  id                        Int      @id @default(autoincrement())
+  tipoOperacion             String // "Carga" or "Consumo"
+  fecha                     DateTime
+  saldoInicio               Float
+  valorOperacionDinero      Float
+  valorOperacionLitros      Float
+  saldoFinal                Float
+  saldoFinalLitros          Float
+  fuelCardId                Int
+  fuelCard                  FuelCard @relation(fields: [fuelCardId], references: [id])
+  vehicleId                 Int? // Nullable for "Carga" operations
+  vehicle                   Vehicle? @relation(fields: [vehicleId], references: [id])
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
 }
