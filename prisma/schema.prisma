@@ -70,6 +70,19 @@ model Mantenimiento {
   vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id])
 }
 
+model FuelCard {
+  id                        Int      @id @default(autoincrement())
+  numeroDeTarjeta           String   @unique
+  tipoDeTarjeta             String
+  tipoDeCombustible         String
+  precioCombustible         Float
+  moneda                    String
+  fechaVencimiento          DateTime
+  esReservorio              Boolean
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+}
+
 model Servicio {
   id                  Int      @id @default(autoincrement())
   tipoServicio        String

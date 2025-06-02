@@ -116,7 +116,7 @@ const VehicleTypesPage = () => {
           />
           <Link href="/fleet/vehicle-types/new">
             <button className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-              Añadir Tipo de Vehículo
+              Crear Tipo de Vehículo
             </button>
           </Link>
         </div>

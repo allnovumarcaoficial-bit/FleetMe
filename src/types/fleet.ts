@@ -73,6 +73,19 @@ export interface Mantenimiento {
   vehicle?: Vehicle;
 }
 
+export interface FuelCard {
+  id: number;
+  numeroDeTarjeta: string;
+  tipoDeTarjeta: string;
+  tipoDeCombustible: string;
+  precioCombustible: number;
+  moneda: string;
+  fechaVencimiento: Date | null;
+  esReservorio: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export enum ServicioTipo {
   EntregaDePedidos = "Entrega de Pedidos",
   Logistico = "Logistico",

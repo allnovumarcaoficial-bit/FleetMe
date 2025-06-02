@@ -77,6 +77,10 @@ export const NAV_DATA = [
             title: "Servicios",
             url: "/fleet/services",
           },
+          {
+            title: "Tarjetas de Combustible",
+            url: "/fleet/fuel-cards",
+          },
         ],
       },
       {
