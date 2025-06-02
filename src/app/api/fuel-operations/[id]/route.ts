@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const fuelOperation = await prisma.fuelOperation.findUnique({
       where: { id: parseInt(id) },
       include: {
@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { tipoOperacion, fecha, valorOperacionDinero, fuelCardId, vehicleId } = body;
 
@@ -92,7 +92,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     await prisma.fuelOperation.delete({
       where: { id: parseInt(id) },
     });
