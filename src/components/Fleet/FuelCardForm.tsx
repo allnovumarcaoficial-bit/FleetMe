@@ -147,9 +147,9 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
   };
 
   const fuelCardTypes = [
-    { value: 'Crédito', label: 'Crédito' },
-    { value: 'Débito', label: 'Débito' },
-    { value: 'Prepago', label: 'Prepago' },
+    { value: 'Fincimex', label: 'Fincimex' },
+    { value: 'Clasica', label: 'Clasica' },
+    { value: 'Metropolitano', label: 'Metropolitano' },
   ];
 
   const fuelTypes = [

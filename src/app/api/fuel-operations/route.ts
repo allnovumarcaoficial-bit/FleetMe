@@ -10,18 +10,22 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || '';
     const orderBy = searchParams.get('orderBy') || 'fecha';
     const orderDirection = searchParams.get('orderDirection') || 'desc';
+    const fuelCardId = searchParams.get('fuelCardId'); // Get fuelCardId from search params
 
     const skip = (page - 1) * limit;
 
-    const where: Prisma.FuelOperationWhereInput = search
-      ? {
-          OR: [
-            { tipoOperacion: { contains: search } },
-            { fuelCard: { numeroDeTarjeta: { contains: search } } },
-            { vehicle: { matricula: { contains: search } } },
-          ],
-        }
-      : {};
+    const where: Prisma.FuelOperationWhereInput = {
+      ...(search
+        ? {
+            OR: [
+              { tipoOperacion: { contains: search } },
+              { fuelCard: { numeroDeTarjeta: { contains: search } } },
+              { vehicle: { matricula: { contains: search } } },
+            ],
+          }
+        : {}),
+      ...(fuelCardId ? { fuelCardId: parseInt(fuelCardId) } : {}), // Add fuelCardId filter
+    };
 
     const fuelOperations = await prisma.fuelOperation.findMany({
       where,

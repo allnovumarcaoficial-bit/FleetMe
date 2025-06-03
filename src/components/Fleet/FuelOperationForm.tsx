@@ -380,7 +380,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
             <Select
               label="Tarjeta de Combustible"
               items={fuelCards.map(card => ({ value: card.id.toString(), label: card.numeroDeTarjeta }))}
-              value={(formData.fuelCardId || 0).toString() as string} // Explicitly cast to string
+              value={formData.fuelCardId?.toString() || ''}
               placeholder="Selecciona una tarjeta"
               onChange={handleChange}
               name="fuelCardId"
@@ -479,7 +479,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                     <Select
                       label={`Vehículo ${index + 1}`}
                       items={vehicles.map(v => ({ value: v.id.toString(), label: v.matricula }))}
-                      value={(dv.vehicleId || 0).toString() as string} // Explicitly cast to string
+                      value={dv.vehicleId?.toString() || ''}
                       placeholder="Selecciona un vehículo"
                       onChange={(e) => handleDestinationVehicleChange(index, 'vehicleId', e.target.value)}
                       name={`destinationVehicle-${index}-id`}
@@ -491,7 +491,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                       name={`destinationVehicle-${index}-litros`}
                       type="number"
                       placeholder="Cantidad de litros"
-                      value={dv.litros} // Now always a number
+                      value={dv.litros.toString()}
                       handleChange={(e) => handleDestinationVehicleChange(index, 'litros', e.target.value)}
                     />
                   </div>
