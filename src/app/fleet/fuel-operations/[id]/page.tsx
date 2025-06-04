@@ -15,6 +15,24 @@ const ViewFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleDelete = async () => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar esta operación de combustible?')) {
+      try {
+        const response = await fetch(`/api/fuel-operations/${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        router.push('/fleet/fuel-operations');
+      } catch (e: any) {
+        setError(e.message);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchFuelOperation = async () => {
       try {
@@ -84,6 +102,13 @@ const ViewFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
               Editar
             </button>
           </Link>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="inline-flex items-center justify-center rounded-md bg-red-600 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            Eliminar
+          </button>
           <button
             type="button"
             onClick={() => router.push('/fleet/fuel-operations')}

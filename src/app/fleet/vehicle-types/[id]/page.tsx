@@ -68,21 +68,7 @@ const VehicleTypeDetailsPage = ({ params }: VehicleTypeDetailsPageProps) => {
       <Breadcrumb pageName="Detalles del Tipo de Vehículo" />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-        <div className="mb-4 flex justify-end gap-4">
-          <button
-            onClick={handleEdit}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Editar
-          </button>
-          <button
-            onClick={handleDelete}
-            className="inline-flex items-center justify-center rounded-md bg-red-500 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Eliminar
-          </button>
-        </div>
-
+        
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <p><strong>Nombre:</strong> {vehicleType.nombre}</p>
           <p><strong>Cantidad de Neumáticos:</strong> {vehicleType.cantidad_neumaticos}</p>
@@ -106,6 +92,27 @@ const VehicleTypeDetailsPage = ({ params }: VehicleTypeDetailsPageProps) => {
               <p><strong>Índice de Consumo:</strong> {vehicleType.indice_consumo ?? 'N/A'}</p>
             </>
           )}
+        </div>
+        <div className="mb-4 flex justify-end gap-4">
+          <button
+            onClick={handleEdit}
+            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            Editar
+          </button>
+          <button
+            onClick={handleDelete}
+            className="inline-flex items-center justify-center rounded-md bg-red-500 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            Eliminar
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/fleet/vehicle-types')}
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+          >
+            Volver
+          </button>
         </div>
       </div>
     </>

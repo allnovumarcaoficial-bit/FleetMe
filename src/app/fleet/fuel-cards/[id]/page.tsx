@@ -101,6 +101,20 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
       <Breadcrumb pageName="Detalles de la Tarjeta de Combustible" />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
+        
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <p><strong>Número de Tarjeta:</strong> {fuelCard.numeroDeTarjeta}</p>
+          <p><strong>Tipo de Tarjeta:</strong> {fuelCard.tipoDeTarjeta}</p>
+          <p><strong>Tipo de Combustible:</strong> {fuelCard.tipoDeCombustible}</p>
+          <p><strong>Precio del Combustible:</strong> {fuelCard.precioCombustible}</p>
+          <p><strong>Moneda:</strong> {fuelCard.moneda}</p>
+          <p><strong>Fecha de Vencimiento:</strong> {fuelCard.fechaVencimiento ? format(new Date(fuelCard.fechaVencimiento), 'dd/MM/yyyy') : 'N/A'}</p>
+          <p><strong>Es Reservorio:</strong> {fuelCard.esReservorio ? 'Sí' : 'No'}</p>
+          <p><strong>Fecha de Creación:</strong> {fuelCard.createdAt ? format(new Date(fuelCard.createdAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
+          <p><strong>Última Actualización:</strong> {fuelCard.updatedAt ? format(new Date(fuelCard.updatedAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
+        </div>
+
         <div className="mb-4 flex justify-end gap-4">
           <button
             onClick={handleEdit}
@@ -114,18 +128,13 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
           >
             Eliminar
           </button>
-        </div>
-
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <p><strong>Número de Tarjeta:</strong> {fuelCard.numeroDeTarjeta}</p>
-          <p><strong>Tipo de Tarjeta:</strong> {fuelCard.tipoDeTarjeta}</p>
-          <p><strong>Tipo de Combustible:</strong> {fuelCard.tipoDeCombustible}</p>
-          <p><strong>Precio del Combustible:</strong> {fuelCard.precioCombustible}</p>
-          <p><strong>Moneda:</strong> {fuelCard.moneda}</p>
-          <p><strong>Fecha de Vencimiento:</strong> {fuelCard.fechaVencimiento ? format(new Date(fuelCard.fechaVencimiento), 'dd/MM/yyyy') : 'N/A'}</p>
-          <p><strong>Es Reservorio:</strong> {fuelCard.esReservorio ? 'Sí' : 'No'}</p>
-          <p><strong>Fecha de Creación:</strong> {fuelCard.createdAt ? format(new Date(fuelCard.createdAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
-          <p><strong>Última Actualización:</strong> {fuelCard.updatedAt ? format(new Date(fuelCard.updatedAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
+          <button
+            type="button"
+            onClick={() => router.push('/fleet/fuel-cards')}
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+          >
+            Volver
+          </button>
         </div>
       </div>
     </>

@@ -101,20 +101,7 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
       <Breadcrumb pageName="Detalles del Servicio" />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-        <div className="mb-4 flex justify-end gap-4">
-          <button
-            onClick={handleEdit}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Editar
-          </button>
-          <button
-            onClick={handleDelete}
-            className="inline-flex items-center justify-center rounded-md bg-red-500 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Eliminar
-          </button>
-        </div>
+
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <p><strong>Tipo de Servicio:</strong> {service.tipoServicio}</p>
@@ -137,6 +124,28 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
           {service.tipoServicio === 'Administrativo' && (
             <p><strong>Descripción:</strong> {service.descripcion || 'N/A'}</p>
           )}
+        </div>
+
+        <div className="mb-4 flex justify-end gap-4">
+          <button
+            onClick={handleEdit}
+            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            Editar
+          </button>
+          <button
+            onClick={handleDelete}
+            className="inline-flex items-center justify-center rounded-md bg-red-500 py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
+            Eliminar
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/fleet/services')}
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+          >
+            Volver
+          </button>
         </div>
       </div>
     </>

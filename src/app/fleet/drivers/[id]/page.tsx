@@ -102,6 +102,15 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
       <Breadcrumb pageName="Detalles del Conductor" />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
+        
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <p><strong>Nombre:</strong> {driver.nombre}</p>
+          <p><strong>Licencia:</strong> {driver.licencia}</p>
+          <p><strong>Fecha de Vencimiento de Licencia:</strong> {driver.fecha_vencimiento_licencia ? format(new Date(driver.fecha_vencimiento_licencia), 'dd/MM/yyyy') : 'N/A'}</p>
+          <p><strong>Carnet de Peritaje:</strong> {driver.carnet_peritage ? 'Sí' : 'No'}</p>
+          <p><strong>Vehículo Asignado:</strong> {driver.vehicle ? `${driver.vehicle.marca} ${driver.vehicle.modelo} (${driver.vehicle.matricula})` : 'Ninguno'}</p>
+        </div>
+
         <div className="mb-4 flex justify-end gap-4">
           <button
             onClick={handleEdit}
@@ -115,14 +124,13 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
           >
             Eliminar
           </button>
-        </div>
-
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <p><strong>Nombre:</strong> {driver.nombre}</p>
-          <p><strong>Licencia:</strong> {driver.licencia}</p>
-          <p><strong>Fecha de Vencimiento de Licencia:</strong> {driver.fecha_vencimiento_licencia ? format(new Date(driver.fecha_vencimiento_licencia), 'dd/MM/yyyy') : 'N/A'}</p>
-          <p><strong>Carnet de Peritaje:</strong> {driver.carnet_peritage ? 'Sí' : 'No'}</p>
-          <p><strong>Vehículo Asignado:</strong> {driver.vehicle ? `${driver.vehicle.marca} ${driver.vehicle.modelo} (${driver.vehicle.matricula})` : 'Ninguno'}</p>
+          <button
+            type="button"
+            onClick={() => router.push('/fleet/drivers')}
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+          >
+            Volver
+          </button>
         </div>
       </div>
     </>
