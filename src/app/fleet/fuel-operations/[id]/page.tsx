@@ -4,14 +4,14 @@ import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumb';
 import React, { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { FuelOperation, FuelCard, Vehicle } from '@/types/fleet';
+import { FuelOperation, FuelCard, Vehicle, FuelDistribution } from '@/types/fleet';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
 const ViewFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const router = useRouter();
   const { id } = use(params);
-  const [fuelOperation, setFuelOperation] = useState<(FuelOperation & { fuelCard: FuelCard; vehicle: Vehicle | null }) | null>(null);
+  const [fuelOperation, setFuelOperation] = useState<(FuelOperation & { fuelCard: FuelCard; fuelDistributions: (FuelDistribution & { vehicle: Vehicle })[] }) | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,8 +63,19 @@ const ViewFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
             <p><strong>Valor Operación (Litros):</strong> {fuelOperation.valorOperacionLitros.toFixed(2)}</p>
             <p><strong>Saldo Final:</strong> {fuelOperation.saldoFinal.toFixed(2)}</p>
             <p><strong>Saldo Final (Litros):</strong> {fuelOperation.saldoFinalLitros.toFixed(2)}</p>
-            <p><strong>Vehículo Destino:</strong> {fuelOperation.vehicle?.matricula || 'N/A'}</p>
           </div>
+          {fuelOperation.tipoOperacion === 'Consumo' && fuelOperation.fuelDistributions && fuelOperation.fuelDistributions.length > 0 && (
+            <div className="mt-4">
+              <h4 className="text-lg font-semibold text-dark dark:text-white mb-2">Vehículos Destino:</h4>
+              <ul className="list-disc pl-5">
+                {fuelOperation.fuelDistributions.map((dist, index) => (
+                  <li key={index} className="text-dark dark:text-white">
+                    {dist.vehicle?.matricula || 'Vehículo Desconocido'} - {dist.liters.toFixed(2)} Litros
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end gap-4">

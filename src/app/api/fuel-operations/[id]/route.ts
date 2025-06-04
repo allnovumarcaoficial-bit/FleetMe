@@ -8,7 +8,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
       where: { id: parseInt(id) },
       include: {
         fuelCard: true,
-        vehicle: true,
+        fuelDistributions: {
+          include: {
+            vehicle: true,
+          },
+        },
       },
     });
 
@@ -27,9 +31,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const { id } = await params;
     const body = await request.json();
-    const { tipoOperacion, fecha, valorOperacionDinero, fuelCardId, vehicleId } = body;
+    const { tipoOperacion, fecha, valorOperacionDinero, fuelCardId, fuelDistributions } = body;
 
-    // Fetch the fuel card to get its price and type
     const fuelCard = await prisma.fuelCard.findUnique({
       where: { id: fuelCardId },
     });
@@ -38,17 +41,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ message: 'Fuel card not found' }, { status: 404 });
     }
 
-    // Calculate valorOperacionLitros
     const valorOperacionLitros = valorOperacionDinero / fuelCard.precioCombustible;
 
-    // Determine saldoInicio (recalculate based on the latest operation for the selected card)
     const lastOperation = await prisma.fuelOperation.findFirst({
-      where: { fuelCardId, id: { not: parseInt(id) } }, // Exclude the current operation being updated
+      where: { fuelCardId, id: { not: parseInt(id) } },
       orderBy: { fecha: 'desc' },
     });
     const saldoInicio = lastOperation ? lastOperation.saldoFinal : 0;
 
-    // Calculate saldoFinal and saldoFinalLitros
     let saldoFinal;
     if (tipoOperacion === 'Carga') {
       saldoFinal = saldoInicio + valorOperacionDinero;
@@ -59,14 +59,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const saldoFinalLitros = saldoFinal / fuelCard.precioCombustible;
-
-    // Validate vehicleId for 'Consumo' operations
-    if (tipoOperacion === 'Consumo' && !vehicleId) {
-      return NextResponse.json({ message: 'Vehicle is required for Consumo operations' }, { status: 400 });
-    }
-    if (tipoOperacion === 'Carga' && vehicleId) {
-        return NextResponse.json({ message: 'Vehicle should not be selected for Carga operations' }, { status: 400 });
-    }
 
     const updatedFuelOperation = await prisma.fuelOperation.update({
       where: { id: parseInt(id) },
@@ -79,7 +71,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         saldoFinal,
         saldoFinalLitros,
         fuelCardId,
-        vehicleId: tipoOperacion === 'Consumo' ? vehicleId : null,
+        fuelDistributions: {
+          deleteMany: {}, // Delete existing distributions
+          createMany: {
+            data: tipoOperacion === 'Consumo' && fuelDistributions && fuelDistributions.length > 0
+              ? fuelDistributions.map((dist: any) => ({
+                  vehicleId: dist.vehicleId,
+                  liters: dist.liters,
+                }))
+              : [],
+          },
+        },
       },
     });
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { FuelOperation, FuelCard, Vehicle } from '@/types/fleet';
+import { FuelOperation, FuelCard, Vehicle, FuelDistribution } from '@/types/fleet';
 import InputGroup from '@/components/FormElements/InputGroup';
 import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
@@ -34,16 +34,19 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
       tipoOperacion: '',
       fecha: new Date(),
       valorOperacionDinero: 0,
-      fuelCardId: undefined, // Changed from null to undefined
-      vehicleId: null, // For single vehicle consumption
+      fuelCardId: undefined,
     };
   });
 
   const [destinationVehicles, setDestinationVehicles] = useState<DestinationVehicle[]>(() => {
-    if (initialData && initialData.tipoOperacion === 'Consumo' && initialData.vehicleId) {
-      return [{ id: 1, vehicleId: initialData.vehicleId, litros: initialData.valorOperacionLitros }];
+    if (initialData && initialData.tipoOperacion === 'Consumo' && initialData.fuelDistributions && initialData.fuelDistributions.length > 0) {
+      return initialData.fuelDistributions.map((dist, index) => ({
+        id: index + 1,
+        vehicleId: dist.vehicleId,
+        litros: dist.liters,
+      }));
     }
-    return [{ id: 1, vehicleId: null, litros: 0 }]; // Changed from '' to 0
+    return [{ id: 1, vehicleId: null, litros: 0 }];
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -255,82 +258,16 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
       const method = initialData ? 'PUT' : 'POST';
       const url = initialData ? `/api/fuel-operations/${initialData.id}` : '/api/fuel-operations';
 
-      const payload = {
+      const payload: any = {
         ...formData,
         fecha: formData.fecha?.toISOString(),
-        vehicleId: formData.tipoOperacion === 'Consumo' && !selectedFuelCard?.esReservorio
-          ? null // Handled by destinationVehicles for multiple
-          : (formData.tipoOperacion === 'Consumo' && selectedFuelCard?.esReservorio
-            ? destinationVehicles[0]?.vehicleId // Single vehicle for reservorio
-            : null), // Null for Carga
       };
 
-      // If consumption and not reservorio, we need to handle multiple vehicles.
-      // The backend API expects a single vehicleId for now.
-      // This implies that if multiple vehicles consume from one operation,
-      // we might need to create multiple FuelOperation records on the backend,
-      // or adjust the backend to handle a list of vehicles.
-      // For now, I'll send the first vehicleId if it's a reservorio, otherwise null.
-      // The prompt says "una operacion solo va a estar asociada a un vehiculo."
-      // This means if multiple vehicles consume, it should be multiple operations.
-      // I will adjust the backend to handle multiple operations if needed, but for now,
-      // the form will only allow one vehicle per operation for non-reservorio consumption
-      // if the backend only supports one vehicleId.
-      // Re-reading the prompt: "si el tipo de operacion que se seleccione es un consumo debe permitir seleccionar el destino que puede ser uno o varios vehiculos para ello debe habilitar un campo select para seleccionar el vehiculo y un campo cantidad de litros para ese vehiculo(Debes validar que la sumatoria del campo cantidad de litros de todos los vehiculos destino sea igual al campo valor de la operacion en litros) debe permitir si es necesario agregar otro vehiculo o quitar alguno pero debe haber al menos uno, sin embargo si la tarjeta que se selecciona es un reservorio solamente tendra como destino un solo vehiculo."
-      // This implies a single FuelOperation can indeed be split among multiple vehicles.
-      // This contradicts "una operacion solo va a estar asociada a un vehiculo."
-      // I will assume the "una operacion solo va a estar asociada a un vehiculo" refers to the *primary* vehicle for the operation,
-      // and the multiple vehicles are for *distribution* of the fuel.
-      // This means the backend needs to be updated to handle the distribution.
-      // For now, I will send the first vehicleId if it's a reservorio, and for non-reservorio,
-      // I will need to decide how to send the multiple vehicles.
-      // Given the current backend API structure, it only accepts a single `vehicleId`.
-      // This means the current backend API does NOT support multiple vehicles per operation.
-      // I need to either:
-      // 1. Adjust the backend API to accept an array of vehicle distributions.
-      // 2. Create multiple FuelOperation records on the frontend for each vehicle distribution.
-      // The prompt implies a single "Registro de Operaciones de Combustible" entry.
-      // This is a significant design decision. I will assume for now that the `vehicleId` in the `FuelOperation` model
-      // is the *primary* vehicle, and the distribution to multiple vehicles is a separate detail.
-      // If the user wants to track distribution to multiple vehicles within a *single* FuelOperation record,
-      // the database schema needs to be updated (e.g., a new `FuelDistribution` model).
-      // For now, I will make a pragmatic choice: if it's a reservorio, send the single vehicleId.
-      // If it's a non-reservorio consumption, and multiple vehicles are selected, I will need to clarify with the user.
-      // For the purpose of this task, I will assume that for non-reservorio consumption, if multiple vehicles are selected,
-      // the form will only send the first vehicle's ID to the `vehicleId` field in `FuelOperation`,
-      // and the sum validation will still apply. This is a temporary workaround until clarification.
-      // Or, I can make `vehicleId` always null for non-reservorio consumption and rely on a future distribution model.
-
-      // Let's re-read: "una operacion solamente va a estar asociada a una tarjeta pero una tarjeta puede tener muchas operaciones, y va a tener relacion con vehiculo donde un vehiculo puede tener muchas operaciones pero una operacion solo va a estar asociada a un vehiculo."
-      // This strongly implies a single vehicle per FuelOperation record.
-      // The "uno o varios vehiculos" part for consumption is the tricky one.
-      // If it's one operation record, and it can be associated with only one vehicle, then "uno o varios vehiculos"
-      // must mean that the *form* allows selecting multiple, but the *backend* will only store one, or it implies
-      // creating multiple backend records.
-
-      // Given the current `FuelOperation` model has `vehicleId: Int?`, it supports only one vehicle.
-      // So, if `tipoOperacion` is 'Consumo' and `esReservorio` is false, and multiple vehicles are selected in the form,
-      // I cannot directly map this to the current `FuelOperation` model.
-
-      // I will implement the form to allow multiple vehicle inputs, but for the backend submission,
-      // I will only send the `vehicleId` if `esReservorio` is true (single vehicle),
-      // and for non-reservorio consumption, I will send `null` for `vehicleId` in the `FuelOperation` record,
-      // and add a comment that this needs a separate distribution mechanism.
-      // This is a compromise to proceed with the task given the conflicting requirements.
-
-      // Let's adjust the payload for vehicleId based on this interpretation.
-      let finalVehicleId: number | null = null;
       if (formData.tipoOperacion === 'Consumo') {
-        if (selectedFuelCard?.esReservorio) {
-          finalVehicleId = destinationVehicles[0]?.vehicleId || null;
-        } else {
-          // For non-reservorio consumption with potentially multiple vehicles,
-          // the current FuelOperation model only supports one vehicleId.
-          // If the user wants to track distribution, a new model is needed.
-          // For now, we'll associate with the first vehicle if any, or null.
-          // This is a temporary decision.
-          finalVehicleId = destinationVehicles[0]?.vehicleId || null;
-        }
+        payload.fuelDistributions = destinationVehicles.map(dv => ({
+          vehicleId: dv.vehicleId,
+          liters: dv.litros,
+        }));
       }
 
       const response = await fetch(url, {
@@ -338,10 +275,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...payload,
-          vehicleId: finalVehicleId,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -491,7 +425,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                       name={`destinationVehicle-${index}-litros`}
                       type="number"
                       placeholder="Cantidad de litros"
-                      value={dv.litros.toString()}
+                      value={String(dv.litros)}
                       handleChange={(e) => handleDestinationVehicleChange(index, 'litros', e.target.value)}
                     />
                   </div>

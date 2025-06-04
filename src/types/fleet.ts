@@ -28,7 +28,7 @@ export interface Vehicle {
   driver?: Driver | null;
   mantenimientos?: Mantenimiento[];
   servicios?: Servicio[];
-  fuelOperations?: FuelOperation[]; // Add relation to FuelOperation
+  fuelDistributions?: FuelDistribution[];
 }
 
 export interface VehicleType {
@@ -85,7 +85,7 @@ export interface FuelCard {
   esReservorio: boolean;
   createdAt: Date;
   updatedAt: Date;
-  fuelOperations?: FuelOperation[]; // Add relation to FuelOperation
+  fuelOperations?: FuelOperation[];
 }
 
 export enum ServicioTipo {
@@ -126,8 +126,16 @@ export interface FuelOperation {
   saldoFinalLitros: number;
   fuelCardId: number;
   fuelCard?: FuelCard;
-  vehicleId?: number | null;
-  vehicle?: Vehicle | null;
   createdAt: Date;
   updatedAt: Date;
+  fuelDistributions?: FuelDistribution[];
+}
+
+export interface FuelDistribution {
+  id: number;
+  fuelOperationId: number;
+  fuelOperation?: FuelOperation;
+  vehicleId: number;
+  vehicle?: Vehicle;
+  liters: number;
 }
