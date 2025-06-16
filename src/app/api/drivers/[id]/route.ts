@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 
 export async function GET(request: Request, context: any) {
   try {
-    const { id: paramId } = context.params;
+    const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
@@ -29,7 +29,7 @@ export async function GET(request: Request, context: any) {
 
 export async function PUT(request: Request, context: any) {
   try {
-    const { id: paramId } = context.params;
+    const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
@@ -90,7 +90,7 @@ export async function PUT(request: Request, context: any) {
 
 export async function DELETE(request: Request, context: any) {
   try {
-    const { id: paramId } = context.params;
+    const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
