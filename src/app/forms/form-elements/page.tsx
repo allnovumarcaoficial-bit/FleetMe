@@ -12,14 +12,14 @@ import { RadioInput } from "@/components/FormElements/radio";
 import { Select } from "@/components/FormElements/select";
 import { Switch } from "@/components/FormElements/switch";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
-import { useState } from "react"; // Import useState
+ // Import useState
 
 export const metadata: Metadata = {
   title: "Form Elements",
 };
 
 export default function FormElementsPage() {
-  const [selectedCountry, setSelectedCountry] = useState("USA"); // State for the Select component
+  /*const [selectedCountry, setSelectedCountry] = useState("USA"); // State for the Select component
 
   return (
     <>
@@ -140,5 +140,5 @@ export default function FormElementsPage() {
         </div>
       </div>
     </>
-  );
+  );*/
 }
