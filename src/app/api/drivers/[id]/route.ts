@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+interface Context {
+  params: {
+    id: string;
+  };
+}
+
+export async function GET(request: Request, context: Context) {
   try {
-    const { id: paramId } = await params;
+    const { id: paramId } = context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
@@ -27,9 +33,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: Context) {
   try {
-    const { id: paramId } = await params;
+    const { id: paramId } = context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
@@ -88,9 +94,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, context: Context) {
   try {
-    const { id: paramId } = await params;
+    const { id: paramId } = context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
