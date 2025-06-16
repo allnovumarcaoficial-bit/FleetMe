@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-interface Context {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: Request, context: Context) {
+export async function GET(request: Request, context: { params: { id: string } }) {
   try {
     const { id: paramId } = context.params;
     const id = parseInt(paramId);
@@ -33,7 +27,7 @@ export async function GET(request: Request, context: Context) {
   }
 }
 
-export async function PUT(request: Request, context: Context) {
+export async function PUT(request: Request, context: { params: { id: string } }) {
   try {
     const { id: paramId } = context.params;
     const id = parseInt(paramId);
@@ -94,7 +88,7 @@ export async function PUT(request: Request, context: Context) {
   }
 }
 
-export async function DELETE(request: Request, context: Context) {
+export async function DELETE(request: Request, context: { params: { id: string } }) {
   try {
     const { id: paramId } = context.params;
     const id = parseInt(paramId);
