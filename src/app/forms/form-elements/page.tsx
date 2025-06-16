@@ -16,9 +16,6 @@ import { Switch } from "@/components/FormElements/switch";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import { useState } from "react"; // Import useState
 
-export const metadata: Metadata = {
-  title: "Form Elements",
-};
 
 export default function FormElementsPage() {
   const [selectedCountry, setSelectedCountry] = useState("USA"); // State for the Select component
