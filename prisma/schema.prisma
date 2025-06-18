@@ -66,6 +66,7 @@ model Mantenimiento {
   descripcion               String
   lista_de_piezas           String // Stored as JSON string
   cambio_de_pieza           Boolean
+  estado                    String @default("Pendiente")
   numero_serie_anterior     String?
   numero_serie_nueva        String?
   vehicleId                 Int

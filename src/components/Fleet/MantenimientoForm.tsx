@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Mantenimiento, MantenimientoTipo, Vehicle } from '@/types/fleet';
+import { Mantenimiento, MantenimientoTipo, MantenimientoEstado, Vehicle } from '@/types/fleet';
 import InputGroup from '@/components/FormElements/InputGroup';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
@@ -25,11 +25,12 @@ interface MantenimientoFormProps {
 
 const MantenimientoForm = ({ initialData, onSuccess, onCancel, selectedVehicleId }: MantenimientoFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<Partial<Mantenimiento>>(initialData ? {
+  const [formData, setFormData] = useState<Mantenimiento | Partial<Mantenimiento>>(initialData ? {
     ...initialData,
     fecha: initialData.fecha ? new Date(initialData.fecha) : null,
-    lista_de_piezas: initialData.lista_de_piezas ? JSON.parse(initialData.lista_de_piezas).map((p: any, index: number) => ({ ...p, id: index })) : [{ id: Date.now(), name: '', cambio_de_pieza: false, numero_serie_anterior: '', numero_serie_nueva: '' }],
+    lista_de_piezas: initialData.lista_de_piezas ? (JSON.parse(initialData.lista_de_piezas as unknown as string) as Piece[]).map((p: any, index: number) => ({ ...p, id: index })) : [{ id: Date.now(), name: '', cambio_de_pieza: false, numero_serie_anterior: '', numero_serie_nueva: '' }],
     cambio_de_pieza: initialData.cambio_de_pieza ?? false, // Initialize top-level cambio_de_pieza
+    estado: initialData.estado ?? 'Pendiente', // Initialize estado
   } : {
     tipo: MantenimientoTipo.Correctivo,
     fecha: null,
@@ -37,6 +38,7 @@ const MantenimientoForm = ({ initialData, onSuccess, onCancel, selectedVehicleId
     descripcion: '',
     lista_de_piezas: [{ id: Date.now(), name: '', cambio_de_pieza: false, numero_serie_anterior: '', numero_serie_nueva: '' }], // Initialize with one empty piece
     cambio_de_pieza: false, // Default to false for new maintenance
+    estado: 'Pendiente', // Default to Pendiente for new maintenance
     vehicleId: selectedVehicleId || undefined,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -65,7 +67,7 @@ const MantenimientoForm = ({ initialData, onSuccess, onCancel, selectedVehicleId
       setFormData({
         ...initialData,
         fecha: initialData.fecha ? new Date(initialData.fecha) : null,
-        lista_de_piezas: initialData.lista_de_piezas ? JSON.parse(initialData.lista_de_piezas).map((p: any, index: number) => ({ ...p, id: index })) : [{ id: Date.now(), name: '', cambio_de_pieza: false, numero_serie_anterior: '', numero_serie_nueva: '' }],
+        lista_de_piezas: initialData.lista_de_piezas ? (JSON.parse(initialData.lista_de_piezas as unknown as string) as Piece[]).map((p: any, index: number) => ({ ...p, id: index })) : [{ id: Date.now(), name: '', cambio_de_pieza: false, numero_serie_anterior: '', numero_serie_nueva: '' }],
       });
     } else if (selectedVehicleId) {
       setFormData(prev => ({ ...prev, vehicleId: selectedVehicleId }));
@@ -90,6 +92,9 @@ const MantenimientoForm = ({ initialData, onSuccess, onCancel, selectedVehicleId
         break;
       case 'vehicleId':
         if (!value) error = 'Debe seleccionar un vehículo.';
+        break;
+      case 'estado':
+        if (!value) error = 'Debe seleccionar un estado.';
         break;
     }
     return error;
@@ -314,6 +319,25 @@ const MantenimientoForm = ({ initialData, onSuccess, onCancel, selectedVehicleId
               ))}
             </select>
             {errors.tipo && <p className="text-red-500 text-sm mt-1">{errors.tipo}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="estado" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
+              Estado
+            </label>
+            <select
+              id="estado"
+              name="estado"
+              value={formData.estado || ''}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
+            >
+              <option value="" disabled>Selecciona un estado</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Ejecutado">Ejecutado</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+            {errors.estado && <p className="text-red-500 text-sm mt-1">{errors.estado}</p>}
           </div>
 
           <div>

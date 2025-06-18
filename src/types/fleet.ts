@@ -72,9 +72,12 @@ export interface Mantenimiento {
   descripcion: string;
   lista_de_piezas: Piece[]; // Changed to array of Piece objects
   cambio_de_pieza: boolean; // Added top-level field
+  estado: MantenimientoEstado; // New field for maintenance status
   vehicleId: number;
   vehicle?: Vehicle;
 }
+
+export type MantenimientoEstado = 'Pendiente' | 'Ejecutado' | 'Cancelado';
 
 export interface FuelCard {
   id: number;

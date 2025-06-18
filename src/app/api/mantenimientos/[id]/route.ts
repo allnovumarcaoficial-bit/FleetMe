@@ -45,6 +45,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       cambio_de_pieza,
       numero_serie_anterior,
       numero_serie_nueva,
+      estado, // Add estado here
       vehicleId,
     } = body;
 
@@ -61,6 +62,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         cambio_de_pieza,
         numero_serie_anterior: cambio_de_pieza ? numero_serie_anterior : null,
         numero_serie_nueva: cambio_de_pieza ? numero_serie_nueva : null,
+        estado, // Add estado here
         vehicle: {
           connect: { id: vehicleId },
         },

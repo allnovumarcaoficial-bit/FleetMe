@@ -142,6 +142,9 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
                 <TableHead className="cursor-pointer" onClick={() => handleSort('costo')}>
                   Costo {sortBy === 'costo' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => handleSort('estado')}>
+                  Estado {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
+                </TableHead>
                 <TableHead>Descripción</TableHead>
                 <TableHead>Vehículo</TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
@@ -162,6 +165,11 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
                   <TableCell>
                     <p className="text-dark dark:text-white">
                       ${mantenimiento.costo.toFixed(2)}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-dark dark:text-white">
+                      {mantenimiento.estado}
                     </p>
                   </TableCell>
                   <TableCell>
