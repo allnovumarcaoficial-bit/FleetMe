@@ -4,10 +4,12 @@ export interface Driver {
   licencia: string;
   fecha_vencimiento_licencia: Date | null;
   carnet_peritage: boolean;
+  estado: DriverStatus; // Add this field
   vehicle?: Vehicle | null; // 1-to-1 relation with Vehicle
   vehicleId?: number | null; // Add this for form handling
 }
 
+export type DriverStatus = 'Activo' | 'Inactivo' | 'Vacaciones'; // New type for driver status
 export type VehicleStatus = 'Activo' | 'Inactivo' | 'En Mantenimiento' | 'Baja';
 
 export interface Vehicle {

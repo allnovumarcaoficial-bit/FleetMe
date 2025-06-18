@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Driver, Vehicle } from '@/types/fleet';
+import { Driver, Vehicle, DriverStatus } from '@/types/fleet';
 import InputGroup from '@/components/FormElements/InputGroup';
+import { Select } from '@/components/FormElements/select'; // Import Select component
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     licencia: '',
     fecha_vencimiento_licencia: null,
     carnet_peritage: false,
+    estado: 'Activo', // Default to 'Activo'
     vehicleId: null,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -69,6 +71,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     switch (name) {
       case 'nombre':
       case 'licencia':
+      case 'estado': // Add validation for estado
         if (!value) error = 'Este campo es requerido.';
         break;
       case 'fecha_vencimiento_licencia':
@@ -210,6 +213,21 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               className="h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary"
             />
             <label htmlFor="carnet_peritage" className="text-dark dark:text-white">Tiene Carnet de Peritaje</label>
+          </div>
+          <div>
+            <Select
+              label="Estado"
+              items={[
+                { value: 'Activo', label: 'Activo' },
+                { value: 'Inactivo', label: 'Inactivo' },
+                { value: 'Vacaciones', label: 'Vacaciones' },
+              ]}
+              value={formData.estado || ''}
+              placeholder="Selecciona un estado"
+              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+              name="estado"
+            />
+            {errors.estado && <p className="text-red-500 text-sm mt-1">{errors.estado}</p>}
           </div>
           <div>
             <label htmlFor="vehicleId" className="mb-3 block text-body-sm font-medium text-dark dark:text-white">

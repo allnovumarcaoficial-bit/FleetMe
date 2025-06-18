@@ -93,7 +93,13 @@ const VehicleTypesPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Tipos de Vehículos" />
+      <Breadcrumb
+        pageName="Tipos de Vehículos"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/vehicle-types", label: "Tipos de Vehículos" }
+        ]}
+      />
 
       {actionStatus.type && (
         <div className="mb-4">

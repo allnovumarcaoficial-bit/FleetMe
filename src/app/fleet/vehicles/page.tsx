@@ -93,7 +93,13 @@ const VehiclesPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Vehículos" />
+      <Breadcrumb
+        pageName="Vehículos"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/vehicles", label: "Vehículos" }
+        ]}
+      />
 
       {actionStatus.type && (
         <div className="mb-4">
@@ -159,7 +165,21 @@ const VehiclesPage = () => {
                   <p className="text-dark dark:text-white">{vehicle.matricula}</p>
                 </TableCell>
                 <TableCell>
-                  <p className="text-dark dark:text-white">{vehicle.estado}</p>
+                  <div
+                  className={cn(
+                    "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+                    {
+                      "bg-[#219653]/[0.08] text-[#219653]":
+                        vehicle.estado === "Activo",
+                      "bg-[#D34053]/[0.08] text-[#D34053]":
+                        vehicle.estado === "Inactivo",
+                      "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
+                        vehicle.estado === "En Mantenimiento",
+                    },
+                  )}
+                >
+                  {vehicle.estado}
+                </div>
                 </TableCell>
                 <TableCell className="xl:pr-7.5">
                   <div className="flex items-center justify-end gap-x-3.5">

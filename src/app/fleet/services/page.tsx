@@ -44,7 +44,13 @@ const ServicesPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Servicios" />
+      <Breadcrumb
+        pageName="Servicios"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/services", label: "Servicios" }
+        ]}
+      />
 
       {actionStatus.type && (
         <div className="mb-4">

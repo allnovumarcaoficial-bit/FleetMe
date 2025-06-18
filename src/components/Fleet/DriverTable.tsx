@@ -15,6 +15,8 @@ import { PreviewIcon } from "@/components/Tables/icons"; // Reusing existing ico
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
+import { cn } from '@/lib/utils'; // Import cn for conditional styling
+import { DriverStatus } from '@/types/fleet'; // Import DriverStatus
 
 interface DriverTableProps { }
 
@@ -138,6 +140,9 @@ const DriverTable = ({ }: DriverTableProps) => {
                 <TableHead className="cursor-pointer" onClick={() => handleSort('carnet_peritage')}>
                   Carnet Peritaje {sortBy === 'carnet_peritage' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
+                <TableHead className="cursor-pointer" onClick={() => handleSort('estado')}>
+                  Estado {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
+                </TableHead>
                 <TableHead>Vehículo Asignado</TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
@@ -161,6 +166,23 @@ const DriverTable = ({ }: DriverTableProps) => {
                     <p className="text-dark dark:text-white">
                       {driver.carnet_peritage ? 'Sí' : 'No'}
                     </p>
+                  </TableCell>
+                  <TableCell>
+                    <div
+                      className={cn(
+                        "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+                        {
+                          "bg-[#219653]/[0.08] text-[#219653]":
+                            driver.estado === "Activo",
+                          "bg-[#D34053]/[0.08] text-[#D34053]":
+                            driver.estado === "Inactivo",
+                          "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
+                            driver.estado === "Vacaciones",
+                        },
+                      )}
+                    >
+                      {driver.estado}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">

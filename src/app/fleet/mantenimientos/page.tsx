@@ -7,7 +7,13 @@ import Link from "next/link";
 const MantenimientosPage = () => {
   return (
     <>
-      <Breadcrumb pageName="Mantenimientos" />
+      <Breadcrumb
+        pageName="Mantenimientos"
+        links={[
+          { href: "/fleet", label: "Fleet" },
+          { href: "/fleet/mantenimientos", label: "Mantenimientos" }
+        ]}
+      />
 
 
 

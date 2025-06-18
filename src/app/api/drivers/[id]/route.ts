@@ -41,6 +41,7 @@ export async function PUT(request: Request, context: any) {
       licencia,
       fecha_vencimiento_licencia,
       carnet_peritage,
+      estado, // Add estado field
       vehicleId, // Optional: for connecting/disconnecting a vehicle
     } = body;
 
@@ -71,6 +72,7 @@ export async function PUT(request: Request, context: any) {
         licencia,
         fecha_vencimiento_licencia: parsedFechaVencimientoLicencia,
         carnet_peritage,
+        estado, // Add estado to the update data
         ...(vehicleId !== undefined && { vehicle: vehicleUpdateData }),
       },
       include: {

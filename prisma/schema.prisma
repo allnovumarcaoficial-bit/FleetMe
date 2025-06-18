@@ -54,6 +54,7 @@ model Driver {
   licencia                          String   @unique
   fecha_vencimiento_licencia        DateTime
   carnet_peritage                   Boolean
+  estado                            String @default("Activo")
   vehicle                           Vehicle? // 1-to-1 relation with Vehicle
 }
 
