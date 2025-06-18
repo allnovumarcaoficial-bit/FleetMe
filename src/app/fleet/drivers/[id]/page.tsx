@@ -67,7 +67,13 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
   if (loading) {
     return (
       <>
-        <Breadcrumb pageName="Detalles del Conductor" />
+        <Breadcrumb
+          pageName="Detalles del Conductor"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/drivers", label: "Conductores" },
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p>Cargando detalles del conductor...</p>
         </div>
@@ -78,7 +84,13 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
   if (error) {
     return (
       <>
-        <Breadcrumb pageName="Detalles del Conductor" />
+        <Breadcrumb
+          pageName="Detalles del Conductor"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/drivers", label: "Conductores" },
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p className="text-red-500">Error: {error}</p>
         </div>
@@ -89,7 +101,13 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
   if (!driver) {
     return (
       <>
-        <Breadcrumb pageName="Detalles del Conductor" />
+        <Breadcrumb
+          pageName="Detalles del Conductor"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/drivers", label: "Conductores" },
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p>No se encontró el conductor.</p>
         </div>
@@ -99,7 +117,13 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
 
   return (
     <>
-      <Breadcrumb pageName="Detalles del Conductor" />
+      <Breadcrumb
+        pageName="Detalles del Conductor"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/drivers", label: "Conductores" },
+        ]}
+      />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
         
@@ -111,7 +135,7 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
           <p><strong>Vehículo Asignado:</strong> {driver.vehicle ? `${driver.vehicle.marca} ${driver.vehicle.modelo} (${driver.vehicle.matricula})` : 'Ninguno'}</p>
         </div>
 
-        <div className="mb-4 flex justify-end gap-4">
+        <div className="mb-4 mt-8 flex justify-end gap-4">
           <button
             onClick={handleEdit}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"

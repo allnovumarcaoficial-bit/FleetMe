@@ -66,7 +66,13 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
   if (loading) {
     return (
       <>
-        <Breadcrumb pageName="Detalles de la Tarjeta de Combustible" />
+        <Breadcrumb
+          pageName="Detalles de la Tarjeta de Combustible"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" }
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p>Cargando detalles de la tarjeta de combustible...</p>
         </div>
@@ -77,7 +83,13 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
   if (error) {
     return (
       <>
-        <Breadcrumb pageName="Detalles de la Tarjeta de Combustible" />
+        <Breadcrumb
+          pageName="Detalles de la Tarjeta de Combustible"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" }
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p className="text-red-500">Error: {error}</p>
         </div>
@@ -88,7 +100,13 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
   if (!fuelCard) {
     return (
       <>
-        <Breadcrumb pageName="Detalles de la Tarjeta de Combustible" />
+        <Breadcrumb
+          pageName="Detalles de la Tarjeta de Combustible"
+          links={[
+            { href: "/fleet", label: "Flota" },
+            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" }
+          ]}
+        />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
           <p>No se encontró la tarjeta de combustible.</p>
         </div>
@@ -98,11 +116,16 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
 
   return (
     <>
-      <Breadcrumb pageName="Detalles de la Tarjeta de Combustible" />
+      <Breadcrumb
+        pageName="Detalles de la Tarjeta de Combustible"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" }
+        ]}
+      />
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
         
-
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <p><strong>Número de Tarjeta:</strong> {fuelCard.numeroDeTarjeta}</p>
           <p><strong>Tipo de Tarjeta:</strong> {fuelCard.tipoDeTarjeta}</p>
@@ -115,7 +138,7 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
           <p><strong>Última Actualización:</strong> {fuelCard.updatedAt ? format(new Date(fuelCard.updatedAt), 'dd/MM/yyyy HH:mm') : 'N/A'}</p>
         </div>
 
-        <div className="mb-4 flex justify-end gap-4">
+        <div className="mb-4 mt-8 flex justify-end gap-4">
           <button
             onClick={handleEdit}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
