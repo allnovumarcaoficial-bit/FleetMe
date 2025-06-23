@@ -15,6 +15,7 @@ import { PreviewIcon } from "@/components/Tables/icons";
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
+import Pagination from "@/components/Tables/Pagination";
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -28,6 +29,7 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalMantenimientosCount, setTotalMantenimientosCount] = useState(0);
   const [sortBy, setSortBy] = useState('fecha');
   const [sortOrder, setSortOrder] = useState('desc');
   const [search, setSearch] = useState('');
@@ -55,6 +57,7 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
       const data = await res.json();
       setMantenimientos(data.data);
       setTotalPages(data.totalPages);
+      setTotalMantenimientosCount(data.total);
     } catch (err: any) {
       setError(err.message || 'Error al cargar mantenimientos.');
       setFormStatus({ type: 'error', message: err.message || 'Error al cargar mantenimientos.' });
@@ -203,23 +206,19 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
             </TableBody>
           </Table>
 
-          <div className="mt-5 flex justify-between items-center">
-            <button
-              onClick={() => setPage(prev => Math.max(1, prev - 1))}
-              disabled={page === 1 || loading}
-              className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white disabled:opacity-50"
-            >
-              Anterior
-            </button>
-            <span className="text-dark dark:text-white">Página {page} de {totalPages}</span>
-            <button
-              onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={page === totalPages || loading}
-              className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50"
-            >
-              Siguiente
-            </button>
-          </div>
+          <Pagination
+            current={page}
+            total={totalMantenimientosCount}
+            pageSize={limit}
+            onChange={(p, ps) => {
+              setPage(p);
+              setLimit(ps);
+            }}
+            onShowSizeChange={(current, size) => {
+              setPage(current);
+              setLimit(size);
+            }}
+          />
         </>
       )}
     </div>

@@ -9,6 +9,7 @@ import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
 import { PreviewIcon } from "@/components/Tables/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Pagination from "@/components/Tables/Pagination";
 
 const VehiclesPage = () => {
   const router = useRouter();
@@ -50,9 +51,6 @@ const VehiclesPage = () => {
     fetchVehicles();
   }, [page, limit, sortBy, sortOrder, search]);
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -192,26 +190,19 @@ const VehiclesPage = () => {
           </TableBody>
         </Table>
 
-        {/* Pagination Controls */}
-        <div className="mt-4 flex justify-between items-center">
-          <button
-            onClick={() => handlePageChange(page - 1)}
-            disabled={page === 1}
-            className="rounded-md bg-gray-2 px-4 py-2 text-dark dark:bg-dark-2 dark:text-white disabled:opacity-50"
-          >
-            Anterior
-          </button>
-          <span className="text-dark dark:text-white">
-            Página {page} de {totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(page + 1)}
-            disabled={page === totalPages}
-            className="rounded-md bg-gray-2 px-4 py-2 text-dark dark:bg-dark-2 dark:text-white disabled:opacity-50"
-          >
-            Siguiente
-          </button>
-        </div>
+        <Pagination
+          current={page}
+          total={totalVehicles}
+          pageSize={limit}
+          onChange={(p, ps) => {
+            setPage(p);
+            setLimit(ps);
+          }}
+          onShowSizeChange={(current, size) => {
+            setPage(current);
+            setLimit(size);
+          }}
+        />
       </div>
     </>
   );
