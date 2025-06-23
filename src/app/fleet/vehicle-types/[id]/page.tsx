@@ -76,11 +76,9 @@ const VehicleTypeDetailsPage = ({ params }: VehicleTypeDetailsPageProps) => {
       <Breadcrumb
         pageName="Detalles del Tipo de Vehículo"
         links={[
+          { href: "/fleet", label: "Flota" },
           { href: "/fleet/vehicle-types", label: "Tipos de Vehículo" },
-          {
-            href: `/fleet/vehicle-types/${vehicleType?.id ?? ""}`,
-            label: "Detalles",
-          },
+          { href: `/fleet/vehicle-types/${vehicleType?.id ?? ""}`, label: "Detalles del Tipo de Vehículo" },
         ]}
       />
 

@@ -53,7 +53,14 @@ const EditDriverPage = ({ params }: EditDriverPageProps) => {
 
   return (
     <>
-      <Breadcrumb pageName="Editar Conductor" />
+      <Breadcrumb
+        pageName="Editar Conductor"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/drivers", label: "Conductores" },
+          { href: `/fleet/drivers/${paramId}`, label: "Detalles del Conductor" },
+        ]}
+      />
       <DriverForm initialData={driver} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

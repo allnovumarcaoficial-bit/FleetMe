@@ -17,7 +17,13 @@ const NewMantenimientoPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Añadir Nuevo Mantenimiento" />
+      <Breadcrumb
+        pageName="Añadir Nuevo Mantenimiento"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/mantenimientos", label: "Mantenimientos" },
+        ]}
+      />
       <MantenimientoForm onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

@@ -18,7 +18,13 @@ const NewDriverPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Añadir Nuevo Conductor" />
+      <Breadcrumb
+        pageName="Añadir Nuevo Conductor"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/drivers", label: "Conductores" },
+        ]}
+      />
       <DriverForm onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

@@ -54,7 +54,7 @@ const EditFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
         links={[
           { href: '/fleet', label: 'Flota' },
           { href: '/fleet/fuel-operations', label: 'Operaciones de Combustible' },
-          { href: `/fleet/fuel-operations/${id}/edit`, label: 'Editar' },
+          { href: `/fleet/fuel-operations/${id}`, label: 'Detalles de Operación de Combustible' },
         ]}
       />
 

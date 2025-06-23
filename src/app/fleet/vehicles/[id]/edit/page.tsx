@@ -52,7 +52,14 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
 
   return (
     <>
-      <Breadcrumb pageName="Editar Vehículo" />
+      <Breadcrumb
+        pageName="Editar Vehículo"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/vehicles", label: "Vehículos" },
+          { href: `/fleet/vehicles/${paramId}`, label: "Detalles del Vehículo" },
+        ]}
+      />
       <VehicleForm initialData={vehicle} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

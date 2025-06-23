@@ -18,7 +18,13 @@ const NewVehicleTypePage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Añadir Nuevo Tipo de Vehículo" />
+      <Breadcrumb
+        pageName="Añadir Nuevo Tipo de Vehículo"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/vehicle-types", label: "Tipos de Vehículo" },
+        ]}
+      />
       <VehicleTypeForm onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

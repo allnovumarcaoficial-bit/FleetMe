@@ -17,7 +17,13 @@ const NewFuelCardPage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Añadir Nueva Tarjeta de Combustible" />
+      <Breadcrumb
+        pageName="Añadir Nueva Tarjeta de Combustible"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+        ]}
+      />
       <FuelCardForm onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

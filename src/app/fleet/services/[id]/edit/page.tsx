@@ -53,7 +53,14 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
 
   return (
     <>
-      <Breadcrumb pageName="Editar Servicio" />
+      <Breadcrumb
+        pageName="Editar Servicio"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/services", label: "Servicios" },
+          { href: `/fleet/services/${paramId}`, label: "Detalles del Servicio" },
+        ]}
+      />
       <ServiceForm initialData={service} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );

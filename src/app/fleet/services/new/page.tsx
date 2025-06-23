@@ -40,7 +40,13 @@ const NewServicePage = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Añadir Nuevo Servicio" />
+      <Breadcrumb
+        pageName="Añadir Nuevo Servicio"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/services", label: "Servicios" },
+        ]}
+      />
       <ServiceForm initialData={initialServiceData} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
   );
