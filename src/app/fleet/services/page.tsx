@@ -3,7 +3,6 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { useEffect, useState, useCallback } from "react";
 import { Vehicle } from "@/types/fleet";
-import { Alert } from "@/components/ui-elements/alert";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ServiceTable from "@/components/Fleet/ServiceTable"; // Import the new ServiceTable
@@ -52,15 +51,6 @@ const ServicesPage = () => {
         ]}
       />
 
-      {actionStatus.type && (
-        <div className="mb-4">
-          <Alert
-            variant={actionStatus.type === 'success' ? 'success' : 'error'}
-            title={actionStatus.type === 'success' ? 'Éxito' : 'Error'}
-            description={actionStatus.message}
-          />
-        </div>
-      )}
 
       <ServiceTable
         vehicleId={selectedVehicleId}

@@ -9,7 +9,6 @@ import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
 import { PreviewIcon } from "@/components/Tables/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Alert } from "@/components/ui-elements/alert";
 
 const VehicleTypesPage = () => {
   const router = useRouter();
@@ -101,15 +100,6 @@ const VehicleTypesPage = () => {
         ]}
       />
 
-      {actionStatus.type && (
-        <div className="mb-4">
-          <Alert
-            variant={actionStatus.type === 'success' ? 'success' : 'error'}
-            title={actionStatus.type === 'success' ? 'Éxito' : 'Error'}
-            description={actionStatus.message}
-          />
-        </div>
-      )}
 
       <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
         <div className="mb-4 flex justify-between items-center">
