@@ -1,0 +1,15 @@
+{
+  "apps": [
+    {
+      "name": "fdashboard-server",
+      "script": "node_modules/next/dist/bin/next",
+      "args": "dev",
+      "interpreter": "node",
+      "cwd": "c:/Users/daeldrn/Desktop/New folder (2)/fdashboardtemplate",
+      "watch": false,
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ]
+}
