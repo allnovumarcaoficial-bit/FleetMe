@@ -3,10 +3,11 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import ServiceForm from "@/components/Fleet/ServiceForm";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Servicio, Vehicle } from "@/types/fleet";
 
-const NewServicePage = () => {
+
+const NewServicePageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [initialServiceData, setInitialServiceData] = useState<Partial<Servicio> | undefined>(undefined);
@@ -49,6 +50,14 @@ const NewServicePage = () => {
       />
       <ServiceForm initialData={initialServiceData} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>
+  );
+};
+
+const NewServicePage = () => {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <NewServicePageContent />
+    </Suspense>
   );
 };
 
