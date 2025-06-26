@@ -19,6 +19,7 @@ import Pagination from "@/components/Tables/Pagination";
 import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
 import moment from 'moment';
 import type { Dayjs } from 'dayjs';
+import { cn } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -162,13 +163,13 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === 'success' ? 'success' : 'error'}
-          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
+          variant={formStatus.type === "success" ? "success" : "error"}
+          title={formStatus.type === "success" ? "Éxito" : "Error"}
           description={formStatus.message}
         />
       )}
 
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <AdvancedTableFilter
           columns={mantenimientoColumns}
           onFilterChange={handleFilterChange}
@@ -176,7 +177,10 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
           applyFiltersAutomatically={true} // Or false, based on desired UX
         />
         {!vehicleId && ( // Only show "Crear Mantenimiento" button if not filtered by vehicle
-          <Link href="/fleet/mantenimientos/new" className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+          <Link
+            href="/fleet/mantenimientos/new"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+          >
             Crear Mantenimiento
           </Link>
         )}
@@ -191,17 +195,32 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
           <Table>
             <TableHeader>
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
-                <TableHead className="min-w-[155px] xl:pl-7.5 cursor-pointer" onClick={() => handleSort('tipo')}>
-                  Tipo {sortBy === 'tipo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                <TableHead
+                  className="min-w-[155px] cursor-pointer xl:pl-7.5"
+                  onClick={() => handleSort("tipo")}
+                >
+                  Tipo {sortBy === "tipo" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('fecha')}>
-                  Fecha {sortBy === 'fecha' && (sortOrder === 'asc' ? '▲' : '▼')}
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleSort("fecha")}
+                >
+                  Fecha{" "}
+                  {sortBy === "fecha" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('costo')}>
-                  Costo {sortBy === 'costo' && (sortOrder === 'asc' ? '▲' : '▼')}
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleSort("costo")}
+                >
+                  Costo{" "}
+                  {sortBy === "costo" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
-                <TableHead className="cursor-pointer" onClick={() => handleSort('estado')}>
-                  Estado {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleSort("estado")}
+                >
+                  Estado{" "}
+                  {sortBy === "estado" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
                 <TableHead>Descripción</TableHead>
                 <TableHead>Vehículo</TableHead>
@@ -211,13 +230,20 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
 
             <TableBody>
               {mantenimientos.map((mantenimiento) => (
-                <TableRow key={mantenimiento.id} className="border-[#eee] dark:border-dark-3">
+                <TableRow
+                  key={mantenimiento.id}
+                  className="border-[#eee] dark:border-dark-3"
+                >
                   <TableCell className="min-w-[155px] xl:pl-7.5">
-                    <h5 className="text-dark dark:text-white">{mantenimiento.tipo}</h5>
+                    <h5 className="text-dark dark:text-white">
+                      {mantenimiento.tipo}
+                    </h5>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {mantenimiento.fecha ? new Date(mantenimiento.fecha).toLocaleDateString() : 'N/A'}
+                      {mantenimiento.fecha
+                        ? new Date(mantenimiento.fecha).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -226,31 +252,56 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-dark dark:text-white">
+                    <div
+                      className={cn(
+                        "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+                        {
+                          "bg-[#219653]/[0.08] text-[#219653]":
+                            mantenimiento.estado === "Ejecutado",
+                          "bg-[#D34053]/[0.08] text-[#D34053]":
+                            mantenimiento.estado === "Cancelado",
+                          "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
+                            mantenimiento.estado === "Pendiente",
+                        },
+                      )}
+                    >
                       {mantenimiento.estado}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-dark dark:text-white">
+                      {mantenimiento.descripcion.length > 50
+                        ? mantenimiento.descripcion.substring(0, 50) + "..."
+                        : mantenimiento.descripcion}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {mantenimiento.descripcion.length > 50 ? mantenimiento.descripcion.substring(0, 50) + '...' : mantenimiento.descripcion}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {mantenimiento.vehicle ? `${mantenimiento.vehicle.marca} (${mantenimiento.vehicle.matricula})` : 'N/A'}
+                      {mantenimiento.vehicle
+                        ? `${mantenimiento.vehicle.marca} (${mantenimiento.vehicle.matricula})`
+                        : "N/A"}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
                     <div className="flex items-center justify-end gap-x-3.5">
-                      <Link href={`/fleet/mantenimientos/${mantenimiento.id}`} className="hover:text-primary">
+                      <Link
+                        href={`/fleet/mantenimientos/${mantenimiento.id}`}
+                        className="hover:text-primary"
+                      >
                         <span className="sr-only">Ver Mantenimiento</span>
                         <PreviewIcon />
                       </Link>
-                      <Link href={`/fleet/mantenimientos/${mantenimiento.id}/edit`} className="hover:text-primary">
+                      <Link
+                        href={`/fleet/mantenimientos/${mantenimiento.id}/edit`}
+                        className="hover:text-primary"
+                      >
                         <span className="sr-only">Editar Mantenimiento</span>
                         <PencilSquareIcon />
                       </Link>
-                      <button onClick={() => handleDelete(mantenimiento.id)} className="hover:text-primary">
+                      <button
+                        onClick={() => handleDelete(mantenimiento.id)}
+                        className="hover:text-primary"
+                      >
                         <span className="sr-only">Eliminar Mantenimiento</span>
                         <TrashIcon />
                       </button>
