@@ -16,6 +16,9 @@ import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
 import Pagination from "@/components/Tables/Pagination";
+import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
+import moment from 'moment';
+import type { Dayjs } from 'dayjs';
 
 const FuelCardTable = () => {
   const router = useRouter();
@@ -28,8 +31,36 @@ const FuelCardTable = () => {
   const [totalFuelCardsCount, setTotalFuelCardsCount] = useState(0);
   const [sortBy, setSortBy] = useState('numeroDeTarjeta');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [search, setSearch] = useState('');
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+
+  const fuelCardColumns: ColumnFilter[] = [
+    { key: 'numeroDeTarjeta', title: 'Número de Tarjeta', type: 'text' },
+    {
+      key: 'tipoDeTarjeta',
+      title: 'Tipo de Tarjeta',
+      type: 'select',
+      options: [
+        { value: 'Crédito', label: 'Crédito' },
+        { value: 'Débito', label: 'Débito' },
+        { value: 'Prepago', label: 'Prepago' },
+      ],
+    },
+    {
+      key: 'tipoDeCombustible',
+      title: 'Tipo de Combustible',
+      type: 'select',
+      options: [
+        { value: 'Gasolina', label: 'Gasolina' },
+        { value: 'Diésel', label: 'Diésel' },
+        { value: 'Eléctrico', label: 'Eléctrico' },
+      ],
+    },
+    { key: 'precioCombustible', title: 'Precio del Combustible', type: 'text' },
+    { key: 'moneda', title: 'Moneda', type: 'text' },
+    { key: 'fechaVencimiento', title: 'Fecha de Vencimiento', type: 'dateRange' },
+    { key: 'esReservorio', title: 'Es Reservorio', type: 'boolean' },
+  ];
 
   const fetchFuelCards = useCallback(async () => {
     setLoading(true);
@@ -41,8 +72,33 @@ const FuelCardTable = () => {
         limit: limit.toString(),
         sortBy,
         sortOrder,
-        search,
       });
+
+      if (activeFilters.globalSearch) {
+        params.append('search', activeFilters.globalSearch);
+      }
+
+      if (activeFilters.columnFilters) {
+        for (const key in activeFilters.columnFilters) {
+          const value = activeFilters.columnFilters[key];
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              if (key === 'fechaVencimiento' && value[0] && value[1]) {
+                const [startDate, endDate] = value as [Dayjs, Dayjs];
+                params.append('fechaVencimientoDesde', startDate.toISOString());
+                params.append('fechaVencimientoHasta', endDate.toISOString());
+              } else if (value.length > 0) {
+                params.append(key, value.join(','));
+              }
+            } else if (typeof value === 'boolean') {
+              params.append(key, value.toString());
+            } else {
+              params.append(key, value.toString());
+            }
+          }
+        }
+      }
+
       const res = await fetch(`/api/fuel-cards?${params.toString()}`);
       if (!res.ok) {
         throw new Error('Failed to fetch fuel cards');
@@ -57,7 +113,16 @@ const FuelCardTable = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, sortBy, sortOrder, search]);
+  }, [page, limit, sortBy, sortOrder, activeFilters]);
+
+  useEffect(() => {
+    fetchFuelCards();
+  }, [fetchFuelCards]);
+
+  const handleFilterChange = useCallback((filters: ActiveFilters) => {
+    setActiveFilters(filters);
+    setPage(1); // Reset to first page on filter change
+  }, []);
 
   useEffect(() => {
     fetchFuelCards();
@@ -105,16 +170,13 @@ const FuelCardTable = () => {
         />
       )}
 
-      <div className="mb-4 flex justify-between items-center">
-        <div className="w-1/3">
-          <input
-            type="text"
-            placeholder="Buscar tarjetas de combustible..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
-          />
-        </div>
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <AdvancedTableFilter
+          columns={fuelCardColumns}
+          onFilterChange={handleFilterChange}
+          loading={loading}
+          applyFiltersAutomatically={true}
+        />
         <Link href="/fleet/fuel-cards/new" className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
           Crear Tarjeta de Combustible
         </Link>

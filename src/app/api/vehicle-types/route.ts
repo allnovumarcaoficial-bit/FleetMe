@@ -9,17 +9,79 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     const search = searchParams.get('search') || '';
+    const nombre = searchParams.get('nombre') || '';
+    const cantidad_neumaticos = searchParams.get('cantidad_neumaticos') || '';
+    const tipo_neumaticos = searchParams.get('tipo_neumaticos') || '';
+    const capacidad_carga = searchParams.get('capacidad_carga') || '';
+    const cantidad_conductores = searchParams.get('cantidad_conductores') || '';
+    const ciclo_mantenimiento_km = searchParams.get('ciclo_mantenimiento_km') || '';
+    const es_electrico = searchParams.get('es_electrico'); // 'true' or 'false' string
+    const cantidad_baterias = searchParams.get('cantidad_baterias') || '';
+    const tipo_bateria = searchParams.get('tipo_bateria') || '';
+    const amperage = searchParams.get('amperage') || '';
+    const voltage = searchParams.get('voltage') || '';
+    const tipo_combustible = searchParams.get('tipo_combustible') || '';
+    const capacidad_tanque = searchParams.get('capacidad_tanque') || '';
+    const indice_consumo = searchParams.get('indice_consumo') || '';
 
     const skip = (page - 1) * limit;
 
-    const whereClause = search
-      ? {
-          OR: [
-            { nombre: { contains: search, mode: 'insensitive' } },
-            { tipo_neumaticos: { contains: search, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    const whereClause: any = {};
+
+    // Global search
+    if (search) {
+      whereClause.OR = [
+        { nombre: { contains: search } },
+        { tipo_neumaticos: { contains: search } },
+        { capacidad_carga: { contains: search } },
+        { tipo_bateria: { contains: search } },
+        { tipo_combustible: { contains: search } },
+      ];
+    }
+
+    // Column filters
+    if (nombre) {
+      whereClause.nombre = { contains: nombre };
+    }
+    if (cantidad_neumaticos) {
+      whereClause.cantidad_neumaticos = parseFloat(cantidad_neumaticos);
+    }
+    if (tipo_neumaticos) {
+      whereClause.tipo_neumaticos = { contains: tipo_neumaticos };
+    }
+    if (capacidad_carga) {
+      whereClause.capacidad_carga = { contains: capacidad_carga };
+    }
+    if (cantidad_conductores) {
+      whereClause.cantidad_conductores = parseFloat(cantidad_conductores);
+    }
+    if (ciclo_mantenimiento_km) {
+      whereClause.ciclo_mantenimiento_km = parseFloat(ciclo_mantenimiento_km);
+    }
+    if (es_electrico !== null) {
+      whereClause.es_electrico = es_electrico === 'true';
+    }
+    if (cantidad_baterias) {
+      whereClause.cantidad_baterias = parseFloat(cantidad_baterias);
+    }
+    if (tipo_bateria) {
+      whereClause.tipo_bateria = { contains: tipo_bateria };
+    }
+    if (amperage) {
+      whereClause.amperage = parseFloat(amperage);
+    }
+    if (voltage) {
+      whereClause.voltage = parseFloat(voltage);
+    }
+    if (tipo_combustible) {
+      whereClause.tipo_combustible = { contains: tipo_combustible };
+    }
+    if (capacidad_tanque) {
+      whereClause.capacidad_tanque = parseFloat(capacidad_tanque);
+    }
+    if (indice_consumo) {
+      whereClause.indice_consumo = parseFloat(indice_consumo);
+    }
 
     const totalVehicleTypes = await prisma.vehicleType.count({
       where: whereClause,

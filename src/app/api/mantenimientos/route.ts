@@ -9,17 +9,58 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
     const search = searchParams.get('search') || '';
-    const vehicleId = searchParams.get('vehicleId');
+    const tipo = searchParams.get('tipo') || '';
+    const fechaDesde = searchParams.get('fechaDesde');
+    const fechaHasta = searchParams.get('fechaHasta');
+    const costo = searchParams.get('costo') || '';
+    const estado = searchParams.get('estado') || '';
+    const descripcion = searchParams.get('descripcion') || '';
+    const vehicleSearch = searchParams.get('vehicle') || '';
+    const vehicleId = searchParams.get('vehicleId'); // Keep this for specific vehicle filtering
 
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    // Global search
     if (search) {
       where.OR = [
-        { tipo: { contains: search, mode: 'insensitive' } },
-        { descripcion: { contains: search, mode: 'insensitive' } },
+        { tipo: { contains: search } },
+        { descripcion: { contains: search } },
+        // Add other fields for global search if needed
       ];
     }
+
+    // Column filters
+    if (tipo) {
+      where.tipo = { contains: tipo };
+    }
+    if (fechaDesde && fechaHasta) {
+      where.fecha = {
+        gte: new Date(fechaDesde),
+        lte: new Date(fechaHasta),
+      };
+    }
+    if (costo) {
+      where.costo = parseFloat(costo); // Assuming exact match for cost
+    }
+    if (estado) {
+      where.estado = estado;
+    }
+    if (descripcion) {
+      where.descripcion = { contains: descripcion };
+    }
+    if (vehicleSearch) {
+      where.vehicle = {
+        OR: [
+          { marca: { contains: vehicleSearch } },
+          { modelo: { contains: vehicleSearch } },
+          { matricula: { contains: vehicleSearch } },
+        ],
+      };
+    }
+
+    // Specific vehicleId filter (if provided as a prop to the table component)
     if (vehicleId) {
       where.vehicleId = parseInt(vehicleId);
     }

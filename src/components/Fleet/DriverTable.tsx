@@ -18,6 +18,9 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils'; // Import cn for conditional styling
 import { DriverStatus } from '@/types/fleet'; // Import DriverStatus
 import Pagination from "@/components/Tables/Pagination";
+import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
+import moment from 'moment';
+import type { Dayjs } from 'dayjs';
 
 interface DriverTableProps { }
 
@@ -32,8 +35,26 @@ const DriverTable = ({ }: DriverTableProps) => {
   const [totalDriversCount, setTotalDriversCount] = useState(0);
   const [sortBy, setSortBy] = useState('id');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [search, setSearch] = useState('');
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+
+  const driverColumns: ColumnFilter[] = [
+    { key: 'nombre', title: 'Nombre', type: 'text' },
+    { key: 'licencia', title: 'Licencia', type: 'text' },
+    { key: 'fecha_vencimiento_licencia', title: 'Vencimiento Licencia', type: 'dateRange' },
+    { key: 'carnet_peritage', title: 'Carnet Peritaje', type: 'boolean' },
+    {
+      key: 'estado',
+      title: 'Estado',
+      type: 'select',
+      options: [
+        { value: 'Activo', label: 'Activo' },
+        { value: 'Inactivo', label: 'Inactivo' },
+        { value: 'Vacaciones', label: 'Vacaciones' },
+      ],
+    },
+    { key: 'vehicle', title: 'Vehículo Asignado', type: 'text' },
+  ];
 
   const fetchDrivers = useCallback(async () => {
     setLoading(true);
@@ -45,8 +66,33 @@ const DriverTable = ({ }: DriverTableProps) => {
         limit: limit.toString(),
         sortBy,
         sortOrder,
-        search,
       });
+
+      if (activeFilters.globalSearch) {
+        params.append('search', activeFilters.globalSearch);
+      }
+
+      if (activeFilters.columnFilters) {
+        for (const key in activeFilters.columnFilters) {
+          const value = activeFilters.columnFilters[key];
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              if (key === 'fecha_vencimiento_licencia' && value[0] && value[1]) {
+                const [startDate, endDate] = value as [Dayjs, Dayjs];
+                params.append('fechaVencimientoLicenciaDesde', startDate.toISOString());
+                params.append('fechaVencimientoLicenciaHasta', endDate.toISOString());
+              } else if (value.length > 0) {
+                params.append(key, value.join(','));
+              }
+            } else if (typeof value === 'boolean') {
+              params.append(key, value.toString());
+            } else {
+              params.append(key, value.toString());
+            }
+          }
+        }
+      }
+
       const res = await fetch(`/api/drivers?${params.toString()}`);
       if (!res.ok) {
         throw new Error('Failed to fetch drivers');
@@ -61,7 +107,16 @@ const DriverTable = ({ }: DriverTableProps) => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, sortBy, sortOrder, search]);
+  }, [page, limit, sortBy, sortOrder, activeFilters]);
+
+  useEffect(() => {
+    fetchDrivers();
+  }, [fetchDrivers]);
+
+  const handleFilterChange = useCallback((filters: ActiveFilters) => {
+    setActiveFilters(filters);
+    setPage(1); // Reset to first page on filter change
+  }, []);
 
   useEffect(() => {
     fetchDrivers();
@@ -109,13 +164,12 @@ const DriverTable = ({ }: DriverTableProps) => {
         />
       )}
 
-      <div className="mb-4 flex justify-between items-center">
-        <input
-          type="text"
-          placeholder="Buscar conductor..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-1/3 rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <AdvancedTableFilter
+          columns={driverColumns}
+          onFilterChange={handleFilterChange}
+          loading={loading}
+          applyFiltersAutomatically={true}
         />
         <Link href="/fleet/drivers/new" className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
           Crear Conductor

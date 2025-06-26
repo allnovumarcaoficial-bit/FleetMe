@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, ChangeEvent } from "react";
-import { Servicio, Vehicle } from "@/types/fleet";
+import { Servicio, Vehicle, ServicioTipo, ServicioEstado } from "@/types/fleet";
 import {
   Table,
   TableBody,
@@ -15,25 +15,20 @@ import { PreviewIcon } from "@/components/Tables/icons";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/ui-elements/alert";
 import Link from "next/link";
-// Importa la función cn para combinar clases condicionalmente
 import { cn } from "@/lib/utils";
 import Pagination from "@/components/Tables/Pagination";
+import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
+import type { Dayjs } from 'dayjs';
 
 interface ServiceTableProps {
-  vehicleId?: number; // Optional prop to filter services by vehicle
-  vehicles: Vehicle[];
-  loadingVehicles: boolean;
-  errorVehicles: string | null;
-  handleVehicleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  // vehicleId?: number; // This prop will now be handled by AdvancedTableFilter
+  // vehicles: Vehicle[]; // These props will now be handled by AdvancedTableFilter
+  // loadingVehicles: boolean;
+  // errorVehicles: string | null;
+  // handleVehicleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const ServiceTable = ({
-  vehicleId,
-  vehicles,
-  loadingVehicles,
-  errorVehicles,
-  handleVehicleChange,
-}: ServiceTableProps) => {
+const ServiceTable = ({}: ServiceTableProps) => {
   const router = useRouter();
   const [services, setServices] = useState<Servicio[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,10 +39,38 @@ const ServiceTable = ({
   const [totalServicesCount, setTotalServicesCount] = useState(0);
   const [sortBy, setSortBy] = useState("fecha");
   const [sortOrder, setSortOrder] = useState("desc");
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{
     type: "success" | "error" | "";
     message: string;
   }>({ type: "", message: "" });
+
+  const serviceColumns: ColumnFilter[] = [
+    {
+      key: 'tipoServicio',
+      title: 'Tipo de Servicio',
+      type: 'select',
+      options: [
+        { value: 'Entrega de Pedidos', label: 'Entrega de Pedidos' },
+        { value: 'Logistico', label: 'Logistico' },
+        { value: 'Administrativo', label: 'Administrativo' },
+      ],
+    },
+    { key: 'fecha', title: 'Fecha', type: 'dateRange' },
+    { key: 'odometroInicial', title: 'Odómetro Inicial', type: 'text' },
+    { key: 'odometroFinal', title: 'Odómetro Final', type: 'text' },
+    { key: 'kilometrosRecorridos', title: 'Km Recorridos', type: 'text' },
+    {
+      key: 'estado',
+      title: 'Estado',
+      type: 'select',
+      options: [
+        { value: 'Pendiente', label: 'Pendiente' },
+        { value: 'Terminado', label: 'Terminado' },
+      ],
+    },
+    { key: 'vehicle', title: 'Vehículo', type: 'text' }, // For vehicle details
+  ];
 
   const fetchServices = useCallback(async () => {
     setLoading(true);
@@ -60,9 +83,32 @@ const ServiceTable = ({
         sortBy,
         sortOrder,
       });
-      if (vehicleId) {
-        params.append("vehicleId", vehicleId.toString());
+
+      if (activeFilters.globalSearch) {
+        params.append('search', activeFilters.globalSearch);
       }
+
+      if (activeFilters.columnFilters) {
+        for (const key in activeFilters.columnFilters) {
+          const value = activeFilters.columnFilters[key];
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              if (key === 'fecha' && value[0] && value[1]) {
+                const [startDate, endDate] = value as [Dayjs, Dayjs];
+                params.append('fechaDesde', startDate.toISOString());
+                params.append('fechaHasta', endDate.toISOString());
+              } else if (value.length > 0) {
+                params.append(key, value.join(','));
+              }
+            } else if (typeof value === 'boolean') {
+              params.append(key, value.toString());
+            } else {
+              params.append(key, value.toString());
+            }
+          }
+        }
+      }
+
       const res = await fetch(`/api/services?${params.toString()}`);
       if (!res.ok) {
         throw new Error("Failed to fetch services");
@@ -80,11 +126,16 @@ const ServiceTable = ({
     } finally {
       setLoading(false);
     }
-  }, [page, limit, sortBy, sortOrder, vehicleId]);
+  }, [page, limit, sortBy, sortOrder, activeFilters]);
 
   useEffect(() => {
     fetchServices();
   }, [fetchServices]);
+
+  const handleFilterChange = useCallback((filters: ActiveFilters) => {
+    setActiveFilters(filters);
+    setPage(1); // Reset to first page on filter change
+  }, []);
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -134,43 +185,19 @@ const ServiceTable = ({
         />
       )}
 
-      <div className="mb-4 flex items-center justify-between">
-        <div className="w-1/3">
-          <label
-            htmlFor="selectVehicle"
-            className="mb-2 block text-body-sm font-medium text-dark dark:text-white"
-          >
-            Filtrar por Vehículo:
-          </label>
-          <select
-            id="selectVehicle"
-            name="selectVehicle"
-            value={vehicleId || ""}
-            onChange={handleVehicleChange}
-            className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
-          >
-            <option value="">Todos los Vehículos</option>
-            {loadingVehicles ? (
-              <option disabled>Cargando vehículos...</option>
-            ) : errorVehicles ? (
-              <option disabled>Error al cargar vehículos</option>
-            ) : (
-              vehicles.map((vehicle) => (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
-                </option>
-              ))
-            )}
-          </select>
-        </div>
-        {!vehicleId && ( // Only show "Crear Servicio" button if not filtered by vehicle
-          <Link
-            href="/fleet/services/new"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Crear Servicio
-          </Link>
-        )}
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <AdvancedTableFilter
+          columns={serviceColumns}
+          onFilterChange={handleFilterChange}
+          loading={loading}
+          applyFiltersAutomatically={true}
+        />
+        <Link
+          href="/fleet/services/new"
+          className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+        >
+          Crear Servicio
+        </Link>
       </div>
 
       {loading ? (

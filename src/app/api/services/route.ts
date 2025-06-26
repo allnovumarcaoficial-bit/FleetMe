@@ -9,21 +9,67 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
     const search = searchParams.get('search') || '';
-    const vehicleId = searchParams.get('vehicleId');
+    const tipoServicio = searchParams.get('tipoServicio') || '';
+    const fechaDesde = searchParams.get('fechaDesde');
+    const fechaHasta = searchParams.get('fechaHasta');
+    const odometroInicial = searchParams.get('odometroInicial') || '';
+    const odometroFinal = searchParams.get('odometroFinal') || '';
+    const kilometrosRecorridos = searchParams.get('kilometrosRecorridos') || '';
+    const estado = searchParams.get('estado') || '';
+    const vehicleSearch = searchParams.get('vehicle') || '';
+    const vehicleId = searchParams.get('vehicleId'); // Keep this for specific vehicle filtering
 
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    // Global search
     if (search) {
       where.OR = [
-        { tipoServicio: { contains: search, mode: 'insensitive' } },
-        { estado: { contains: search, mode: 'insensitive' } },
-        { descripcion: { contains: search, mode: 'insensitive' } },
-        { origen: { contains: search, mode: 'insensitive' } },
-        { destino: { contains: search, mode: 'insensitive' } },
+        { tipoServicio: { contains: search } },
+        { estado: { contains: search } },
+        { descripcion: { contains: search } },
+        { origen: { contains: search } },
+        { destino: { contains: search } },
+        { vehicle: { matricula: { contains: search } } },
+        { vehicle: { marca: { contains: search } } },
+        { vehicle: { modelo: { contains: search } } },
       ];
     }
 
+    // Column filters
+    if (tipoServicio) {
+      where.tipoServicio = tipoServicio;
+    }
+    if (fechaDesde && fechaHasta) {
+      where.fecha = {
+        gte: new Date(fechaDesde),
+        lte: new Date(fechaHasta),
+      };
+    }
+    if (odometroInicial) {
+      where.odometroInicial = parseFloat(odometroInicial);
+    }
+    if (odometroFinal) {
+      where.odometroFinal = parseFloat(odometroFinal);
+    }
+    if (kilometrosRecorridos) {
+      where.kilometrosRecorridos = parseFloat(kilometrosRecorridos);
+    }
+    if (estado) {
+      where.estado = estado;
+    }
+    if (vehicleSearch) {
+      where.vehicle = {
+        OR: [
+          { matricula: { contains: vehicleSearch } },
+          { marca: { contains: vehicleSearch } },
+          { modelo: { contains: vehicleSearch } },
+        ],
+      };
+    }
+
+    // Specific vehicleId filter (if provided as a prop to the table component)
     if (vehicleId) {
       where.vehicleId = parseInt(vehicleId);
     }

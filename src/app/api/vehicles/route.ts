@@ -9,17 +9,89 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
     const search = searchParams.get('search') || '';
+    const marca = searchParams.get('marca') || '';
+    const modelo = searchParams.get('modelo') || '';
+    const vin = searchParams.get('vin') || '';
+    const matricula = searchParams.get('matricula') || '';
+    const estado = searchParams.get('estado') || '';
+    const fechaCompraDesde = searchParams.get('fechaCompraDesde');
+    const fechaCompraHasta = searchParams.get('fechaCompraHasta');
+    const fechaVencimientoLicenciaOperativaDesde = searchParams.get('fechaVencimientoLicenciaOperativaDesde');
+    const fechaVencimientoLicenciaOperativaHasta = searchParams.get('fechaVencimientoLicenciaOperativaHasta');
+    const fechaVencimientoCirculacionDesde = searchParams.get('fechaVencimientoCirculacionDesde');
+    const fechaVencimientoCirculacionHasta = searchParams.get('fechaVencimientoCirculacionHasta');
+    const fechaVencimientoSomatonDesde = searchParams.get('fechaVencimientoSomatonDesde');
+    const fechaVencimientoSomatonHasta = searchParams.get('fechaVencimientoSomatonHasta');
+    const gps = searchParams.get('gps'); // 'true' or 'false' string
+    const tipoNombre = searchParams.get('tipoNombre') || '';
+    const driverSearch = searchParams.get('driver') || '';
 
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    // Global search
     if (search) {
       where.OR = [
-        { marca: { contains: search, mode: 'insensitive' } },
-        { modelo: { contains: search, mode: 'insensitive' } },
-        { vin: { contains: search, mode: 'insensitive' } },
-        { matricula: { contains: search, mode: 'insensitive' } },
+        { marca: { contains: search } },
+        { modelo: { contains: search } },
+        { vin: { contains: search } },
+        { matricula: { contains: search } },
+        { tipoNombre: { contains: search } },
+        { driver: { nombre: { contains: search } } },
       ];
+    }
+
+    // Column filters
+    if (marca) {
+      where.marca = { contains: marca };
+    }
+    if (modelo) {
+      where.modelo = { contains: modelo };
+    }
+    if (vin) {
+      where.vin = { contains: vin };
+    }
+    if (matricula) {
+      where.matricula = { contains: matricula };
+    }
+    if (estado) {
+      where.estado = estado;
+    }
+    if (fechaCompraDesde && fechaCompraHasta) {
+      where.fecha_compra = {
+        gte: new Date(fechaCompraDesde),
+        lte: new Date(fechaCompraHasta),
+      };
+    }
+    if (fechaVencimientoLicenciaOperativaDesde && fechaVencimientoLicenciaOperativaHasta) {
+      where.fecha_vencimiento_licencia_operativa = {
+        gte: new Date(fechaVencimientoLicenciaOperativaDesde),
+        lte: new Date(fechaVencimientoLicenciaOperativaHasta),
+      };
+    }
+    if (fechaVencimientoCirculacionDesde && fechaVencimientoCirculacionHasta) {
+      where.fecha_vencimiento_circulacion = {
+        gte: new Date(fechaVencimientoCirculacionDesde),
+        lte: new Date(fechaVencimientoCirculacionHasta),
+      };
+    }
+    if (fechaVencimientoSomatonDesde && fechaVencimientoSomatonHasta) {
+      where.fecha_vencimiento_somaton = {
+        gte: new Date(fechaVencimientoSomatonDesde),
+        lte: new Date(fechaVencimientoSomatonHasta),
+      };
+    }
+    if (gps !== null) {
+      where.gps = gps === 'true';
+    }
+    if (tipoNombre) {
+      where.tipoNombre = { contains: tipoNombre };
+    }
+    if (driverSearch) {
+      where.driver = {
+        nombre: { contains: driverSearch },
+      };
     }
 
     const orderBy: any = {
@@ -88,12 +160,12 @@ export async function POST(request: Request) {
         fecha_vencimiento_licencia_operativa: parsedFechaVencimientoLicenciaOperativa,
         fecha_vencimiento_circulacion: parsedFechaVencimientoCirculacion,
         fecha_vencimiento_somaton: parsedFechaVencimientoSomaton,
-        estado,
-        gps,
-        listado_municipios, // Stored as JSON string
-        tipoNombre, // Changed from tipoVehiculoId
-        listado_idconductores, // Stored as array of numbers
-      },
+      estado,
+      gps,
+      listado_municipios, // Stored as JSON string
+      tipoNombre, // Changed from tipoVehiculoId
+      // listado_idconductores, // Removed as it's not a direct field in VehicleCreateInput
+    },
     });
 
     return NextResponse.json(newVehicle, { status: 201 });

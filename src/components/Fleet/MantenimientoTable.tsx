@@ -16,6 +16,9 @@ import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
 import Pagination from "@/components/Tables/Pagination";
+import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
+import moment from 'moment';
+import type { Dayjs } from 'dayjs';
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -32,8 +35,26 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
   const [totalMantenimientosCount, setTotalMantenimientosCount] = useState(0);
   const [sortBy, setSortBy] = useState('fecha');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [search, setSearch] = useState('');
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+
+  const mantenimientoColumns: ColumnFilter[] = [
+    { key: 'tipo', title: 'Tipo', type: 'text' },
+    { key: 'fecha', title: 'Fecha', type: 'dateRange' },
+    { key: 'costo', title: 'Costo', type: 'text' }, // Assuming text search for cost for now
+    {
+      key: 'estado',
+      title: 'Estado',
+      type: 'select',
+      options: [
+        { value: 'Pendiente', label: 'Pendiente' },
+        { value: 'Completado', label: 'Completado' },
+        { value: 'En Progreso', label: 'En Progreso' },
+      ],
+    },
+    { key: 'descripcion', title: 'Descripción', type: 'text' },
+    { key: 'vehicle', title: 'Vehículo', type: 'text' }, // For vehicle details
+  ];
 
   const fetchMantenimientos = useCallback(async () => {
     setLoading(true);
@@ -45,11 +66,37 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
         limit: limit.toString(),
         sortBy,
         sortOrder,
-        search,
       });
+
+      if (activeFilters.globalSearch) {
+        params.append('search', activeFilters.globalSearch);
+      }
+
+      if (activeFilters.columnFilters) {
+        for (const key in activeFilters.columnFilters) {
+          const value = activeFilters.columnFilters[key];
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              if (key === 'fecha' && value[0] && value[1]) {
+                const [startDate, endDate] = value as [Dayjs, Dayjs];
+                params.append('fechaDesde', startDate.toISOString());
+                params.append('fechaHasta', endDate.toISOString());
+              } else if (value.length > 0) {
+                params.append(key, value.join(','));
+              }
+            } else if (typeof value === 'boolean') {
+              params.append(key, value.toString());
+            } else {
+              params.append(key, value.toString());
+            }
+          }
+        }
+      }
+
       if (vehicleId) {
         params.append('vehicleId', vehicleId.toString());
       }
+
       const res = await fetch(`/api/mantenimientos?${params.toString()}`);
       if (!res.ok) {
         throw new Error('Failed to fetch maintenances');
@@ -64,7 +111,16 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, sortBy, sortOrder, search, vehicleId]);
+  }, [page, limit, sortBy, sortOrder, activeFilters, vehicleId]);
+
+  useEffect(() => {
+    fetchMantenimientos();
+  }, [fetchMantenimientos]);
+
+  const handleFilterChange = useCallback((filters: ActiveFilters) => {
+    setActiveFilters(filters);
+    setPage(1); // Reset to first page on filter change
+  }, []);
 
   useEffect(() => {
     fetchMantenimientos();
@@ -112,13 +168,12 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
         />
       )}
 
-      <div className="mb-4 flex justify-between items-center">
-        <input
-          type="text"
-          placeholder="Buscar mantenimiento..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-1/3 rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary"
+      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <AdvancedTableFilter
+          columns={mantenimientoColumns}
+          onFilterChange={handleFilterChange}
+          loading={loading}
+          applyFiltersAutomatically={true} // Or false, based on desired UX
         />
         {!vehicleId && ( // Only show "Crear Mantenimiento" button if not filtered by vehicle
           <Link href="/fleet/mantenimientos/new" className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">

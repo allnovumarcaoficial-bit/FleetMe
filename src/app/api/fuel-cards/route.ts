@@ -9,17 +9,55 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
     const search = searchParams.get('search') || '';
+    const numeroDeTarjeta = searchParams.get('numeroDeTarjeta') || '';
+    const tipoDeTarjeta = searchParams.get('tipoDeTarjeta') || '';
+    const tipoDeCombustible = searchParams.get('tipoDeCombustible') || '';
+    const precioCombustible = searchParams.get('precioCombustible') || '';
+    const moneda = searchParams.get('moneda') || '';
+    const fechaVencimientoDesde = searchParams.get('fechaVencimientoDesde');
+    const fechaVencimientoHasta = searchParams.get('fechaVencimientoHasta');
+    const esReservorio = searchParams.get('esReservorio'); // 'true' or 'false' string
 
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    // Global search
     if (search) {
       where.OR = [
-        { numeroDeTarjeta: { contains: search, mode: 'insensitive' } },
-        { tipoDeTarjeta: { contains: search, mode: 'insensitive' } },
-        { tipoDeCombustible: { contains: search, mode: 'insensitive' } },
-        { moneda: { contains: search, mode: 'insensitive' } },
+        { numeroDeTarjeta: { contains: search } },
+        { tipoDeTarjeta: { contains: search } },
+        { tipoDeCombustible: { contains: search } },
+        { moneda: { contains: search } },
+        // Add other fields for global search if needed
       ];
+    }
+
+    // Column filters
+    if (numeroDeTarjeta) {
+      where.numeroDeTarjeta = { contains: numeroDeTarjeta };
+    }
+    if (tipoDeTarjeta) {
+      where.tipoDeTarjeta = tipoDeTarjeta;
+    }
+    if (tipoDeCombustible) {
+      where.tipoDeCombustible = tipoDeCombustible;
+    }
+    if (precioCombustible) {
+      // Assuming exact match for price, or you might need range/numeric comparison
+      where.precioCombustible = parseFloat(precioCombustible);
+    }
+    if (moneda) {
+      where.moneda = { contains: moneda };
+    }
+    if (fechaVencimientoDesde && fechaVencimientoHasta) {
+      where.fechaVencimiento = {
+        gte: new Date(fechaVencimientoDesde),
+        lte: new Date(fechaVencimientoHasta),
+      };
+    }
+    if (esReservorio !== null) {
+      where.esReservorio = esReservorio === 'true';
     }
 
     const orderBy: any = {

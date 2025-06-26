@@ -7,10 +7,22 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const search = searchParams.get('search') || '';
     const orderBy = searchParams.get('orderBy') || 'fecha';
     const orderDirection = searchParams.get('orderDirection') || 'desc';
+    const search = searchParams.get('search') || '';
     const fuelCardId = searchParams.get('fuelCardId'); // Get fuelCardId from search params
+
+    // Column filters from frontend
+    const tipoOperacion = searchParams.get('tipoOperacion') || '';
+    const fechaDesde = searchParams.get('fechaDesde');
+    const fechaHasta = searchParams.get('fechaHasta');
+    const fuelCardNumeroDeTarjeta = searchParams.get('fuelCard.numeroDeTarjeta') || '';
+    const saldoInicio = searchParams.get('saldoInicio') || '';
+    const valorOperacionDinero = searchParams.get('valorOperacionDinero') || '';
+    const valorOperacionLitros = searchParams.get('valorOperacionLitros') || '';
+    const saldoFinal = searchParams.get('saldoFinal') || '';
+    const saldoFinalLitros = searchParams.get('saldoFinalLitros') || '';
+    const vehicleMatricula = searchParams.get('vehicle.matricula') || '';
 
     const skip = (page - 1) * limit;
 
@@ -26,6 +38,46 @@ export async function GET(request: Request) {
         : {}),
       ...(fuelCardId ? { fuelCardId: parseInt(fuelCardId) } : {}),
     };
+
+    // Apply column filters
+    if (tipoOperacion) {
+      where.tipoOperacion = { contains: tipoOperacion };
+    }
+    if (fechaDesde && fechaHasta) {
+      where.fecha = {
+        gte: new Date(fechaDesde),
+        lte: new Date(fechaHasta),
+      };
+    }
+    if (fuelCardNumeroDeTarjeta) {
+      where.fuelCard = {
+        numeroDeTarjeta: { contains: fuelCardNumeroDeTarjeta },
+      };
+    }
+    if (saldoInicio) {
+      where.saldoInicio = parseFloat(saldoInicio);
+    }
+    if (valorOperacionDinero) {
+      where.valorOperacionDinero = parseFloat(valorOperacionDinero);
+    }
+    if (valorOperacionLitros) {
+      where.valorOperacionLitros = parseFloat(valorOperacionLitros);
+    }
+    if (saldoFinal) {
+      where.saldoFinal = parseFloat(saldoFinal);
+    }
+    if (saldoFinalLitros) {
+      where.saldoFinalLitros = parseFloat(saldoFinalLitros);
+    }
+    if (vehicleMatricula) {
+      where.fuelDistributions = {
+        some: {
+          vehicle: {
+            matricula: { contains: vehicleMatricula },
+          },
+        },
+      };
+    }
 
     const fuelOperations = await prisma.fuelOperation.findMany({
       where,

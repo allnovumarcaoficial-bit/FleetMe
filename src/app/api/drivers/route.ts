@@ -9,15 +9,54 @@ export async function GET(request: Request) {
     const sortBy = searchParams.get('sortBy') || 'id';
     const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
     const search = searchParams.get('search') || '';
+    const nombre = searchParams.get('nombre') || '';
+    const licencia = searchParams.get('licencia') || '';
+    const fechaVencimientoLicenciaDesde = searchParams.get('fechaVencimientoLicenciaDesde');
+    const fechaVencimientoLicenciaHasta = searchParams.get('fechaVencimientoLicenciaHasta');
+    const carnet_peritage = searchParams.get('carnet_peritage'); // 'true' or 'false' string
+    const estado = searchParams.get('estado') || '';
+    const vehicleSearch = searchParams.get('vehicle') || ''; // For vehicle text search
 
     const skip = (page - 1) * limit;
 
     const where: any = {};
+
+    // Global search
     if (search) {
       where.OR = [
-        { nombre: { contains: search, mode: 'insensitive' } },
-        { licencia: { contains: search, mode: 'insensitive' } },
+        { nombre: { contains: search } },
+        { licencia: { contains: search } },
+        // Add other fields for global search if needed
       ];
+    }
+
+    // Column filters
+    if (nombre) {
+      where.nombre = { contains: nombre };
+    }
+    if (licencia) {
+      where.licencia = { contains: licencia };
+    }
+    if (fechaVencimientoLicenciaDesde && fechaVencimientoLicenciaHasta) {
+      where.fecha_vencimiento_licencia = {
+        gte: new Date(fechaVencimientoLicenciaDesde),
+        lte: new Date(fechaVencimientoLicenciaHasta),
+      };
+    }
+    if (carnet_peritage !== null) {
+      where.carnet_peritage = carnet_peritage === 'true';
+    }
+    if (estado) {
+      where.estado = estado;
+    }
+    if (vehicleSearch) {
+      where.vehicle = {
+        OR: [
+          { marca: { contains: vehicleSearch } },
+          { modelo: { contains: vehicleSearch } },
+          { matricula: { contains: vehicleSearch } },
+        ],
+      };
     }
 
     const orderBy: any = {
