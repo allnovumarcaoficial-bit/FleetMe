@@ -10,7 +10,6 @@ const VehicleTypesPage = () => {
         pageName="Tipos de Vehículos"
         links={[
           { href: "/fleet", label: "Flota" },
-          { href: "/fleet/vehicle-types", label: "Tipos de Vehículos" },
         ]}
       />
       <VehicleTypesTable />

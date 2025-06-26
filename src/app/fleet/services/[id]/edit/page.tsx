@@ -58,7 +58,6 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
         links={[
           { href: "/fleet", label: "Flota" },
           { href: "/fleet/services", label: "Servicios" },
-          { href: `/fleet/services/${paramId}`, label: "Detalles del Servicio" },
         ]}
       />
       <ServiceForm initialData={service} onSuccess={handleSuccess} onCancel={handleCancel} />

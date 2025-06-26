@@ -9,8 +9,7 @@ const FuelCardsPage = () => {
       <Breadcrumb
         pageName="Tarjetas de Combustible"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" }
+          { href: "/fleet/fuel-cards", label: "Flota" },
         ]}
       />
       <div className="flex flex-col gap-10">

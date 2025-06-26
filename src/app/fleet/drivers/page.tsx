@@ -9,8 +9,7 @@ const DriversPage = () => {
       <Breadcrumb
         pageName="Conductores"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/drivers", label: "Conductores" }
+          { href: "/fleet/drivers", label: "Flota" },
         ]}
       />
       <DriverTable />

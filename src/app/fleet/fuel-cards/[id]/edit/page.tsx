@@ -58,8 +58,7 @@ const EditFuelCardPage = ({ params }: EditFuelCardPageProps) => {
         links={[
           { href: "/fleet", label: "Flota" },
           { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
-          { href: `/fleet/fuel-cards/${paramId}`, label: "Detalles de la Tarjeta de Combustible" },
-        ]}
+          ]}
       />
       <FuelCardForm initialData={fuelCard} onSuccess={handleSuccess} onCancel={handleCancel} />
     </>

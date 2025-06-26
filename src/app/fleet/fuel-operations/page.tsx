@@ -9,8 +9,7 @@ const FuelOperationsPage = () => {
       <Breadcrumbs
         pageName="Operaciones de Combustible"
         links={[
-          { href: '/fleet', label: 'Flota' },
-          { href: '/fleet/fuel-operations', label: 'Operaciones de Combustible' },
+          { href: '/fleet/fuel-operations', label: 'Flota' },
         ]}
       />
       <FuelOperationsTable />

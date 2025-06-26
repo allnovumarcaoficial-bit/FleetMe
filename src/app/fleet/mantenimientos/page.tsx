@@ -10,8 +10,7 @@ const MantenimientosPage = () => {
       <Breadcrumb
         pageName="Mantenimientos"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/mantenimientos", label: "Mantenimientos" }
+          { href: "/fleet/mantenimientos", label: "Flota" },
         ]}
       />
 

@@ -58,7 +58,6 @@ const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
         links={[
           { href: "/fleet", label: "Flota" },
           { href: "/fleet/mantenimientos", label: "Mantenimientos" },
-          { href: `/fleet/mantenimientos/${paramId}`, label: "Detalles del Mantenimiento" },
         ]}
       />
       <MantenimientoForm initialData={mantenimiento} onSuccess={handleSuccess} onCancel={handleCancel} />
