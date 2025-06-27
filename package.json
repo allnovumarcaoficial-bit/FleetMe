@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@prisma/client": "^6.8.2",
+    "@types/uuid": "^10.0.0",
     "antd": "^5.26.1",
     "apexcharts": "^4.5.0",
     "class-variance-authority": "^0.7.1",
@@ -25,6 +27,7 @@
     "react-apexcharts": "^1.7.0",
     "react-dom": "19.0.0",
     "tailwind-merge": "^2.6.0",
+    "uuid": "^11.1.0",
     "zod": "^3.25.67"
   },
   "devDependencies": {

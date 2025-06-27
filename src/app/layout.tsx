@@ -1,5 +1,6 @@
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import 'antd/dist/reset.css'; // Import Ant Design styles
 
 import { Sidebar } from "@/components/Layouts/sidebar";
 
