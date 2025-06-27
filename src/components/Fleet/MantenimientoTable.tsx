@@ -17,7 +17,6 @@ import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
 import Pagination from "@/components/Tables/Pagination";
 import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
-import moment from 'moment';
 import type { Dayjs } from 'dayjs';
 import { cn } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
 
