@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { notification, Modal } from 'antd';
-import { Notification, NotificationType } from '@/types/notification';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useEffect, useCallback } from "react";
+import { notification, Modal } from "antd";
+import { Notification, NotificationType } from "@/types/notification";
+import { v4 as uuidv4 } from "uuid";
 import {
   InfoCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
-} from '@ant-design/icons';
-import { differenceInDays, isPast } from 'date-fns';
+} from "@ant-design/icons";
+import { differenceInDays, isPast } from "date-fns";
 
 // Define a minimal Driver type to avoid direct Prisma client import in frontend hook
 interface Driver {
@@ -21,7 +21,12 @@ interface Driver {
 interface UseNotificationsHook {
   notifications: Notification[];
   unreadCount: number;
-  addNotification: (type: NotificationType, message: string, details?: string, userId?: string) => void;
+  addNotification: (
+    type: NotificationType,
+    message: string,
+    details?: string,
+    userId?: string,
+  ) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   deleteNotification: (id: string) => void;
@@ -29,16 +34,16 @@ interface UseNotificationsHook {
 
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return <InfoCircleOutlined style={{ color: '#1890ff' }} />;
-    case 'success':
-      return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
-    case 'warning':
-      return <WarningOutlined style={{ color: '#faad14' }} />;
-    case 'error':
-      return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
-    case 'critical':
-      return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
+    case "info":
+      return <InfoCircleOutlined style={{ color: "#1890ff" }} />;
+    case "success":
+      return <CheckCircleOutlined style={{ color: "#52c41a" }} />;
+    case "warning":
+      return <WarningOutlined style={{ color: "#faad14" }} />;
+    case "error":
+      return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+    case "critical":
+      return <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />;
     default:
       return null;
   }
@@ -46,63 +51,75 @@ const getNotificationIcon = (type: NotificationType) => {
 
 const getNotificationColor = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return '#1890ff'; // Blue
-    case 'success':
-      return '#52c41a'; // Green
-    case 'warning':
-      return '#faad14'; // Orange
-    case 'error':
-    case 'critical':
-      return '#ff4d4f'; // Red
+    case "info":
+      return "#1890ff"; // Blue
+    case "success":
+      return "#52c41a"; // Green
+    case "warning":
+      return "#faad14"; // Orange
+    case "error":
+    case "critical":
+      return "#ff4d4f"; // Red
     default:
-      return '#1890ff';
+      return "#1890ff";
   }
 };
 
 export const useNotifications = (): UseNotificationsHook => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const addNotification = useCallback((type: NotificationType, message: string, details?: string, userId: string = 'defaultUser') => {
-    const newNotification: Notification = {
-      id: uuidv4(),
-      type,
-      message,
-      details,
-      date: new Date().toISOString(),
-      read: false,
-      userId,
-    };
+  const addNotification = useCallback(
+    (
+      type: NotificationType,
+      message: string,
+      details?: string,
+      userId: string = "defaultUser",
+    ) => {
+      const newNotification: Notification = {
+        id: uuidv4(),
+        type,
+        message,
+        details,
+        date: new Date().toISOString(),
+        read: false,
+        userId,
+      };
 
-    setNotifications((prev) => [newNotification, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      setNotifications((prev) =>
+        [newNotification, ...prev].sort(
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+        ),
+      );
 
-    if (type === 'critical') {
-      Modal.error({
-        title: 'Notificación Crítica',
-        content: message,
-        okText: 'Entendido',
-        icon: getNotificationIcon(type),
-        centered: true,
-        onOk: () => markAsRead(newNotification.id),
-      });
-    } else {
-      notification.open({
-        message: newNotification.message,
-        description: newNotification.details,
-        icon: getNotificationIcon(type),
-        style: {
-          borderLeft: `5px solid ${getNotificationColor(type)}`,
-        },
-        onClick: () => {
-          markAsRead(newNotification.id);
-        },
-      });
-    }
-  }, []);
+      if (type === "critical") {
+        Modal.error({
+          title: "Notificación Crítica",
+          content: message,
+          okText: "Entendido",
+          icon: getNotificationIcon(type),
+          centered: true,
+          onOk: () => markAsRead(newNotification.id),
+        });
+      } else {
+        notification.open({
+          message: newNotification.message,
+          description: newNotification.details,
+          icon: getNotificationIcon(type),
+          style: {
+            borderLeft: `5px solid ${getNotificationColor(type)}`,
+          },
+          onClick: () => {
+            markAsRead(newNotification.id);
+          },
+        });
+      }
+    },
+    [],
+  );
 
   const markAsRead = useCallback((id: string) => {
     setNotifications((prev) =>
-      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
+      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)),
     );
   }, []);
 
@@ -120,37 +137,57 @@ export const useNotifications = (): UseNotificationsHook => {
   useEffect(() => {
     const fetchDriversAndGenerateNotifications = async () => {
       try {
-        const response = await fetch('/api/drivers');
+        const response = await fetch("/api/drivers");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const { data: drivers } = await response.json();
 
         drivers.forEach((driver: Driver) => {
-          const licenseExpirationDate = new Date(driver.fecha_vencimiento_licencia);
+          const licenseExpirationDate = new Date(
+            driver.fecha_vencimiento_licencia,
+          );
           const today = new Date();
 
-          if (isPast(licenseExpirationDate) && !notifications.some(n => n.userId === `driver-${driver.id}-expired` && n.type === 'critical')) {
+          if (
+            isPast(licenseExpirationDate) &&
+            !notifications.some(
+              (n) =>
+                n.userId === `driver-${driver.id}-expired` &&
+                n.type === "critical",
+            )
+          ) {
             addNotification(
-              'critical',
-              'Licencia de Conducción Vencida',
+              "critical",
+              "Licencia de Conducción Vencida",
               `La licencia del conductor ${driver.nombre} ha vencido.`,
-              `driver-${driver.id}-expired`
+              `driver-${driver.id}-expired`,
             );
           } else {
-            const daysUntilExpiration = differenceInDays(licenseExpirationDate, today);
-            if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0 && !notifications.some(n => n.userId === `driver-${driver.id}-warning` && n.type === 'warning')) {
+            const daysUntilExpiration = differenceInDays(
+              licenseExpirationDate,
+              today,
+            );
+            if (
+              daysUntilExpiration <= 30 &&
+              daysUntilExpiration >= 0 &&
+              !notifications.some(
+                (n) =>
+                  n.userId === `driver-${driver.id}-warning` &&
+                  n.type === "warning",
+              )
+            ) {
               addNotification(
-                'warning',
-                'Licencia de Conducción Próxima a Vencer',
+                "warning",
+                "Licencia de Conducción Próxima a Vencer",
                 `La licencia del conductor ${driver.nombre} vencerá en ${daysUntilExpiration} días.`,
-                `driver-${driver.id}-warning`
+                `driver-${driver.id}-warning`,
               );
             }
           }
         });
       } catch (error) {
-        console.error('Error fetching drivers for notifications:', error);
+        console.error("Error fetching drivers for notifications:", error);
       }
     };
 
