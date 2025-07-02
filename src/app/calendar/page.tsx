@@ -10,7 +10,13 @@ export const metadata: Metadata = {
 const CalendarPage = () => {
   return (
     <>
-      <Breadcrumb pageName="Calendar" />
+      <Breadcrumb
+        pageName="Calendar"
+        links={[
+          { href: "/", label: "Home" },
+          { href: "/calendar", label: "Calendar" }
+        ]}
+      />
 
       <CalendarBox />
     </>
