@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { FuelCard } from '@/types/fleet';
-import InputGroup from '@/components/FormElements/InputGroup';
-import { Select } from '@/components/FormElements/select';
-import { Alert } from '@/components/ui-elements/alert';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from "react";
+import { FuelCard } from "@/types/fleet";
+import InputGroup from "@/components/FormElements/InputGroup";
+import { Select } from "@/components/FormElements/select";
+import { Alert } from "@/components/ui-elements/alert";
+import { useRouter } from "next/navigation";
 
 interface FuelCardFormProps {
   initialData?: Partial<FuelCard>;
@@ -13,88 +13,110 @@ interface FuelCardFormProps {
   onCancel?: () => void;
 }
 
-const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) => {
+const FuelCardForm = ({
+  initialData,
+  onSuccess,
+  onCancel,
+}: FuelCardFormProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<FuelCard>>(() => {
     if (initialData) {
       return {
         ...initialData,
-        fechaVencimiento: initialData.fechaVencimiento ? new Date(initialData.fechaVencimiento) : null,
+        fechaVencimiento: initialData.fechaVencimiento
+          ? new Date(initialData.fechaVencimiento)
+          : null,
       };
     }
     return {
-      numeroDeTarjeta: '',
-      tipoDeTarjeta: '',
-      tipoDeCombustible: '',
+      numeroDeTarjeta: "",
+      tipoDeTarjeta: "",
+      tipoDeCombustible: "",
       precioCombustible: 0,
-      moneda: '',
+      moneda: "",
       fechaVencimiento: null,
       esReservorio: false,
     };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+  const [formStatus, setFormStatus] = useState<{
+    type: "success" | "error" | "";
+    message: string;
+  }>({ type: "", message: "" });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         ...initialData,
-        fechaVencimiento: initialData.fechaVencimiento ? new Date(initialData.fechaVencimiento) : null,
+        fechaVencimiento: initialData.fechaVencimiento
+          ? new Date(initialData.fechaVencimiento)
+          : null,
       }));
     }
   }, [initialData]);
 
   const validateField = useCallback((name: string, value: any): string => {
-    let error = '';
+    let error = "";
     switch (name) {
-      case 'numeroDeTarjeta':
-        if (!value) error = 'El número de tarjeta es requerido.';
+      case "numeroDeTarjeta":
+        if (!value) error = "El número de tarjeta es requerido.";
         break;
-      case 'tipoDeTarjeta':
-        if (!value) error = 'El tipo de tarjeta es requerido.';
+      case "tipoDeTarjeta":
+        if (!value) error = "El tipo de tarjeta es requerido.";
         break;
-      case 'tipoDeCombustible':
-        if (!value) error = 'El tipo de combustible es requerido.';
+      case "tipoDeCombustible":
+        if (!value) error = "El tipo de combustible es requerido.";
         break;
-      case 'precioCombustible':
-        if (value === null || value === undefined || value <= 0) error = 'El precio del combustible es requerido y debe ser mayor que cero.';
+      case "precioCombustible":
+        if (value === null || value === undefined || value <= 0)
+          error =
+            "El precio del combustible es requerido y debe ser mayor que cero.";
         break;
-      case 'moneda':
-        if (!value) error = 'La moneda es requerida.';
+      case "moneda":
+        if (!value) error = "La moneda es requerida.";
         break;
-      case 'fechaVencimiento':
-        if (!value) error = 'La fecha de vencimiento es requerida.';
+      case "fechaVencimiento":
+        if (!value) error = "La fecha de vencimiento es requerida.";
         break;
     }
     return error;
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     let newValue: any = value;
 
-    if (type === 'number') {
-      newValue = value === '' ? null : parseFloat(value);
-    } else if (type === 'date') {
+    if (type === "number") {
+      newValue = value === "" ? null : parseFloat(value);
+    } else if (type === "date") {
       newValue = value ? new Date(value) : null;
-    } else if (type === 'checkbox') {
+    } else if (type === "checkbox") {
       newValue = checked;
     }
 
-    setFormData(prev => ({ ...prev, [name]: newValue }));
-    setErrors(prev => ({ ...prev, [name]: validateField(name, newValue) }));
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, newValue) }));
   };
 
   const validateForm = useCallback(() => {
-    let newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {};
     let isValid = true;
     const fieldsToValidate: (keyof FuelCard)[] = [
-      'numeroDeTarjeta', 'tipoDeTarjeta', 'tipoDeCombustible', 'precioCombustible', 'moneda', 'fechaVencimiento'
+      "numeroDeTarjeta",
+      "tipoDeTarjeta",
+      "tipoDeCombustible",
+      "precioCombustible",
+      "moneda",
+      "fechaVencimiento",
     ];
 
-    fieldsToValidate.forEach(field => {
+    fieldsToValidate.forEach((field) => {
       const value = formData[field];
       const error = validateField(field as string, value);
       if (error) {
@@ -109,21 +131,26 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: '', message: '' });
+    setFormStatus({ type: "", message: "" });
 
     if (!validateForm()) {
-      setFormStatus({ type: 'error', message: 'Por favor, corrige los errores del formulario.' });
+      setFormStatus({
+        type: "error",
+        message: "Por favor, corrige los errores del formulario.",
+      });
       return;
     }
 
     setLoading(true);
     try {
-      const method = initialData ? 'PUT' : 'POST';
-      const url = initialData ? `/api/fuel-cards/${initialData.id}` : '/api/fuel-cards';
+      const method = initialData ? "PUT" : "POST";
+      const url = initialData
+        ? `/api/fuel-cards/${initialData.id}`
+        : "/api/fuel-cards";
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           ...formData,
@@ -133,45 +160,53 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al guardar la tarjeta de combustible.');
+        throw new Error(
+          errorData.error || "Error al guardar la tarjeta de combustible.",
+        );
       }
 
-      setFormStatus({ type: 'success', message: `Tarjeta de combustible ${initialData ? 'actualizada' : 'creada'} exitosamente.` });
+      setFormStatus({
+        type: "success",
+        message: `Tarjeta de combustible ${initialData ? "actualizada" : "creada"} exitosamente.`,
+      });
       if (onSuccess) onSuccess();
-      router.push('/fleet/fuel-cards');
+      router.push("/fleet/fuel-cards");
     } catch (err: any) {
-      setFormStatus({ type: 'error', message: err.message || 'Ocurrió un error inesperado.' });
+      setFormStatus({
+        type: "error",
+        message: err.message || "Ocurrió un error inesperado.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const fuelCardTypes = [
-    { value: 'Fincimex', label: 'Fincimex' },
-    { value: 'Clasica', label: 'Clasica' },
-    { value: 'Metropolitano', label: 'Metropolitano' },
+    { value: "Fincimex", label: "Fincimex" },
+    { value: "Clasica", label: "Clasica" },
+    { value: "Metropolitano", label: "Metropolitano" },
   ];
 
   const fuelTypes = [
-    { value: 'Gasolina Regular', label: 'Gasolina Regular' },
-    { value: 'Gasolina Especial', label: 'Gasolina Especial' },
-    { value: 'Diésel', label: 'Diésel' },
-    { value: 'Eléctrico', label: 'Eléctrico' },
+    { value: "Gasolina Regular", label: "Gasolina Regular" },
+    { value: "Gasolina Especial", label: "Gasolina Especial" },
+    { value: "Diésel", label: "Diésel" },
+    { value: "Eléctrico", label: "Eléctrico" },
   ];
 
   const currencies = [
-    { value: 'CUP', label: 'CUP' },
-    { value: 'MLC', label: 'MLC' },
-    { value: 'USD', label: 'USD' },
-    { value: 'EUR', label: 'EUR' },
+    { value: "CUP", label: "CUP" },
+    { value: "MLC", label: "MLC" },
+    { value: "USD", label: "USD" },
+    { value: "EUR", label: "EUR" },
   ];
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === 'success' ? 'success' : 'error'}
-          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
+          variant={formStatus.type === "success" ? "success" : "error"}
+          title={formStatus.type === "success" ? "Éxito" : "Error"}
           description={formStatus.message}
         />
       )}
@@ -184,32 +219,48 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
               name="numeroDeTarjeta"
               type="text"
               placeholder="Introduce el número de tarjeta"
-              value={formData.numeroDeTarjeta || ''}
+              value={formData.numeroDeTarjeta || ""}
               handleChange={handleChange}
             />
-            {errors.numeroDeTarjeta && <p className="text-red-500 text-sm mt-1">{errors.numeroDeTarjeta}</p>}
+            {errors.numeroDeTarjeta && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.numeroDeTarjeta}
+              </p>
+            )}
           </div>
           <div>
             <Select
               label="Tipo de Tarjeta"
               items={fuelCardTypes}
-              value={formData.tipoDeTarjeta || ''}
+              value={formData.tipoDeTarjeta || ""}
               placeholder="Selecciona el tipo de tarjeta"
-              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
               name="tipoDeTarjeta"
             />
-            {errors.tipoDeTarjeta && <p className="text-red-500 text-sm mt-1">{errors.tipoDeTarjeta}</p>}
+            {errors.tipoDeTarjeta && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.tipoDeTarjeta}
+              </p>
+            )}
           </div>
           <div>
             <Select
               label="Tipo de Combustible"
               items={fuelTypes}
-              value={formData.tipoDeCombustible || ''}
+              value={formData.tipoDeCombustible || ""}
               placeholder="Selecciona el tipo de combustible"
-              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
               name="tipoDeCombustible"
             />
-            {errors.tipoDeCombustible && <p className="text-red-500 text-sm mt-1">{errors.tipoDeCombustible}</p>}
+            {errors.tipoDeCombustible && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.tipoDeCombustible}
+              </p>
+            )}
           </div>
           <div>
             <InputGroup
@@ -217,21 +268,29 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
               name="precioCombustible"
               type="number"
               placeholder="Introduce el precio del combustible"
-              value={formData.precioCombustible?.toString() || ''}
+              value={formData.precioCombustible?.toString() || ""}
               handleChange={handleChange}
             />
-            {errors.precioCombustible && <p className="text-red-500 text-sm mt-1">{errors.precioCombustible}</p>}
+            {errors.precioCombustible && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.precioCombustible}
+              </p>
+            )}
           </div>
           <div>
             <Select
               label="Moneda"
               items={currencies}
-              value={formData.moneda || ''}
+              value={formData.moneda || ""}
               placeholder="Selecciona la moneda"
-              onChange={(e) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
               name="moneda"
             />
-            {errors.moneda && <p className="text-red-500 text-sm mt-1">{errors.moneda}</p>}
+            {errors.moneda && (
+              <p className="mt-1 text-sm text-red-500">{errors.moneda}</p>
+            )}
           </div>
           <div>
             <InputGroup
@@ -239,10 +298,18 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
               name="fechaVencimiento"
               type="date"
               placeholder="Selecciona la fecha de vencimiento"
-              value={formData.fechaVencimiento ? formData.fechaVencimiento.toISOString().split('T')[0] : ''}
+              value={
+                formData.fechaVencimiento
+                  ? formData.fechaVencimiento.toISOString().split("T")[0]
+                  : ""
+              }
               handleChange={handleChange}
             />
-            {errors.fechaVencimiento && <p className="text-red-500 text-sm mt-1">{errors.fechaVencimiento}</p>}
+            {errors.fechaVencimiento && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.fechaVencimiento}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -251,9 +318,12 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
               name="esReservorio"
               checked={formData.esReservorio || false}
               onChange={handleChange}
-              className="h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded"
+              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <label htmlFor="esReservorio" className="text-body-sm font-medium text-dark dark:text-white">
+            <label
+              htmlFor="esReservorio"
+              className="text-body-sm font-medium text-dark dark:text-white"
+            >
               Es Reservorio
             </label>
           </div>
@@ -263,16 +333,20 @@ const FuelCardForm = ({ initialData, onSuccess, onCancel }: FuelCardFormProps) =
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 px-4 py-2 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
-            {loading ? 'Guardando...' : (initialData ? 'Actualizar Tarjeta' : 'Crear Tarjeta')}
+            {loading
+              ? "Guardando..."
+              : initialData
+                ? "Actualizar Tarjeta"
+                : "Crear Tarjeta"}
           </button>
         </div>
       </form>

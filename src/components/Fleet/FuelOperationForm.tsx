@@ -1,13 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { FuelOperation, FuelCard, Vehicle, FuelDistribution } from '@/types/fleet';
-import InputGroup from '@/components/FormElements/InputGroup';
-import { Select } from '@/components/FormElements/select';
-import { Alert } from '@/components/ui-elements/alert';
-import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
-import { PlusIcon, TrashIcon } from '@/assets/icons'; // Assuming these icons exist
+import { useState, useEffect, useCallback } from "react";
+import {
+  FuelOperation,
+  FuelCard,
+  Vehicle,
+  FuelDistribution,
+} from "@/types/fleet";
+import InputGroup from "@/components/FormElements/InputGroup";
+import { Select } from "@/components/FormElements/select";
+import { Alert } from "@/components/ui-elements/alert";
+import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
+import { PlusIcon, TrashIcon } from "@/assets/icons"; // Assuming these icons exist
 
 interface FuelOperationFormProps {
   initialData?: FuelOperation;
@@ -21,7 +26,11 @@ interface DestinationVehicle {
   litros: number; // Changed from number | '' to number
 }
 
-const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFormProps) => {
+const FuelOperationForm = ({
+  initialData,
+  onSuccess,
+  onCancel,
+}: FuelOperationFormProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<FuelOperation>>(() => {
     if (initialData) {
@@ -31,15 +40,22 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
       };
     }
     return {
-      tipoOperacion: '',
+      tipoOperacion: "",
       fecha: new Date(),
       valorOperacionDinero: 0,
       fuelCardId: undefined,
     };
   });
 
-  const [destinationVehicles, setDestinationVehicles] = useState<DestinationVehicle[]>(() => {
-    if (initialData && initialData.tipoOperacion === 'Consumo' && initialData.fuelDistributions && initialData.fuelDistributions.length > 0) {
+  const [destinationVehicles, setDestinationVehicles] = useState<
+    DestinationVehicle[]
+  >(() => {
+    if (
+      initialData &&
+      initialData.tipoOperacion === "Consumo" &&
+      initialData.fuelDistributions &&
+      initialData.fuelDistributions.length > 0
+    ) {
       return initialData.fuelDistributions.map((dist, index) => ({
         id: index + 1,
         vehicleId: dist.vehicleId,
@@ -50,19 +66,24 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+  const [formStatus, setFormStatus] = useState<{
+    type: "success" | "error" | "";
+    message: string;
+  }>({ type: "", message: "" });
   const [fuelCards, setFuelCards] = useState<FuelCard[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedFuelCard, setSelectedFuelCard] = useState<FuelCard | null>(null);
+  const [selectedFuelCard, setSelectedFuelCard] = useState<FuelCard | null>(
+    null,
+  );
   const [lastOperationBalance, setLastOperationBalance] = useState<number>(0);
 
   const fetchDependencies = useCallback(async () => {
     setLoading(true);
     try {
       const [fuelCardsRes, vehiclesRes] = await Promise.all([
-        fetch('/api/fuel-cards'),
-        fetch('/api/vehicles'),
+        fetch("/api/fuel-cards"),
+        fetch("/api/vehicles"),
       ]);
 
       const fuelCardsData = await fuelCardsRes.json();
@@ -72,14 +93,19 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
       setVehicles(vehiclesData.data || []);
 
       if (initialData?.fuelCardId) {
-        const card = fuelCardsData.data.find((fc: FuelCard) => fc.id === initialData.fuelCardId);
+        const card = fuelCardsData.data.find(
+          (fc: FuelCard) => fc.id === initialData.fuelCardId,
+        );
         setSelectedFuelCard(card || null);
       }
 
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching form dependencies:', err);
-      setFormStatus({ type: 'error', message: 'Error al cargar datos necesarios para el formulario.' });
+      console.error("Error fetching form dependencies:", err);
+      setFormStatus({
+        type: "error",
+        message: "Error al cargar datos necesarios para el formulario.",
+      });
       setLoading(false);
     }
   }, [initialData]);
@@ -92,7 +118,9 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
     const calculateDerivedFields = async () => {
       if (formData.fuelCardId && selectedFuelCard) {
         // Fetch last operation balance
-        const lastOpRes = await fetch(`/api/fuel-operations?fuelCardId=${formData.fuelCardId}&orderBy=fecha&orderDirection=desc&limit=1`);
+        const lastOpRes = await fetch(
+          `/api/fuel-operations?fuelCardId=${formData.fuelCardId}&orderBy=fecha&orderDirection=desc&limit=1`,
+        );
         const lastOpData = await lastOpRes.json();
         const lastOp = lastOpData.data[0];
         const calculatedSaldoInicio = lastOp ? lastOp.saldoFinal : 0;
@@ -103,15 +131,18 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
           : 0;
 
         let calculatedSaldoFinal = 0;
-        if (formData.tipoOperacion === 'Carga') {
-          calculatedSaldoFinal = calculatedSaldoInicio + (formData.valorOperacionDinero || 0);
-        } else if (formData.tipoOperacion === 'Consumo') {
-          calculatedSaldoFinal = calculatedSaldoInicio - (formData.valorOperacionDinero || 0);
+        if (formData.tipoOperacion === "Carga") {
+          calculatedSaldoFinal =
+            calculatedSaldoInicio + (formData.valorOperacionDinero || 0);
+        } else if (formData.tipoOperacion === "Consumo") {
+          calculatedSaldoFinal =
+            calculatedSaldoInicio - (formData.valorOperacionDinero || 0);
         }
 
-        const calculatedSaldoFinalLitros = calculatedSaldoFinal / selectedFuelCard.precioCombustible;
+        const calculatedSaldoFinalLitros =
+          calculatedSaldoFinal / selectedFuelCard.precioCombustible;
 
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           saldoInicio: calculatedSaldoInicio,
           valorOperacionLitros: valorOperacionLitros,
@@ -119,7 +150,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
           saldoFinalLitros: calculatedSaldoFinalLitros,
         }));
       } else {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           saldoInicio: 0,
           valorOperacionLitros: 0,
@@ -131,37 +162,57 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
     };
 
     calculateDerivedFields();
-  }, [formData.fuelCardId, formData.valorOperacionDinero, formData.tipoOperacion, selectedFuelCard]);
+  }, [
+    formData.fuelCardId,
+    formData.valorOperacionDinero,
+    formData.tipoOperacion,
+    selectedFuelCard,
+  ]);
 
   const validateField = (name: string, value: any): string => {
-    let error = '';
+    let error = "";
     switch (name) {
-      case 'tipoOperacion':
-      case 'fecha':
-      case 'valorOperacionDinero':
-      case 'fuelCardId':
-        if (!value) error = 'Este campo es requerido.';
+      case "tipoOperacion":
+      case "fecha":
+      case "fuelCardId":
+        if (!value) error = "Este campo es requerido.";
         break;
-      case 'valorOperacionDinero':
-        if (value <= 0) error = 'El valor debe ser mayor que cero.';
+      case "valorOperacionDinero":
+        if (!value) {
+          error = "Este campo es requerido.";
+        } else if (value <= 0) {
+          error = "El valor debe ser mayor que cero.";
+        }
         break;
-      case 'destinationVehicles':
-        if (formData.tipoOperacion === 'Consumo') {
+      case "destinationVehicles":
+        if (formData.tipoOperacion === "Consumo") {
           if (destinationVehicles.length === 0) {
-            error = 'Debe seleccionar al menos un vehículo destino.';
+            error = "Debe seleccionar al menos un vehículo destino.";
           } else {
-            const totalLitros = destinationVehicles.reduce((sum, dv) => sum + (dv.litros || 0), 0);
-            if (Math.abs(totalLitros - (formData.valorOperacionLitros || 0)) > 0.01) { // Allow for floating point inaccuracies
+            const totalLitros = destinationVehicles.reduce(
+              (sum, dv) => sum + dv.litros,
+              0,
+            );
+            if (
+              Math.abs(totalLitros - (formData.valorOperacionLitros || 0)) >
+              0.01
+            ) {
+              // Allow for floating point inaccuracies
               error = `La suma de litros (${totalLitros.toFixed(2)}) debe ser igual al valor de la operación en litros (${(formData.valorOperacionLitros || 0).toFixed(2)}).`;
             }
-            if (destinationVehicles.some(dv => !dv.vehicleId)) {
-              error = 'Todos los vehículos destino deben ser seleccionados.';
+            if (destinationVehicles.some((dv) => !dv.vehicleId)) {
+              error = "Todos los vehículos destino deben ser seleccionados.";
             }
-            if (destinationVehicles.some(dv => (parseFloat(dv.litros as string) || 0) <= 0)) {
-              error = 'La cantidad de litros para cada vehículo debe ser mayor que cero.';
+            if (destinationVehicles.some((dv) => dv.litros <= 0)) {
+              error =
+                "La cantidad de litros para cada vehículo debe ser mayor que cero.";
             }
-            if (selectedFuelCard?.esReservorio && destinationVehicles.length > 1) {
-              error = 'Las tarjetas de reservorio solo pueden tener un vehículo destino.';
+            if (
+              selectedFuelCard?.esReservorio &&
+              destinationVehicles.length > 1
+            ) {
+              error =
+                "Las tarjetas de reservorio solo pueden tener un vehículo destino.";
             }
           }
         }
@@ -170,56 +221,84 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
     return error;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
 
-    if (type === 'number') {
+    if (type === "number") {
       newValue = parseFloat(value);
-    } else if (type === 'date') {
+    } else if (type === "date") {
       newValue = new Date(value);
-    } else if (name === 'fuelCardId') {
+    } else if (name === "fuelCardId") {
       newValue = parseInt(value);
-      const card = fuelCards.find(fc => fc.id === newValue);
+      const card = fuelCards.find((fc) => fc.id === newValue);
       setSelectedFuelCard(card || null);
       // Reset destination vehicles if card changes or operation type changes
       setDestinationVehicles([{ id: 1, vehicleId: null, litros: 0 }]); // Changed to 0
-    } else if (name === 'tipoOperacion') {
+    } else if (name === "tipoOperacion") {
       // Reset destination vehicles if operation type changes
       setDestinationVehicles([{ id: 1, vehicleId: null, litros: 0 }]); // Changed to 0
     }
 
-    setFormData(prev => ({ ...prev, [name]: newValue }));
-    setErrors(prev => ({ ...prev, [name]: validateField(name, newValue) }));
+    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, newValue) }));
   };
 
-  const handleDestinationVehicleChange = (index: number, field: 'vehicleId' | 'litros', value: any) => {
+  const handleDestinationVehicleChange = (
+    index: number,
+    field: "vehicleId" | "litros",
+    value: any,
+  ) => {
     const updatedVehicles = [...destinationVehicles];
-    if (field === 'vehicleId') {
+    if (field === "vehicleId") {
       updatedVehicles[index].vehicleId = parseInt(value);
     } else {
       updatedVehicles[index].litros = parseFloat(value) || 0; // Changed from '' to 0
     }
     setDestinationVehicles(updatedVehicles);
-    setErrors(prev => ({ ...prev, destinationVehicles: validateField('destinationVehicles', updatedVehicles) }));
+    setErrors((prev) => ({
+      ...prev,
+      destinationVehicles: validateField(
+        "destinationVehicles",
+        updatedVehicles,
+      ),
+    }));
   };
 
   const addDestinationVehicle = () => {
-    setDestinationVehicles(prev => [...prev, { id: prev.length + 1, vehicleId: null, litros: 0 }]); // Changed from '' to 0
+    setDestinationVehicles((prev) => [
+      ...prev,
+      { id: prev.length + 1, vehicleId: null, litros: 0 },
+    ]); // Changed from '' to 0
   };
 
   const removeDestinationVehicle = (id: number) => {
-    setDestinationVehicles(prev => prev.filter(dv => dv.id !== id));
-    setErrors(prev => ({ ...prev, destinationVehicles: validateField('destinationVehicles', destinationVehicles.filter(dv => dv.id !== id)) }));
+    setDestinationVehicles((prev) => prev.filter((dv) => dv.id !== id));
+    setErrors((prev) => ({
+      ...prev,
+      destinationVehicles: validateField(
+        "destinationVehicles",
+        destinationVehicles.filter((dv) => dv.id !== id),
+      ),
+    }));
   };
 
   const validateForm = () => {
-    let newErrors: Record<string, string> = {};
+    const newErrors: Record<string, string> = {};
     let isValid = true;
 
-    const fieldsToValidate = ['tipoOperacion', 'fecha', 'valorOperacionDinero', 'fuelCardId'];
-    if (formData.tipoOperacion === 'Consumo') {
-      fieldsToValidate.push('destinationVehicles');
+    const fieldsToValidate = [
+      "tipoOperacion",
+      "fecha",
+      "valorOperacionDinero",
+      "fuelCardId",
+    ];
+    if (formData.tipoOperacion === "Consumo") {
+      fieldsToValidate.push("destinationVehicles");
     }
 
     for (const fieldName of fieldsToValidate) {
@@ -232,8 +311,11 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
     }
 
     // Specific validation for destinationVehicles if it's a consumption operation
-    if (formData.tipoOperacion === 'Consumo') {
-      const destVehiclesError = validateField('destinationVehicles', destinationVehicles);
+    if (formData.tipoOperacion === "Consumo") {
+      const destVehiclesError = validateField(
+        "destinationVehicles",
+        destinationVehicles,
+      );
       if (destVehiclesError) {
         newErrors.destinationVehicles = destVehiclesError;
         isValid = false;
@@ -246,25 +328,30 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: '', message: '' });
+    setFormStatus({ type: "", message: "" });
 
     if (!validateForm()) {
-      setFormStatus({ type: 'error', message: 'Por favor, corrige los errores del formulario.' });
+      setFormStatus({
+        type: "error",
+        message: "Por favor, corrige los errores del formulario.",
+      });
       return;
     }
 
     setLoading(true);
     try {
-      const method = initialData ? 'PUT' : 'POST';
-      const url = initialData ? `/api/fuel-operations/${initialData.id}` : '/api/fuel-operations';
+      const method = initialData ? "PUT" : "POST";
+      const url = initialData
+        ? `/api/fuel-operations/${initialData.id}`
+        : "/api/fuel-operations";
 
       const payload: any = {
         ...formData,
         fecha: formData.fecha?.toISOString(),
       };
 
-      if (formData.tipoOperacion === 'Consumo') {
-        payload.fuelDistributions = destinationVehicles.map(dv => ({
+      if (formData.tipoOperacion === "Consumo") {
+        payload.fuelDistributions = destinationVehicles.map((dv) => ({
           vehicleId: dv.vehicleId,
           liters: dv.litros,
         }));
@@ -273,37 +360,51 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al guardar la operación de combustible.');
+        throw new Error(
+          errorData.message || "Error al guardar la operación de combustible.",
+        );
       }
 
-      setFormStatus({ type: 'success', message: `Operación de combustible ${initialData ? 'actualizada' : 'creada'} exitosamente.` });
+      setFormStatus({
+        type: "success",
+        message: `Operación de combustible ${initialData ? "actualizada" : "creada"} exitosamente.`,
+      });
       if (onSuccess) onSuccess();
-      router.push('/fleet/fuel-operations');
+      router.push("/fleet/fuel-operations");
     } catch (err: any) {
-      setFormStatus({ type: 'error', message: err.message || 'Ocurrió un error inesperado.' });
+      setFormStatus({
+        type: "error",
+        message: err.message || "Ocurrió un error inesperado.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading && fuelCards.length === 0 && vehicles.length === 0 && !initialData) return <p>Cargando formulario...</p>;
+  if (
+    loading &&
+    fuelCards.length === 0 &&
+    vehicles.length === 0 &&
+    !initialData
+  )
+    return <p>Cargando formulario...</p>;
 
-  const isConsumption = formData.tipoOperacion === 'Consumo';
+  const isConsumption = formData.tipoOperacion === "Consumo";
   const isReservorioCard = selectedFuelCard?.esReservorio;
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === 'success' ? 'success' : 'error'}
-          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
+          variant={formStatus.type === "success" ? "success" : "error"}
+          title={formStatus.type === "success" ? "Éxito" : "Error"}
           description={formStatus.message}
         />
       )}
@@ -313,27 +414,36 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
           <div>
             <Select
               label="Tarjeta de Combustible"
-              items={fuelCards.map(card => ({ value: card.id.toString(), label: card.numeroDeTarjeta }))}
-              value={formData.fuelCardId?.toString() || ''}
+              items={fuelCards.map((card) => ({
+                value: card.id.toString(),
+                label: card.numeroDeTarjeta,
+              }))}
+              value={formData.fuelCardId?.toString() || ""}
               placeholder="Selecciona una tarjeta"
               onChange={handleChange}
               name="fuelCardId"
             />
-            {errors.fuelCardId && <p className="text-red-500 text-sm mt-1">{errors.fuelCardId}</p>}
+            {errors.fuelCardId && (
+              <p className="mt-1 text-sm text-red-500">{errors.fuelCardId}</p>
+            )}
           </div>
           <div>
             <Select
               label="Tipo de Operación"
               items={[
-                { value: 'Carga', label: 'Carga' },
-                { value: 'Consumo', label: 'Consumo' },
+                { value: "Carga", label: "Carga" },
+                { value: "Consumo", label: "Consumo" },
               ]}
-              value={formData.tipoOperacion || ''}
+              value={formData.tipoOperacion || ""}
               placeholder="Selecciona el tipo de operación"
               onChange={handleChange}
               name="tipoOperacion"
             />
-            {errors.tipoOperacion && <p className="text-red-500 text-sm mt-1">{errors.tipoOperacion}</p>}
+            {errors.tipoOperacion && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.tipoOperacion}
+              </p>
+            )}
           </div>
           <div>
             <InputGroup
@@ -341,10 +451,16 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="fecha"
               type="datetime-local"
               placeholder="Selecciona la fecha y hora"
-              value={formData.fecha ? dayjs(formData.fecha).format('YYYY-MM-DDTHH:mm') : ''}
+              value={
+                formData.fecha
+                  ? dayjs(formData.fecha).format("YYYY-MM-DDTHH:mm")
+                  : ""
+              }
               handleChange={handleChange}
             />
-            {errors.fecha && <p className="text-red-500 text-sm mt-1">{errors.fecha}</p>}
+            {errors.fecha && (
+              <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
+            )}
           </div>
           <div>
             <InputGroup
@@ -352,7 +468,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="saldoInicio"
               type="number"
               placeholder="Saldo inicial"
-              value={formData.saldoInicio?.toFixed(2) || '0.00'}
+              value={formData.saldoInicio?.toFixed(2) || "0.00"}
               handleChange={() => {}} // Disabled, so no change handler
               disabled={true}
             />
@@ -363,10 +479,14 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="valorOperacionDinero"
               type="number"
               placeholder="Introduce el valor en dinero"
-              value={formData.valorOperacionDinero || ''}
+              value={formData.valorOperacionDinero?.toString() || ""}
               handleChange={handleChange}
             />
-            {errors.valorOperacionDinero && <p className="text-red-500 text-sm mt-1">{errors.valorOperacionDinero}</p>}
+            {errors.valorOperacionDinero && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.valorOperacionDinero}
+              </p>
+            )}
           </div>
           <div>
             <InputGroup
@@ -374,7 +494,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="valorOperacionLitros"
               type="number"
               placeholder="Valor en litros"
-              value={formData.valorOperacionLitros?.toFixed(2) || '0.00'}
+              value={formData.valorOperacionLitros?.toFixed(2) || "0.00"}
               handleChange={() => {}} // Disabled
               disabled={true}
             />
@@ -385,7 +505,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="saldoFinal"
               type="number"
               placeholder="Saldo final"
-              value={formData.saldoFinal?.toFixed(2) || '0.00'}
+              value={formData.saldoFinal?.toFixed(2) || "0.00"}
               handleChange={() => {}} // Disabled
               disabled={true}
             />
@@ -396,7 +516,7 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
               name="saldoFinalLitros"
               type="number"
               placeholder="Saldo final en litros"
-              value={formData.saldoFinalLitros?.toFixed(2) || '0.00'}
+              value={formData.saldoFinalLitros?.toFixed(2) || "0.00"}
               handleChange={() => {}} // Disabled
               disabled={true}
             />
@@ -408,14 +528,23 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                 Vehículos Destino
               </label>
               {destinationVehicles.map((dv, index) => (
-                <div key={dv.id} className="flex items-center gap-4 mb-4">
+                <div key={dv.id} className="mb-4 flex items-center gap-4">
                   <div className="flex-1">
                     <Select
                       label={`Vehículo ${index + 1}`}
-                      items={vehicles.map(v => ({ value: v.id.toString(), label: v.matricula }))}
-                      value={dv.vehicleId?.toString() || ''}
+                      items={vehicles.map((v) => ({
+                        value: v.id.toString(),
+                        label: v.matricula,
+                      }))}
+                      value={dv.vehicleId?.toString() || ""}
                       placeholder="Selecciona un vehículo"
-                      onChange={(e) => handleDestinationVehicleChange(index, 'vehicleId', e.target.value)}
+                      onChange={(e) =>
+                        handleDestinationVehicleChange(
+                          index,
+                          "vehicleId",
+                          e.target.value,
+                        )
+                      }
                       name={`destinationVehicle-${index}-id`}
                     />
                   </div>
@@ -425,8 +554,14 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                       name={`destinationVehicle-${index}-litros`}
                       type="number"
                       placeholder="Cantidad de litros"
-                      value={String(dv.litros)}
-                      handleChange={(e) => handleDestinationVehicleChange(index, 'litros', e.target.value)}
+                      value={dv.litros.toString()}
+                      handleChange={(e) =>
+                        handleDestinationVehicleChange(
+                          index,
+                          "litros",
+                          e.target.value,
+                        )
+                      }
                     />
                   </div>
                   {!isReservorioCard && destinationVehicles.length > 1 && (
@@ -444,12 +579,16 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
                 <button
                   type="button"
                   onClick={addDestinationVehicle}
-                  className="inline-flex items-center justify-center rounded-md bg-blue-500 py-2 px-4 text-center font-medium text-white hover:bg-blue-600"
+                  className="inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-center font-medium text-white hover:bg-blue-600"
                 >
                   <PlusIcon className="mr-2" /> Añadir Vehículo
                 </button>
               )}
-              {errors.destinationVehicles && <p className="text-red-500 text-sm mt-1">{errors.destinationVehicles}</p>}
+              {errors.destinationVehicles && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.destinationVehicles}
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -458,16 +597,20 @@ const FuelOperationForm = ({ initialData, onSuccess, onCancel }: FuelOperationFo
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 py-2 px-4 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
+            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 px-4 py-2 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-4 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10 disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
-            {loading ? 'Guardando...' : (initialData ? 'Actualizar Operación' : 'Crear Operación')}
+            {loading
+              ? "Guardando..."
+              : initialData
+                ? "Actualizar Operación"
+                : "Crear Operación"}
           </button>
         </div>
       </form>
