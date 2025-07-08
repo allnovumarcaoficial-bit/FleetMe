@@ -130,7 +130,7 @@ export function Sidebar() {
                               >
                                 {item.items.map((subItem) => (
                                   <li key={subItem.title} role="none">
-                                    {subItem.title === "Sign Out" ? (
+                                    {subItem.title === "Cerrar Sesión" ? (
                                       <MenuItem
                                         onClick={() => signOut()}
                                         isActive={pathname === subItem.url}
