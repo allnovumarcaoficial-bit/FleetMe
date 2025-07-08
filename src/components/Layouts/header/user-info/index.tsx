@@ -32,7 +32,7 @@ export function UserInfo() {
   if (status === "unauthenticated" || !session?.user) {
     return (
       <Link href="/auth/sign-in" className="text-primary">
-        Sign In
+        Iniciar Sesión
       </Link>
     );
   }
@@ -42,7 +42,7 @@ export function UserInfo() {
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
       <DropdownTrigger className="rounded align-middle outline-none ring-primary ring-offset-2 focus-visible:ring-1 dark:ring-offset-gray-dark">
-        <span className="sr-only">My Account</span>
+        <span className="sr-only">Mi cuenta</span>
 
         <figure className="flex items-center gap-3">
           <Image
@@ -72,7 +72,7 @@ export function UserInfo() {
         className="border border-stroke bg-white shadow-md dark:border-dark-3 dark:bg-gray-dark min-[230px]:min-w-[17.5rem]"
         align="end"
       >
-        <h2 className="sr-only">User information</h2>
+        <h2 className="sr-only">Información del usuario</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
           <Image
@@ -103,7 +103,7 @@ export function UserInfo() {
           >
             <UserIcon />
 
-            <span className="mr-auto text-base font-medium">View profile</span>
+            <span className="mr-auto text-base font-medium">Ver perfil</span>
           </Link>
 
           <Link
@@ -114,7 +114,7 @@ export function UserInfo() {
             <SettingsIcon />
 
             <span className="mr-auto text-base font-medium">
-              Account Settings
+              Configuración de la cuenta
             </span>
           </Link>
         </div>
@@ -128,7 +128,7 @@ export function UserInfo() {
           >
             <LogOutIcon />
 
-            <span className="text-base font-medium">Log out</span>
+            <span className="text-base font-medium">Cerrar sesión</span>
           </button>
         </div>
       </DropdownContent>

@@ -53,7 +53,7 @@ export default function SigninWithPassword() {
       )}
       <InputGroup
         type="email"
-        label="Email"
+        label="Correo Electrónico"
         className="mb-4 [&_input]:py-[15px]"
         placeholder="Enter your email"
         name="email"
@@ -64,7 +64,7 @@ export default function SigninWithPassword() {
 
       <InputGroup
         type="password"
-        label="Password"
+        label="Contraseña"
         className="mb-5 [&_input]:py-[15px]"
         placeholder="Enter your password"
         name="password"
@@ -75,14 +75,6 @@ export default function SigninWithPassword() {
 
       <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
         {/* La funcionalidad "Remember me" es manejada por NextAuth con la sesión */}
-        <div />
-
-        <Link
-          href="/auth/forgot-password"
-          className="hover:text-primary dark:text-white dark:hover:text-primary"
-        >
-          Forgot Password?
-        </Link>
       </div>
 
       <div className="mb-4.5">
@@ -91,7 +83,7 @@ export default function SigninWithPassword() {
           disabled={loading}
           className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary p-4 font-medium text-white transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-opacity-70"
         >
-          Sign In
+          Iniciar Sesión
           {loading && (
             <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-white border-t-transparent dark:border-primary dark:border-t-transparent" />
           )}

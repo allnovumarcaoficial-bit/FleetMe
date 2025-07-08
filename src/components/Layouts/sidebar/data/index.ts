@@ -2,20 +2,20 @@ import * as Icons from "../icons";
 
 export const NAV_DATA = [
   {
-    label: "MAIN MENU",
+    label: "MENÚ PRINCIPAL",
     items: [
       {
         title: "Dashboard",
         icon: Icons.HomeIcon,
         items: [
           {
-            title: "eCommerce",
+            title: "Reportes",
             url: "/",
           },
         ],
       },
       {
-        title: "Calendar",
+        title: "Calendario",
         url: "/calendar",
         icon: Icons.Calendar,
         items: [],
@@ -59,20 +59,20 @@ export const NAV_DATA = [
     ],
   },
   {
-    label: "OTHERS",
+    label: "OTROS",
     items: [
       {
-        title: "Settings",
+        title: "Configuración",
         icon: Icons.SettingsIcon,
         url: "/settings",
       },
       {
-        title: "Authentication",
+        title: "Autenticación",
         icon: Icons.Authentication,
         items: [
           {
-            title: "Sign In",
-            url: "/auth/sign-in",
+            title: "Cerrar Sesión",
+            url: "/auth/signin",
           },
         ],
       },
