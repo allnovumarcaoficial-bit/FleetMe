@@ -10,16 +10,34 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function UserInfo() {
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
-  const USER = {
-    name: "John Smith",
-    email: "johnson@nextadmin.com",
-    img: "/images/user/user-03.png",
-  };
+  if (status === "loading") {
+    return (
+      <div className="flex items-center gap-3">
+        <Skeleton className="size-12 rounded-full" />
+        <div className="space-y-2 max-[1024px]:sr-only">
+          <Skeleton className="h-4 w-[80px]" />
+        </div>
+      </div>
+    );
+  }
+
+  if (status === "unauthenticated" || !session?.user) {
+    return (
+      <Link href="/auth/sign-in" className="text-primary">
+        Sign In
+      </Link>
+    );
+  }
+
+  const { user } = session;
 
   return (
     <Dropdown isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -28,15 +46,15 @@ export function UserInfo() {
 
         <figure className="flex items-center gap-3">
           <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar of ${USER.name}`}
+            src={user.image || "/images/user/user-03.png"} // Fallback image
+            className="size-12 rounded-full"
+            alt={`Avatar of ${user.name}`}
             role="presentation"
-            width={200}
-            height={200}
+            width={48}
+            height={48}
           />
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
-            <span>{USER.name}</span>
+            <span>{user.name}</span>
 
             <ChevronUpIcon
               aria-hidden
@@ -58,20 +76,20 @@ export function UserInfo() {
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
           <Image
-            src={USER.img}
-            className="size-12"
-            alt={`Avatar for ${USER.name}`}
+            src={user.image || "/images/user/user-03.png"}
+            className="size-12 rounded-full"
+            alt={`Avatar for ${user.name}`}
             role="presentation"
-            width={200}
-            height={200}
+            width={48}
+            height={48}
           />
 
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
-              {USER.name}
+              {user.name}
             </div>
 
-            <div className="leading-none text-gray-6">{USER.email}</div>
+            <div className="leading-none text-gray-6">{user.email}</div>
           </figcaption>
         </figure>
 
@@ -106,7 +124,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => setIsOpen(false)}
+            onClick={() => signOut({ callbackUrl: "/auth/sign-in" })}
           >
             <LogOutIcon />
 

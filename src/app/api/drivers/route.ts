@@ -1,21 +1,32 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function GET(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const sortBy = searchParams.get('sortBy') || 'id';
-    const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
-    const search = searchParams.get('search') || '';
-    const nombre = searchParams.get('nombre') || '';
-    const licencia = searchParams.get('licencia') || '';
-    const fechaVencimientoLicenciaDesde = searchParams.get('fechaVencimientoLicenciaDesde');
-    const fechaVencimientoLicenciaHasta = searchParams.get('fechaVencimientoLicenciaHasta');
-    const carnet_peritage = searchParams.get('carnet_peritage'); // 'true' or 'false' string
-    const estado = searchParams.get('estado') || '';
-    const vehicleSearch = searchParams.get('vehicle') || ''; // For vehicle text search
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const sortBy = searchParams.get("sortBy") || "id";
+    const sortOrder = searchParams.get("sortOrder") || "asc"; // 'asc' or 'desc'
+    const search = searchParams.get("search") || "";
+    const nombre = searchParams.get("nombre") || "";
+    const licencia = searchParams.get("licencia") || "";
+    const fechaVencimientoLicenciaDesde = searchParams.get(
+      "fechaVencimientoLicenciaDesde",
+    );
+    const fechaVencimientoLicenciaHasta = searchParams.get(
+      "fechaVencimientoLicenciaHasta",
+    );
+    const carnet_peritage = searchParams.get("carnet_peritage"); // 'true' or 'false' string
+    const estado = searchParams.get("estado") || "";
+    const vehicleSearch = searchParams.get("vehicle") || ""; // For vehicle text search
 
     const skip = (page - 1) * limit;
 
@@ -44,7 +55,7 @@ export async function GET(request: Request) {
       };
     }
     if (carnet_peritage !== null) {
-      where.carnet_peritage = carnet_peritage === 'true';
+      where.carnet_peritage = carnet_peritage === "true";
     }
     if (estado) {
       where.estado = estado;
@@ -83,12 +94,20 @@ export async function GET(request: Request) {
       totalPages: Math.ceil(totalDrivers / limit),
     });
   } catch (error) {
-    console.error('Error fetching drivers:', error);
-    return NextResponse.json({ error: 'Failed to fetch drivers' }, { status: 500 });
+    console.error("Error fetching drivers:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch drivers" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
 
@@ -110,7 +129,10 @@ export async function POST(request: Request) {
       });
 
       if (existingVehicle && existingVehicle.driver) {
-        return NextResponse.json({ error: 'El vehículo seleccionado ya tiene un conductor asignado.' }, { status: 409 });
+        return NextResponse.json(
+          { error: "El vehículo seleccionado ya tiene un conductor asignado." },
+          { status: 409 },
+        );
       }
     }
 
@@ -130,18 +152,30 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newDriver, { status: 201 });
   } catch (error: any) {
-    console.error('Error creating driver:', error);
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Licencia ya existe.' }, { status: 409 });
+    console.error("Error creating driver:", error);
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Licencia ya existe." },
+        { status: 409 },
+      );
     }
-    return NextResponse.json({ error: 'Failed to create driver', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create driver", details: error.message },
+      { status: 500 },
+    );
   }
 }
 
 export async function PUT(request: Request) {
-  return NextResponse.json({ message: 'PUT not implemented yet' }, { status: 501 });
+  return NextResponse.json(
+    { message: "PUT not implemented yet" },
+    { status: 501 },
+  );
 }
 
 export async function DELETE(request: Request) {
-  return NextResponse.json({ message: 'DELETE not implemented yet' }, { status: 501 });
+  return NextResponse.json(
+    { message: "DELETE not implemented yet" },
+    { status: 501 },
+  );
 }

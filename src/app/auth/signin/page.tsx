@@ -1,6 +1,16 @@
 import Signin from "@/components/Auth/Signin";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export default function SignIn() {
+export default async function SignIn() {
+  const session = await getServerSession(authOptions);
+
+  // Si el usuario ya está autenticado, redirigir al dashboard
+  if (session) {
+    redirect("/");
+  }
+
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="flex flex-wrap items-center">
@@ -35,8 +45,8 @@ export default function SignIn() {
             </h1>
 
             <p className="w-full max-w-[375px] font-medium text-dark-4 dark:text-dark-6">
-              Please sign in to your account by completing the necessary
-              fields below
+              Please sign in to your account by completing the necessary fields
+              below
             </p>
 
             <div className="mt-31">

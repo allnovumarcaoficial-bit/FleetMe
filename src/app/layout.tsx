@@ -1,17 +1,17 @@
 import "@/css/satoshi.css";
 import "@/css/style.css";
-import "antd/dist/reset.css"; // Import Ant Design styles
-
-import { Sidebar } from "@/components/Layouts/sidebar";
-
+import "antd/dist/reset.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";
 
 import type { Metadata } from "next";
-import NextTopLoader from "nextjs-toploader";
 import type { PropsWithChildren } from "react";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Providers } from "./providers";
-import DashboardLayout from "@/components/Layouts/DashboardLayout"; // Import the new layout component
+import ConditionalLayout from "@/components/Layouts/ConditionalLayout";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: {
@@ -22,13 +22,15 @@ export const metadata: Metadata = {
     "Next.js admin dashboard toolkit with 200+ templates, UI components, and integrations for fast dashboard development.",
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
+  const session = await getServerSession(authOptions); // ✅ obteniendo sesión vía JWT
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning>
       <body>
-        <Providers>
+        <Providers session={session}>
           <NextTopLoader color="#5750F1" showSpinner={false} />
-          <DashboardLayout>{children}</DashboardLayout>
+          <ConditionalLayout>{children}</ConditionalLayout>
         </Providers>
       </body>
     </html>
