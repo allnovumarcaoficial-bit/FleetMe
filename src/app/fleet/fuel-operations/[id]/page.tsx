@@ -12,6 +12,8 @@ import {
 } from "@/types/fleet";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { ShowcaseSection } from "@/components/Layouts/showcase-section";
+import DetailsButtons from "@/components/Fleet/PageElements/DetailsButtons";
 
 const ViewFuelOperationPage = ({
   params,
@@ -29,6 +31,10 @@ const ViewFuelOperationPage = ({
   >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const handleEdit = () => {
+    router.push(`/fleet/fuel-operations/${id}/edit`);
+  };
 
   const handleDelete = async () => {
     if (
@@ -92,84 +98,72 @@ const ViewFuelOperationPage = ({
         ]}
       />
 
-      <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-        <div className="mb-4">
-          <h3 className="mb-4 text-xl font-semibold text-dark dark:text-white">
-            Información de la Operación
-          </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <p>
-              <strong>Tipo de Operación:</strong> {fuelOperation.tipoOperacion}
-            </p>
-            <p>
-              <strong>Fecha:</strong>{" "}
-              {dayjs(fuelOperation.fecha).format("DD/MM/YYYY HH:mm")}
-            </p>
-            <p>
-              <strong>Tarjeta:</strong> {fuelOperation.fuelCard.numeroDeTarjeta}
-            </p>
-            <p>
-              <strong>Saldo Inicio:</strong>{" "}
-              {fuelOperation.saldoInicio.toFixed(2)}
-            </p>
-            <p>
-              <strong>Valor Operación (Dinero):</strong>{" "}
-              {fuelOperation.valorOperacionDinero.toFixed(2)}
-            </p>
-            <p>
-              <strong>Valor Operación (Litros):</strong>{" "}
-              {fuelOperation.valorOperacionLitros.toFixed(2)}
-            </p>
-            <p>
-              <strong>Saldo Final:</strong>{" "}
-              {fuelOperation.saldoFinal.toFixed(2)}
-            </p>
-            <p>
-              <strong>Saldo Final (Litros):</strong>{" "}
-              {fuelOperation.saldoFinalLitros.toFixed(2)}
-            </p>
+      <ShowcaseSection title="Detalles:" className="!p-7">
+        <div className="">
+          <div className="mb-4">
+            <h3 className="mb-4 text-xl font-semibold text-dark dark:text-white">
+              Información de la Operación
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <p>
+                <strong>Tipo de Operación:</strong>{" "}
+                {fuelOperation.tipoOperacion}
+              </p>
+              <p>
+                <strong>Fecha:</strong>{" "}
+                {dayjs(fuelOperation.fecha).format("DD/MM/YYYY HH:mm")}
+              </p>
+              <p>
+                <strong>Tarjeta:</strong>{" "}
+                {fuelOperation.fuelCard.numeroDeTarjeta}
+              </p>
+              <p>
+                <strong>Saldo Inicio:</strong>{" "}
+                {fuelOperation.saldoInicio.toFixed(2)}
+              </p>
+              <p>
+                <strong>Valor Operación (Dinero):</strong>{" "}
+                {fuelOperation.valorOperacionDinero.toFixed(2)}
+              </p>
+              <p>
+                <strong>Valor Operación (Litros):</strong>{" "}
+                {fuelOperation.valorOperacionLitros.toFixed(2)}
+              </p>
+              <p>
+                <strong>Saldo Final:</strong>{" "}
+                {fuelOperation.saldoFinal.toFixed(2)}
+              </p>
+              <p>
+                <strong>Saldo Final (Litros):</strong>{" "}
+                {fuelOperation.saldoFinalLitros.toFixed(2)}
+              </p>
+            </div>
+            {fuelOperation.tipoOperacion === "Consumo" &&
+              fuelOperation.fuelDistributions &&
+              fuelOperation.fuelDistributions.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="mb-2 text-lg font-semibold text-dark dark:text-white">
+                    Vehículos Destino:
+                  </h4>
+                  <ul className="list-disc pl-5">
+                    {fuelOperation.fuelDistributions.map((dist, index) => (
+                      <li key={index} className="text-dark dark:text-white">
+                        {dist.vehicle?.matricula || "Vehículo Desconocido"} -{" "}
+                        {dist.liters.toFixed(2)} Litros
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
           </div>
-          {fuelOperation.tipoOperacion === "Consumo" &&
-            fuelOperation.fuelDistributions &&
-            fuelOperation.fuelDistributions.length > 0 && (
-              <div className="mt-4">
-                <h4 className="mb-2 text-lg font-semibold text-dark dark:text-white">
-                  Vehículos Destino:
-                </h4>
-                <ul className="list-disc pl-5">
-                  {fuelOperation.fuelDistributions.map((dist, index) => (
-                    <li key={index} className="text-dark dark:text-white">
-                      {dist.vehicle?.matricula || "Vehículo Desconocido"} -{" "}
-                      {dist.liters.toFixed(2)} Litros
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-        </div>
 
-        <div className="mb-4 mt-8 flex justify-end gap-4">
-          <Link href={`/fleet/fuel-operations/${id}/edit`}>
-            <button className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
-              Editar
-            </button>
-          </Link>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Eliminar
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/fleet/fuel-operations")}
-            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 px-4 py-2 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
-          >
-            Volver
-          </button>
+          <DetailsButtons
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            handleBack={() => router.push("/fleet/fuel-operations")}
+          />
         </div>
-      </div>
+      </ShowcaseSection>
     </>
   );
 };

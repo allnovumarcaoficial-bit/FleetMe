@@ -16,9 +16,12 @@ import { PreviewIcon } from "@/components/Tables/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Pagination from "@/components/Tables/Pagination";
-import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
-import { Alert } from '@/components/ui-elements/alert';
-import type { Dayjs } from 'dayjs';
+import AdvancedTableFilter, {
+  ColumnFilter,
+  ActiveFilters,
+} from "../PageElements/AdvancedTableFilter";
+import { Alert } from "@/components/ui-elements/alert";
+import type { Dayjs } from "dayjs";
 
 const VehicleTypesTable = () => {
   const router = useRouter();
@@ -38,20 +41,28 @@ const VehicleTypesTable = () => {
   }>({ type: "", message: "" });
 
   const vehicleTypeColumns: ColumnFilter[] = [
-    { key: 'nombre', title: 'Nombre', type: 'text' },
-    { key: 'cantidad_neumaticos', title: 'Neumáticos', type: 'text' },
-    { key: 'tipo_neumaticos', title: 'Tipo Neumáticos', type: 'text' },
-    { key: 'capacidad_carga', title: 'Capacidad de Carga', type: 'text' },
-    { key: 'cantidad_conductores', title: 'Cantidad de Conductores', type: 'text' },
-    { key: 'ciclo_mantenimiento_km', title: 'Ciclo Mantenimiento (Km)', type: 'text' },
-    { key: 'es_electrico', title: 'Es Eléctrico', type: 'boolean' },
-    { key: 'cantidad_baterias', title: 'Cantidad de Baterías', type: 'text' },
-    { key: 'tipo_bateria', title: 'Tipo de Batería', type: 'text' },
-    { key: 'amperage', title: 'Amperaje', type: 'text' },
-    { key: 'voltage', title: 'Voltaje', type: 'text' },
-    { key: 'tipo_combustible', title: 'Tipo de Combustible', type: 'text' },
-    { key: 'capacidad_tanque', title: 'Capacidad de Tanque', type: 'text' },
-    { key: 'indice_consumo', title: 'Índice de Consumo', type: 'text' },
+    { key: "nombre", title: "Nombre", type: "text" },
+    { key: "cantidad_neumaticos", title: "Neumáticos", type: "text" },
+    { key: "tipo_neumaticos", title: "Tipo Neumáticos", type: "text" },
+    { key: "capacidad_carga", title: "Capacidad de Carga", type: "text" },
+    {
+      key: "cantidad_conductores",
+      title: "Cantidad de Conductores",
+      type: "text",
+    },
+    {
+      key: "ciclo_mantenimiento_km",
+      title: "Ciclo Mantenimiento (Km)",
+      type: "text",
+    },
+    { key: "es_electrico", title: "Es Eléctrico", type: "boolean" },
+    { key: "cantidad_baterias", title: "Cantidad de Baterías", type: "text" },
+    { key: "tipo_bateria", title: "Tipo de Batería", type: "text" },
+    { key: "amperage", title: "Amperaje", type: "text" },
+    { key: "voltage", title: "Voltaje", type: "text" },
+    { key: "tipo_combustible", title: "Tipo de Combustible", type: "text" },
+    { key: "capacidad_tanque", title: "Capacidad de Tanque", type: "text" },
+    { key: "indice_consumo", title: "Índice de Consumo", type: "text" },
   ];
 
   const fetchVehicleTypes = useCallback(async () => {
@@ -66,18 +77,18 @@ const VehicleTypesTable = () => {
       });
 
       if (activeFilters.globalSearch) {
-        params.append('search', activeFilters.globalSearch);
+        params.append("search", activeFilters.globalSearch);
       }
 
       if (activeFilters.columnFilters) {
         for (const key in activeFilters.columnFilters) {
           const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== '') {
+          if (value !== undefined && value !== null && value !== "") {
             if (Array.isArray(value)) {
               if (value.length > 0) {
-                params.append(key, value.join(','));
+                params.append(key, value.join(","));
               }
-            } else if (typeof value === 'boolean') {
+            } else if (typeof value === "boolean") {
               params.append(key, value.toString());
             } else {
               params.append(key, value.toString());
@@ -86,9 +97,7 @@ const VehicleTypesTable = () => {
         }
       }
 
-      const response = await fetch(
-        `/api/vehicle-types?${params.toString()}`,
-      );
+      const response = await fetch(`/api/vehicle-types?${params.toString()}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -163,7 +172,7 @@ const VehicleTypesTable = () => {
         />
       )}
 
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <AdvancedTableFilter
           columns={vehicleTypeColumns}
           onFilterChange={handleFilterChange}
@@ -214,7 +223,8 @@ const VehicleTypesTable = () => {
                   onClick={() => handleSort("es_electrico")}
                 >
                   Eléctrico{" "}
-                  {sortBy === "es_electrico" && (sortOrder === "asc" ? "▲" : "▼")}
+                  {sortBy === "es_electrico" &&
+                    (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>

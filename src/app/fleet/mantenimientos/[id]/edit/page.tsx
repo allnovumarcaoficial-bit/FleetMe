@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import MantenimientoForm from "@/components/Fleet/MantenimientoForm";
+import MantenimientoForm from "@/components/Fleet/Forms/MantenimientoForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Mantenimiento } from "@/types/fleet";
@@ -14,7 +14,9 @@ interface EditMantenimientoPageProps {
 
 const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
   const router = useRouter();
-  const [mantenimiento, setMantenimiento] = useState<Mantenimiento | null>(null);
+  const [mantenimiento, setMantenimiento] = useState<Mantenimiento | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,16 +41,19 @@ const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Mantenimiento updated successfully!');
+    console.log("Mantenimiento updated successfully!");
     // Redirection is handled within MantenimientoForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/mantenimientos');
+    router.push("/fleet/mantenimientos");
   };
 
   if (loading) return <p>Cargando mantenimiento para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar mantenimiento: {error}</p>;
+  if (error)
+    return (
+      <p className="text-red-500">Error al cargar mantenimiento: {error}</p>
+    );
   if (!mantenimiento) return <p>Mantenimiento no encontrado.</p>;
 
   return (
@@ -60,7 +65,11 @@ const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
           { href: "/fleet/mantenimientos", label: "Mantenimientos" },
         ]}
       />
-      <MantenimientoForm initialData={mantenimiento} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <MantenimientoForm
+        initialData={mantenimiento}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

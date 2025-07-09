@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehicleTypeForm from "@/components/Fleet/VehicleTypeForm";
+import VehicleTypeForm from "@/components/Fleet/Forms/VehicleTypeForm";
 import { useRouter } from "next/navigation";
 
 const NewVehicleTypePage = () => {
   const router = useRouter();
 
   const handleSuccess = () => {
-    console.log('Vehicle type created successfully!');
+    console.log("Vehicle type created successfully!");
     // Redirection is handled within VehicleTypeForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/vehicle-types');
+    router.push("/fleet/vehicle-types");
   };
 
   return (

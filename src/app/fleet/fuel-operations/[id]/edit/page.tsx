@@ -1,16 +1,22 @@
-'use client';
+"use client";
 
-import Breadcrumbs from '@/components/Breadcrumbs/Breadcrumb';
-import FuelOperationForm from '@/components/Fleet/FuelOperationForm';
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FuelOperation, FuelCard, Vehicle } from '@/types/fleet';
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumb";
+import FuelOperationForm from "@/components/Fleet/Forms/FuelOperationForm";
+import React from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FuelOperation, FuelCard, Vehicle } from "@/types/fleet";
 
-const EditFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) => {
+const EditFuelOperationPage = ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
   const router = useRouter();
   const { id } = React.use(params);
-  const [initialData, setInitialData] = useState<(FuelOperation & { fuelCard: FuelCard; vehicle: Vehicle | null }) | null>(null);
+  const [initialData, setInitialData] = useState<
+    (FuelOperation & { fuelCard: FuelCard; vehicle: Vehicle | null }) | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,11 +42,11 @@ const EditFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
   }, [id]);
 
   const handleCancel = () => {
-    router.push('/fleet/fuel-operations');
+    router.push("/fleet/fuel-operations");
   };
 
   const handleSuccess = () => {
-    router.push('/fleet/fuel-operations');
+    router.push("/fleet/fuel-operations");
   };
 
   if (loading) return <p>Cargando operación de combustible...</p>;
@@ -52,13 +58,20 @@ const EditFuelOperationPage = ({ params }: { params: Promise<{ id: string }> }) 
       <Breadcrumbs
         pageName="Editar Operación de Combustible"
         links={[
-          { href: '/fleet', label: 'Flota' },
-          { href: '/fleet/fuel-operations', label: 'Operaciones de Combustible' },
+          { href: "/fleet", label: "Flota" },
+          {
+            href: "/fleet/fuel-operations",
+            label: "Operaciones de Combustible",
+          },
         ]}
       />
 
       <div className="flex flex-col gap-10">
-        <FuelOperationForm initialData={initialData} onSuccess={handleSuccess} onCancel={handleCancel} />
+        <FuelOperationForm
+          initialData={initialData}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
       </div>
     </>
   );

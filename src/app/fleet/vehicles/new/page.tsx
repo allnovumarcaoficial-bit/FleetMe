@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehicleForm from "@/components/Fleet/VehicleForm";
+import VehicleForm from "@/components/Fleet/Forms/VehicleForm";
 import { useRouter } from "next/navigation";
 
 const NewVehiclePage = () => {
@@ -9,12 +9,12 @@ const NewVehiclePage = () => {
 
   const handleSuccess = () => {
     // Optionally, show a success message before redirecting
-    console.log('Vehicle created successfully!');
+    console.log("Vehicle created successfully!");
     // Redirection is handled within VehicleForm, but can be done here too if needed
   };
 
   const handleCancel = () => {
-    router.push('/fleet/vehicles');
+    router.push("/fleet/vehicles");
   };
 
   return (
@@ -23,7 +23,7 @@ const NewVehiclePage = () => {
         pageName="Añadir Nuevo Vehículo"
         links={[
           { href: "/fleet", label: "Flota" },
-          { href: "/fleet/vehicles", label: "Vehículos" }
+          { href: "/fleet/vehicles", label: "Vehículos" },
         ]}
       />
       <VehicleForm onSuccess={handleSuccess} onCancel={handleCancel} />

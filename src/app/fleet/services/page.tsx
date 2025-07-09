@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import { useRouter } from "next/navigation";
-import ServiceTable from "@/components/Fleet/ServiceTable"; // Import the new ServiceTable
+import ServiceTable from "@/components/Fleet/Tables/ServiceTable"; // Import the new ServiceTable
 
 const ServicesPage = () => {
   const router = useRouter();
@@ -11,14 +11,10 @@ const ServicesPage = () => {
     <>
       <Breadcrumb
         pageName="Servicios"
-        links={[
-          { href: "/fleet/services", label: "Flota" },
-        ]}
+        links={[{ href: "/fleet/services", label: "Flota" }]}
       />
 
-
       <ServiceTable />
-     
     </>
   );
 };

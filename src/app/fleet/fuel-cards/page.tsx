@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import FuelCardTable from "@/components/Fleet/FuelCardTable";
+import FuelCardTable from "@/components/Fleet/Tables/FuelCardTable";
 
 const FuelCardsPage = () => {
   return (
     <>
       <Breadcrumb
         pageName="Tarjetas de Combustible"
-        links={[
-          { href: "/fleet/fuel-cards", label: "Flota" },
-        ]}
+        links={[{ href: "/fleet/fuel-cards", label: "Flota" }]}
       />
       <div className="flex flex-col gap-10">
         <FuelCardTable />

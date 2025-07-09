@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import FuelCardForm from "@/components/Fleet/FuelCardForm";
+import FuelCardForm from "@/components/Fleet/Forms/FuelCardForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FuelCard } from "@/types/fleet";
@@ -39,16 +39,21 @@ const EditFuelCardPage = ({ params }: EditFuelCardPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Fuel card updated successfully!');
+    console.log("Fuel card updated successfully!");
     // Redirection is handled within FuelCardForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/fuel-cards');
+    router.push("/fleet/fuel-cards");
   };
 
   if (loading) return <p>Cargando tarjeta de combustible para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar tarjeta de combustible: {error}</p>;
+  if (error)
+    return (
+      <p className="text-red-500">
+        Error al cargar tarjeta de combustible: {error}
+      </p>
+    );
   if (!fuelCard) return <p>Tarjeta de combustible no encontrada.</p>;
 
   return (
@@ -58,9 +63,13 @@ const EditFuelCardPage = ({ params }: EditFuelCardPageProps) => {
         links={[
           { href: "/fleet", label: "Flota" },
           { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
-          ]}
+        ]}
       />
-      <FuelCardForm initialData={fuelCard} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <FuelCardForm
+        initialData={fuelCard}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

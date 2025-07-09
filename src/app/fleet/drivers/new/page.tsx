@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import DriverForm from "@/components/Fleet/DriverForm";
+import DriverForm from "@/components/Fleet/Forms/DriverForm";
 import { useRouter } from "next/navigation";
 
 const NewDriverPage = () => {
   const router = useRouter();
 
   const handleSuccess = () => {
-    console.log('Driver created successfully!');
+    console.log("Driver created successfully!");
     // Redirection is handled within DriverForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/drivers');
+    router.push("/fleet/drivers");
   };
 
   return (

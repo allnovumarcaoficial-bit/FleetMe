@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mantenimiento, Piece } from "@/types/fleet"; // Import Piece interface
 import { format } from "date-fns";
+import { ShowcaseSection } from "@/components/Layouts/showcase-section";
+import DetailsButtons from "@/components/Fleet/PageElements/DetailsButtons";
 
 interface MantenimientoDetailsPageProps {
   params: Promise<{
@@ -139,77 +141,63 @@ const MantenimientoDetailsPage = ({
         ]}
       />
 
-      <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <p>
-            <strong>Tipo:</strong> {mantenimiento.tipo}
-          </p>
-          <p>
-            <strong>Fecha:</strong>{" "}
-            {mantenimiento.fecha
-              ? format(new Date(mantenimiento.fecha), "dd/MM/yyyy")
-              : "N/A"}
-          </p>
-          <p>
-            <strong>Costo:</strong> ${mantenimiento.costo.toFixed(2)}
-          </p>
-          <p className="md:col-span-2">
-            <strong>Descripción:</strong> {mantenimiento.descripcion}
-          </p>
-          <div className="md:col-span-2">
-            <strong>Lista de Piezas:</strong>
-            {mantenimiento.lista_de_piezas &&
-            mantenimiento.lista_de_piezas.length > 0 ? (
-              <ul className="ml-4 list-inside list-disc">
-                {mantenimiento.lista_de_piezas.map(
-                  (piece: Piece, index: number) => (
-                    <li key={index} className="mb-2">
-                      {piece.name}
-                      {piece.cambio_de_pieza && (
-                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                          (Serie Anterior:{" "}
-                          {piece.numero_serie_anterior || "N/A"}, Serie Nueva:{" "}
-                          {piece.numero_serie_nueva || "N/A"})
-                        </span>
-                      )}
-                    </li>
-                  ),
-                )}
-              </ul>
-            ) : (
-              <p>N/A</p>
-            )}
+      <ShowcaseSection title="Detalles:" className="!p-7">
+        <div className="">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <p>
+              <strong>Tipo:</strong> {mantenimiento.tipo}
+            </p>
+            <p>
+              <strong>Fecha:</strong>{" "}
+              {mantenimiento.fecha
+                ? format(new Date(mantenimiento.fecha), "dd/MM/yyyy")
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Costo:</strong> ${mantenimiento.costo.toFixed(2)}
+            </p>
+            <p className="md:col-span-2">
+              <strong>Descripción:</strong> {mantenimiento.descripcion}
+            </p>
+            <div className="md:col-span-2">
+              <strong>Lista de Piezas:</strong>
+              {mantenimiento.lista_de_piezas &&
+              mantenimiento.lista_de_piezas.length > 0 ? (
+                <ul className="ml-4 list-inside list-disc">
+                  {mantenimiento.lista_de_piezas.map(
+                    (piece: Piece, index: number) => (
+                      <li key={index} className="mb-2">
+                        {piece.name}
+                        {piece.cambio_de_pieza && (
+                          <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                            (Serie Anterior:{" "}
+                            {piece.numero_serie_anterior || "N/A"}, Serie Nueva:{" "}
+                            {piece.numero_serie_nueva || "N/A"})
+                          </span>
+                        )}
+                      </li>
+                    ),
+                  )}
+                </ul>
+              ) : (
+                <p>N/A</p>
+              )}
+            </div>
+            <p>
+              <strong>Vehículo Asociado:</strong>{" "}
+              {mantenimiento.vehicle
+                ? `${mantenimiento.vehicle.marca} ${mantenimiento.vehicle.modelo} (${mantenimiento.vehicle.matricula})`
+                : "N/A"}
+            </p>
           </div>
-          <p>
-            <strong>Vehículo Asociado:</strong>{" "}
-            {mantenimiento.vehicle
-              ? `${mantenimiento.vehicle.marca} ${mantenimiento.vehicle.modelo} (${mantenimiento.vehicle.matricula})`
-              : "N/A"}
-          </p>
-        </div>
 
-        <div className="mb-4 mt-8 flex justify-end gap-4">
-          <button
-            onClick={handleEdit}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Editar
-          </button>
-          <button
-            onClick={handleDelete}
-            className="inline-flex items-center justify-center rounded-md bg-red-500 px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Eliminar
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push("/fleet/mantenimientos")}
-            className="inline-flex items-center justify-center rounded-md border border-stroke bg-gray-2 px-4 py-2 text-center font-medium text-dark hover:bg-opacity-90 dark:border-dark-3 dark:bg-dark-2 dark:text-white lg:px-8 xl:px-10"
-          >
-            Volver
-          </button>
+          <DetailsButtons
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            handleBack={() => router.push("/fleet/mantenimientos")}
+          />
         </div>
-      </div>
+      </ShowcaseSection>
     </>
   );
 };

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import MantenimientoTable from "@/components/Fleet/MantenimientoTable";
+import MantenimientoTable from "@/components/Fleet/Tables/MantenimientoTable";
 import Link from "next/link";
 
 const MantenimientosPage = () => {
@@ -9,12 +9,8 @@ const MantenimientosPage = () => {
     <>
       <Breadcrumb
         pageName="Mantenimientos"
-        links={[
-          { href: "/fleet/mantenimientos", label: "Flota" },
-        ]}
+        links={[{ href: "/fleet/mantenimientos", label: "Flota" }]}
       />
-
-
 
       <MantenimientoTable />
     </>

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import ServiceForm from "@/components/Fleet/ServiceForm";
+import ServiceForm from "@/components/Fleet/Forms/ServiceForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Servicio } from "@/types/fleet";
@@ -39,16 +39,17 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Service updated successfully!');
-    router.push('/fleet/services');
+    console.log("Service updated successfully!");
+    router.push("/fleet/services");
   };
 
   const handleCancel = () => {
-    router.push('/fleet/services');
+    router.push("/fleet/services");
   };
 
   if (loading) return <p>Cargando servicio para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar servicio: {error}</p>;
+  if (error)
+    return <p className="text-red-500">Error al cargar servicio: {error}</p>;
   if (!service) return <p>Servicio no encontrado.</p>;
 
   return (
@@ -60,7 +61,11 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
           { href: "/fleet/services", label: "Servicios" },
         ]}
       />
-      <ServiceForm initialData={service} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <ServiceForm
+        initialData={service}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

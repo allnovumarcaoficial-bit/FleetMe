@@ -1,16 +1,14 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehiclesTable from "@/components/Fleet/VehiclesTable";
+import VehiclesTable from "@/components/Fleet/Tables/VehiclesTable";
 
 const VehiclesPage = () => {
   return (
     <>
       <Breadcrumb
         pageName="Vehículos"
-        links={[
-          { href: "/fleet/vehicles", label: "Flota" },
-        ]}
+        links={[{ href: "/fleet/vehicles", label: "Flota" }]}
       />
       <VehiclesTable />
     </>

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehicleTypeForm from "@/components/Fleet/VehicleTypeForm";
+import VehicleTypeForm from "@/components/Fleet/Forms/VehicleTypeForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { VehicleType } from "@/types/fleet";
@@ -39,16 +39,19 @@ const EditVehicleTypePage = ({ params }: EditVehicleTypePageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Vehicle type updated successfully!');
+    console.log("Vehicle type updated successfully!");
     // Redirection is handled within VehicleTypeForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/vehicle-types');
+    router.push("/fleet/vehicle-types");
   };
 
   if (loading) return <p>Cargando tipo de vehículo para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar tipo de vehículo: {error}</p>;
+  if (error)
+    return (
+      <p className="text-red-500">Error al cargar tipo de vehículo: {error}</p>
+    );
   if (!vehicleType) return <p>Tipo de vehículo no encontrado.</p>;
 
   return (
@@ -60,7 +63,11 @@ const EditVehicleTypePage = ({ params }: EditVehicleTypePageProps) => {
           { href: "/fleet/vehicle-types", label: "Tipos de Vehículo" },
         ]}
       />
-      <VehicleTypeForm initialData={vehicleType} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <VehicleTypeForm
+        initialData={vehicleType}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

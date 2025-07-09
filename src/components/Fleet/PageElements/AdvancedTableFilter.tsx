@@ -1,14 +1,32 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Input, Button, Dropdown, Space, DatePicker, Switch, Select, Badge, Drawer, Form, Row, Col, Spin } from 'antd';
-import { FilterOutlined, SearchOutlined, ClearOutlined } from '@ant-design/icons';
-import { useIsMobile } from '@/hooks/use-mobile';
-import type { MenuProps } from 'antd';
-import moment from 'moment'; // Keep moment for now for compatibility with existing data if any
-import type { Dayjs } from 'dayjs';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Input,
+  Button,
+  Dropdown,
+  Space,
+  DatePicker,
+  Switch,
+  Select,
+  Badge,
+  Drawer,
+  Form,
+  Row,
+  Col,
+  Spin,
+} from "antd";
+import {
+  FilterOutlined,
+  SearchOutlined,
+  ClearOutlined,
+} from "@ant-design/icons";
+import { useIsMobile } from "@/hooks/use-mobile";
+import type { MenuProps } from "antd";
+import moment from "moment"; // Keep moment for now for compatibility with existing data if any
+import type { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;
 
-export type FilterType = 'text' | 'select' | 'dateRange' | 'boolean';
+export type FilterType = "text" | "select" | "dateRange" | "boolean";
 
 export interface ColumnFilter {
   key: string;
@@ -38,8 +56,10 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
   applyFiltersAutomatically = true,
 }) => {
   const isMobile = useIsMobile();
-  const [globalSearchText, setGlobalSearchText] = useState<string>('');
-  const [columnFilters, setColumnFilters] = useState<ActiveFilters['columnFilters']>({});
+  const [globalSearchText, setGlobalSearchText] = useState<string>("");
+  const [columnFilters, setColumnFilters] = useState<
+    ActiveFilters["columnFilters"]
+  >({});
   const [activeFilterCount, setActiveFilterCount] = useState<number>(0);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
@@ -51,7 +71,12 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
     }
     for (const key in columnFilters) {
       const value = columnFilters[key];
-      if (value !== undefined && value !== null && value !== '' && !(Array.isArray(value) && value.length === 0)) {
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== "" &&
+        !(Array.isArray(value) && value.length === 0)
+      ) {
         count++;
       }
     }
@@ -74,7 +99,12 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
     if (applyFiltersAutomatically) {
       applyFilters();
     }
-  }, [globalSearchText, columnFilters, applyFiltersAutomatically, applyFilters]);
+  }, [
+    globalSearchText,
+    columnFilters,
+    applyFiltersAutomatically,
+    applyFilters,
+  ]);
 
   const handleGlobalSearch = (value: string) => {
     setGlobalSearchText(value);
@@ -85,7 +115,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
   };
 
   const handleClearFilters = () => {
-    setGlobalSearchText('');
+    setGlobalSearchText("");
     setColumnFilters({});
     form.resetFields();
     if (applyFiltersAutomatically) {
@@ -97,15 +127,17 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
 
   const renderFilterInput = (column: ColumnFilter) => {
     switch (column.type) {
-      case 'text':
+      case "text":
         return (
           <Input
             placeholder={`Buscar por ${column.title}`}
-            onChange={(e) => handleColumnFilterChange(column.key, e.target.value)}
+            onChange={(e) =>
+              handleColumnFilterChange(column.key, e.target.value)
+            }
             value={columnFilters?.[column.key] as string | undefined}
           />
         );
-      case 'select':
+      case "select":
         return (
           <Select
             placeholder={`Seleccionar ${column.title}`}
@@ -115,21 +147,25 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
             allowClear
           />
         );
-      case 'dateRange':
-        const dateRangeValue = columnFilters?.[column.key] as [Dayjs, Dayjs] | undefined;
+      case "dateRange":
+        const dateRangeValue = columnFilters?.[column.key] as
+          | [Dayjs, Dayjs]
+          | undefined;
         return (
           <RangePicker
             onChange={(dates) => handleColumnFilterChange(column.key, dates)}
             value={dateRangeValue}
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
           />
         );
-      case 'boolean':
+      case "boolean":
         return (
           <Switch
             checkedChildren="Sí"
             unCheckedChildren="No"
-            onChange={(checked) => handleColumnFilterChange(column.key, checked)}
+            onChange={(checked) =>
+              handleColumnFilterChange(column.key, checked)
+            }
             checked={columnFilters?.[column.key] as boolean | undefined}
           />
         );
@@ -138,10 +174,15 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
     }
   };
 
-  const filterMenuItems: MenuProps['items'] = columns.map((column) => ({
+  const filterMenuItems: MenuProps["items"] = columns.map((column) => ({
     key: column.key,
     label: (
-      <Form.Item name={column.key} label={column.title} initialValue={columnFilters?.[column.key]} style={{ marginBottom: 0 }}>
+      <Form.Item
+        name={column.key}
+        label={column.title}
+        initialValue={columnFilters?.[column.key]}
+        style={{ marginBottom: 0 }}
+      >
         {renderFilterInput(column)}
       </Form.Item>
     ),
@@ -170,34 +211,55 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
 
   return (
     <Spin spinning={loading}>
-      <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'flex-start' }}>
+      <Space
+        style={{
+          marginBottom: 16,
+          width: "100%",
+          justifyContent: "flex-start",
+        }}
+      >
         <Input.Search
           placeholder="Búsqueda global..."
           allowClear
           onSearch={handleGlobalSearch}
           onChange={(e) => setGlobalSearchText(e.target.value)}
           value={globalSearchText}
-          style={{ width: isMobile ? '100%' : 250 }}
+          style={{ width: isMobile ? "100%" : 250 }}
           prefix={<SearchOutlined />}
         />
 
         {isMobile ? (
-          <Button icon={<FilterOutlined />} onClick={() => setDrawerVisible(true)}>
+          <Button
+            icon={<FilterOutlined />}
+            onClick={() => setDrawerVisible(true)}
+          >
             Filtros ({activeFilterCount})
           </Button>
         ) : (
           <Dropdown
             popupRender={() => (
-              <div style={{ background: '#fff', padding: 16, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
+              <div
+                style={{
+                  background: "#fff",
+                  padding: 16,
+                  borderRadius: 8,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                }}
+              >
                 {filterContent}
               </div>
             )}
-            trigger={['click']}
+            trigger={["click"]}
             placement="bottomLeft"
             arrow
           >
             <Button icon={<FilterOutlined />}>
-              Filtros por Columna <Badge count={activeFilterCount} offset={[5, -5]} showZero={false} />
+              Filtros por Columna{" "}
+              <Badge
+                count={activeFilterCount}
+                offset={[5, -5]}
+                showZero={false}
+              />
             </Button>
           </Dropdown>
         )}
@@ -216,7 +278,13 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
           width="80%"
           extra={
             !applyFiltersAutomatically && (
-              <Button type="primary" onClick={() => { applyFilters(); setDrawerVisible(false); }}>
+              <Button
+                type="primary"
+                onClick={() => {
+                  applyFilters();
+                  setDrawerVisible(false);
+                }}
+              >
                 Aplicar
               </Button>
             )

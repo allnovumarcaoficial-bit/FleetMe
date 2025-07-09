@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import MantenimientoForm from "@/components/Fleet/MantenimientoForm";
+import MantenimientoForm from "@/components/Fleet/Forms/MantenimientoForm";
 import { useRouter } from "next/navigation";
 
 const NewMantenimientoPage = () => {
   const router = useRouter();
 
   const handleSuccess = () => {
-    console.log('Mantenimiento created successfully!');
+    console.log("Mantenimiento created successfully!");
   };
 
   const handleCancel = () => {
-    router.push('/fleet/mantenimientos');
+    router.push("/fleet/mantenimientos");
   };
 
   return (

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehicleForm from "@/components/Fleet/VehicleForm";
+import VehicleForm from "@/components/Fleet/Forms/VehicleForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Vehicle } from "@/types/fleet";
@@ -38,16 +38,17 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Vehicle updated successfully!');
+    console.log("Vehicle updated successfully!");
     // Redirection is handled within VehicleForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/vehicles');
+    router.push("/fleet/vehicles");
   };
 
   if (loading) return <p>Cargando vehículo para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar vehículo: {error}</p>;
+  if (error)
+    return <p className="text-red-500">Error al cargar vehículo: {error}</p>;
   if (!vehicle) return <p>Vehículo no encontrado.</p>;
 
   return (
@@ -59,7 +60,11 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
           { href: "/fleet/vehicles", label: "Vehículos" },
         ]}
       />
-      <VehicleForm initialData={vehicle} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <VehicleForm
+        initialData={vehicle}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

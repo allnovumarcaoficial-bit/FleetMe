@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import FuelCardForm from "@/components/Fleet/FuelCardForm";
+import FuelCardForm from "@/components/Fleet/Forms/FuelCardForm";
 import { useRouter } from "next/navigation";
 
 const NewFuelCardPage = () => {
   const router = useRouter();
 
   const handleSuccess = () => {
-    console.log('Fuel card created successfully!');
+    console.log("Fuel card created successfully!");
   };
 
   const handleCancel = () => {
-    router.push('/fleet/fuel-cards');
+    router.push("/fleet/fuel-cards");
   };
 
   return (

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import DriverForm from "@/components/Fleet/DriverForm";
+import DriverForm from "@/components/Fleet/Forms/DriverForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Driver } from "@/types/fleet";
@@ -39,16 +39,17 @@ const EditDriverPage = ({ params }: EditDriverPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Driver updated successfully!');
+    console.log("Driver updated successfully!");
     // Redirection is handled within DriverForm
   };
 
   const handleCancel = () => {
-    router.push('/fleet/drivers');
+    router.push("/fleet/drivers");
   };
 
   if (loading) return <p>Cargando conductor para editar...</p>;
-  if (error) return <p className="text-red-500">Error al cargar conductor: {error}</p>;
+  if (error)
+    return <p className="text-red-500">Error al cargar conductor: {error}</p>;
   if (!driver) return <p>Conductor no encontrado.</p>;
 
   return (
@@ -60,7 +61,11 @@ const EditDriverPage = ({ params }: EditDriverPageProps) => {
           { href: "/fleet/drivers", label: "Conductores" },
         ]}
       />
-      <DriverForm initialData={driver} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <DriverForm
+        initialData={driver}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

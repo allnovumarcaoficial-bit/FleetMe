@@ -1,38 +1,39 @@
-'use client';
+"use client";
 
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import ServiceForm from "@/components/Fleet/ServiceForm";
+import ServiceForm from "@/components/Fleet/Forms/ServiceForm";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Servicio, Vehicle } from "@/types/fleet";
 
-
 const NewServicePageContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [initialServiceData, setInitialServiceData] = useState<Partial<Servicio> | undefined>(undefined);
+  const [initialServiceData, setInitialServiceData] = useState<
+    Partial<Servicio> | undefined
+  >(undefined);
   const [loadingInitialData, setLoadingInitialData] = useState(true);
 
   useEffect(() => {
-    const vehicleIdParam = searchParams.get('vehicleId');
+    const vehicleIdParam = searchParams.get("vehicleId");
     if (vehicleIdParam) {
       const id = parseInt(vehicleIdParam);
       if (!isNaN(id)) {
         // Optionally fetch vehicle details to pre-fill if needed,
         // but for now, just pass the vehicleId
-        setInitialServiceData(prev => ({ ...prev, vehicleId: id }));
+        setInitialServiceData((prev) => ({ ...prev, vehicleId: id }));
       }
     }
     setLoadingInitialData(false);
   }, [searchParams]);
 
   const handleSuccess = () => {
-    console.log('Service created successfully!');
-    router.push('/fleet/services');
+    console.log("Service created successfully!");
+    router.push("/fleet/services");
   };
 
   const handleCancel = () => {
-    router.push('/fleet/services');
+    router.push("/fleet/services");
   };
 
   if (loadingInitialData) {
@@ -48,7 +49,11 @@ const NewServicePageContent = () => {
           { href: "/fleet/services", label: "Servicios" },
         ]}
       />
-      <ServiceForm initialData={initialServiceData} onSuccess={handleSuccess} onCancel={handleCancel} />
+      <ServiceForm
+        initialData={initialServiceData}
+        onSuccess={handleSuccess}
+        onCancel={handleCancel}
+      />
     </>
   );
 };

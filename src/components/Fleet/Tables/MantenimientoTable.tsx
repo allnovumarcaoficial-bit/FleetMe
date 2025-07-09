@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Mantenimiento } from '@/types/fleet';
+import { useState, useEffect, useCallback } from "react";
+import { Mantenimiento } from "@/types/fleet";
 import {
   Table,
   TableBody,
@@ -12,13 +12,16 @@ import {
 } from "@/components/ui/table";
 import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
 import { PreviewIcon } from "@/components/Tables/icons";
-import { useRouter } from 'next/navigation';
-import { Alert } from '@/components/ui-elements/alert';
-import Link from 'next/link';
+import { useRouter } from "next/navigation";
+import { Alert } from "@/components/ui-elements/alert";
+import Link from "next/link";
 import Pagination from "@/components/Tables/Pagination";
-import AdvancedTableFilter, { ColumnFilter, ActiveFilters } from './AdvancedTableFilter';
-import type { Dayjs } from 'dayjs';
-import { cn } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
+import AdvancedTableFilter, {
+  ColumnFilter,
+  ActiveFilters,
+} from "../PageElements/AdvancedTableFilter";
+import type { Dayjs } from "dayjs";
+import { cn } from "@/lib/utils"; // Asegúrate de que la ruta sea correcta según tu proyecto
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -33,33 +36,36 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalMantenimientosCount, setTotalMantenimientosCount] = useState(0);
-  const [sortBy, setSortBy] = useState('fecha');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState("fecha");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
-  const [formStatus, setFormStatus] = useState<{ type: 'success' | 'error' | ''; message: string }>({ type: '', message: '' });
+  const [formStatus, setFormStatus] = useState<{
+    type: "success" | "error" | "";
+    message: string;
+  }>({ type: "", message: "" });
 
   const mantenimientoColumns: ColumnFilter[] = [
-    { key: 'tipo', title: 'Tipo', type: 'text' },
-    { key: 'fecha', title: 'Fecha', type: 'dateRange' },
-    { key: 'costo', title: 'Costo', type: 'text' }, // Assuming text search for cost for now
+    { key: "tipo", title: "Tipo", type: "text" },
+    { key: "fecha", title: "Fecha", type: "dateRange" },
+    { key: "costo", title: "Costo", type: "text" }, // Assuming text search for cost for now
     {
-      key: 'estado',
-      title: 'Estado',
-      type: 'select',
+      key: "estado",
+      title: "Estado",
+      type: "select",
       options: [
-        { value: 'Pendiente', label: 'Pendiente' },
-        { value: 'Completado', label: 'Completado' },
-        { value: 'En Progreso', label: 'En Progreso' },
+        { value: "Pendiente", label: "Pendiente" },
+        { value: "Completado", label: "Completado" },
+        { value: "En Progreso", label: "En Progreso" },
       ],
     },
-    { key: 'descripcion', title: 'Descripción', type: 'text' },
-    { key: 'vehicle', title: 'Vehículo', type: 'text' }, // For vehicle details
+    { key: "descripcion", title: "Descripción", type: "text" },
+    { key: "vehicle", title: "Vehículo", type: "text" }, // For vehicle details
   ];
 
   const fetchMantenimientos = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setFormStatus({ type: '', message: '' });
+    setFormStatus({ type: "", message: "" });
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -69,22 +75,22 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
       });
 
       if (activeFilters.globalSearch) {
-        params.append('search', activeFilters.globalSearch);
+        params.append("search", activeFilters.globalSearch);
       }
 
       if (activeFilters.columnFilters) {
         for (const key in activeFilters.columnFilters) {
           const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== '') {
+          if (value !== undefined && value !== null && value !== "") {
             if (Array.isArray(value)) {
-              if (key === 'fecha' && value[0] && value[1]) {
+              if (key === "fecha" && value[0] && value[1]) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
-                params.append('fechaDesde', startDate.toISOString());
-                params.append('fechaHasta', endDate.toISOString());
+                params.append("fechaDesde", startDate.toISOString());
+                params.append("fechaHasta", endDate.toISOString());
               } else if (value.length > 0) {
-                params.append(key, value.join(','));
+                params.append(key, value.join(","));
               }
-            } else if (typeof value === 'boolean') {
+            } else if (typeof value === "boolean") {
               params.append(key, value.toString());
             } else {
               params.append(key, value.toString());
@@ -94,20 +100,23 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
       }
 
       if (vehicleId) {
-        params.append('vehicleId', vehicleId.toString());
+        params.append("vehicleId", vehicleId.toString());
       }
 
       const res = await fetch(`/api/mantenimientos?${params.toString()}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch maintenances');
+        throw new Error("Failed to fetch maintenances");
       }
       const data = await res.json();
       setMantenimientos(data.data);
       setTotalPages(data.totalPages);
       setTotalMantenimientosCount(data.total);
     } catch (err: any) {
-      setError(err.message || 'Error al cargar mantenimientos.');
-      setFormStatus({ type: 'error', message: err.message || 'Error al cargar mantenimientos.' });
+      setError(err.message || "Error al cargar mantenimientos.");
+      setFormStatus({
+        type: "error",
+        message: err.message || "Error al cargar mantenimientos.",
+      });
     } finally {
       setLoading(false);
     }
@@ -128,31 +137,40 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(column);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este mantenimiento?')) {
+    if (!confirm("¿Estás seguro de que quieres eliminar este mantenimiento?")) {
       return;
     }
     setLoading(true);
-    setFormStatus({ type: '', message: '' });
+    setFormStatus({ type: "", message: "" });
     try {
       const res = await fetch(`/api/mantenimientos/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Error al eliminar el mantenimiento.');
+        throw new Error(
+          errorData.error || "Error al eliminar el mantenimiento.",
+        );
       }
-      setFormStatus({ type: 'success', message: 'Mantenimiento eliminado exitosamente.' });
+      setFormStatus({
+        type: "success",
+        message: "Mantenimiento eliminado exitosamente.",
+      });
       fetchMantenimientos(); // Re-fetch data after deletion
     } catch (err: any) {
-      setFormStatus({ type: 'error', message: err.message || 'Ocurrió un error al eliminar el mantenimiento.' });
+      setFormStatus({
+        type: "error",
+        message:
+          err.message || "Ocurrió un error al eliminar el mantenimiento.",
+      });
     } finally {
       setLoading(false);
     }
