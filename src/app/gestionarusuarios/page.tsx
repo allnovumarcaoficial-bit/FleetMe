@@ -15,9 +15,6 @@ export default function GestionarUsuarios() {
           links={[{ href: "/", label: "Home" }]}
         />
       </div>
-      <ShowcaseSection title="Usuarios:" className="!p-7">
-        <></>
-      </ShowcaseSection>
     </>
   );
 }
