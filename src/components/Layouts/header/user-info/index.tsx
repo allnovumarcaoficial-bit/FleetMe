@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Role } from "@prisma/client";
 
 export function UserInfo() {
   const { data: session, status } = useSession();
@@ -45,14 +46,9 @@ export function UserInfo() {
         <span className="sr-only">Mi cuenta</span>
 
         <figure className="flex items-center gap-3">
-          <Image
-            src={user.image || "/images/user/user-03.png"} // Fallback image
-            className="size-12 rounded-full"
-            alt={`Avatar of ${user.name}`}
-            role="presentation"
-            width={48}
-            height={48}
-          />
+          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2">
+            <UserIcon className="size-6" />
+          </div>
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
             <span>{user.name}</span>
 
@@ -75,14 +71,9 @@ export function UserInfo() {
         <h2 className="sr-only">Información del usuario</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <Image
-            src={user.image || "/images/user/user-03.png"}
-            className="size-12 rounded-full"
-            alt={`Avatar for ${user.name}`}
-            role="presentation"
-            width={48}
-            height={48}
-          />
+          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2">
+            <UserIcon className="size-6" />
+          </div>
 
           <figcaption className="space-y-1 text-base font-medium">
             <div className="mb-2 leading-none text-dark dark:text-white">
@@ -96,17 +87,19 @@ export function UserInfo() {
         <hr className="border-[#E8E8E8] dark:border-dark-3" />
 
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
-          <Link
-            href={"/gestionarusuarios"}
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-          >
-            <UserIcon />
+          {session?.user?.role === Role.ADMIN && (
+            <Link
+              href={"/gestionarusuarios"}
+              onClick={() => setIsOpen(false)}
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
+            >
+              <UserIcon />
 
-            <span className="mr-auto text-base font-medium">
-              Gestionar Usuarios
-            </span>
-          </Link>
+              <span className="mr-auto text-base font-medium">
+                Gestionar Usuarios
+              </span>
+            </Link>
+          )}
 
           <Link
             href={"/settings"}

@@ -71,6 +71,10 @@ export const NAV_DATA = [
         icon: Icons.Authentication,
         items: [
           {
+            title: "Gestionar Usuarios",
+            url: "/gestionarusuarios",
+          },
+          {
             title: "Cerrar Sesión",
             url: "/auth/signin",
           },

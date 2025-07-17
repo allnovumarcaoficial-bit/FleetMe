@@ -1,20 +1,19 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import type { Metadata } from "next";
-import { ShowcaseSection } from "@/components/Layouts/showcase-section";
+import UsersTable from "@/components/Users/UsersTable";
 
-export const metadata: Metadata = {
-  title: "Gestionar Usuarios",
-};
-
-export default function GestionarUsuarios() {
+const ManageUsersPage = () => {
   return (
     <>
-      <div className="">
-        <Breadcrumb
-          pageName="Gestionar Usuarios"
-          links={[{ href: "/", label: "Home" }]}
-        />
+      <Breadcrumb
+        pageName="Gestionar Usuarios"
+        links={[{ href: "/", label: "Dashboard" }]}
+      />
+
+      <div className="flex flex-col gap-10">
+        <UsersTable />
       </div>
     </>
   );
-}
+};
+
+export default ManageUsersPage;

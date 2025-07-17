@@ -6,12 +6,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { NAV_DATA } from "./data";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { ArrowLeftIcon, ChevronUp } from "./icons";
 import { MenuItem } from "./menu-item";
 import { useSidebarContext } from "./sidebar-context";
+import { Role } from "@prisma/client";
 
 export function Sidebar() {
+  const { data: session } = useSession();
   const pathname = usePathname();
   const { setIsOpen, isOpen, isMobile, toggleSidebar } = useSidebarContext();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
@@ -128,26 +130,32 @@ export function Sidebar() {
                                 className="ml-9 mr-0 space-y-1.5 pb-[15px] pr-0 pt-2"
                                 role="menu"
                               >
-                                {item.items.map((subItem) => (
-                                  <li key={subItem.title} role="none">
-                                    {subItem.title === "Cerrar Sesión" ? (
-                                      <MenuItem
-                                        onClick={() => signOut()}
-                                        isActive={pathname === subItem.url}
-                                      >
-                                        <span>{subItem.title}</span>
-                                      </MenuItem>
-                                    ) : (
-                                      <MenuItem
-                                        as="link"
-                                        href={subItem.url}
-                                        isActive={pathname === subItem.url}
-                                      >
-                                        <span>{subItem.title}</span>
-                                      </MenuItem>
-                                    )}
-                                  </li>
-                                ))}
+                                {item.items
+                                  .filter(
+                                    (subItem) =>
+                                      subItem.title !== "Gestionar Usuarios" ||
+                                      session?.user?.role === Role.ADMIN,
+                                  )
+                                  .map((subItem) => (
+                                    <li key={subItem.title} role="none">
+                                      {subItem.title === "Cerrar Sesión" ? (
+                                        <MenuItem
+                                          onClick={() => signOut()}
+                                          isActive={pathname === subItem.url}
+                                        >
+                                          <span>{subItem.title}</span>
+                                        </MenuItem>
+                                      ) : (
+                                        <MenuItem
+                                          as="link"
+                                          href={subItem.url}
+                                          isActive={pathname === subItem.url}
+                                        >
+                                          <span>{subItem.title}</span>
+                                        </MenuItem>
+                                      )}
+                                    </li>
+                                  ))}
                               </ul>
                             )}
                           </div>

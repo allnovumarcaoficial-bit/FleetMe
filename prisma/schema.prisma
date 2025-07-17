@@ -17,9 +17,15 @@ model User {
   hashedPassword String? // Campo para la contraseña encriptada
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  role          Role      @default(USER) // Nuevo campo de rol
 
   accounts Account[]
   sessions Session[]
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 // Modelos requeridos por NextAuth

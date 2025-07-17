@@ -1,18 +1,25 @@
 // src/app/api/auth/[...nextauth]/route.ts
-import NextAuth, { Session, User, SessionStrategy } from "next-auth";
+import NextAuth, {
+  AuthOptions,
+  Session,
+  User,
+  SessionStrategy,
+} from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "../../../../lib/prisma"; // Asegúrate que esta ruta es correcta
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { AdapterUser } from "next-auth/adapters";
+import { Adapter } from "next-auth/adapters";
+import { Role } from "@prisma/client";
 
 type UserWithHashedPassword = User & {
   hashedPassword?: string | null;
+  role: Role;
 };
 
-export const authOptions = {
-  adapter: PrismaAdapter(prisma),
+export const authOptions: AuthOptions = {
+  adapter: PrismaAdapter(prisma) as Adapter,
 
   providers: [
     CredentialsProvider({
@@ -44,7 +51,7 @@ export const authOptions = {
           throw new Error("Credenciales inválidas");
         }
 
-        return user as AdapterUser;
+        return user;
       },
     }),
   ],
@@ -62,26 +69,18 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User }): Promise<JWT> {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
+        token.role = user.role;
       }
       return token;
     },
 
-    async session({
-      session,
-      token,
-    }: {
-      session: Session;
-      token: JWT;
-    }): Promise<Session> {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.email = token.email;
-        session.user.name = token.name;
+        session.user.role = token.role as Role;
       }
       return session;
     },

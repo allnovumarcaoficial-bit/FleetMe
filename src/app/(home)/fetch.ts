@@ -29,7 +29,6 @@ export async function getChatsData() {
   return [
     {
       name: "Jacob Jones",
-      profile: "/images/user/user-01.png",
       isActive: true,
       lastMessage: {
         content: "See you tomorrow at the meeting!",
@@ -41,7 +40,6 @@ export async function getChatsData() {
     },
     {
       name: "Wilium Smith",
-      profile: "/images/user/user-03.png",
       isActive: true,
       lastMessage: {
         content: "Thanks for the update",
@@ -53,7 +51,6 @@ export async function getChatsData() {
     },
     {
       name: "Johurul Haque",
-      profile: "/images/user/user-04.png",
       isActive: false,
       lastMessage: {
         content: "What's up?",
@@ -65,7 +62,6 @@ export async function getChatsData() {
     },
     {
       name: "M. Chowdhury",
-      profile: "/images/user/user-05.png",
       isActive: false,
       lastMessage: {
         content: "Where are you now?",
@@ -77,7 +73,6 @@ export async function getChatsData() {
     },
     {
       name: "Akagami",
-      profile: "/images/user/user-07.png",
       isActive: false,
       lastMessage: {
         content: "Hey, how are you?",
