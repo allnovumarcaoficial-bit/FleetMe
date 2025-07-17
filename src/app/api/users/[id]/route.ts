@@ -3,8 +3,19 @@ import { PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
+import { z } from "zod";
 
 const prisma = new PrismaClient();
+
+const userUpdateSchema = z.object({
+  name: z.string().min(1, "El nombre es requerido.").optional(),
+  email: z.string().email("El email no es válido.").optional(),
+  password: z
+    .string()
+    .min(8, "La contraseña debe tener al menos 8 caracteres.")
+    .optional(),
+  role: z.nativeEnum(Role).optional(),
+});
 
 export async function GET(
   request: Request,
@@ -41,7 +52,19 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    const { name, email, password, role } = body;
+    const validation = userUpdateSchema.safeParse(body);
+
+    if (!validation.success) {
+      return new NextResponse(
+        JSON.stringify({ error: validation.error.flatten().fieldErrors }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
+
+    const { name, email, password, role } = validation.data;
 
     let hashedPassword;
     if (password) {
