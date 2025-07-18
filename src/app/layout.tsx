@@ -12,6 +12,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Providers } from "./providers";
 import ConditionalLayout from "@/components/Layouts/ConditionalLayout";
 import NextTopLoader from "nextjs-toploader";
+import SessionManager from "@/components/SessionManager";
 
 export const metadata: Metadata = {
   title: {
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     <html lang="es" suppressHydrationWarning>
       <body>
         <Providers session={session}>
+          <SessionManager />
           <NextTopLoader color="#5750F1" showSpinner={false} />
           <ConditionalLayout>{children}</ConditionalLayout>
         </Providers>

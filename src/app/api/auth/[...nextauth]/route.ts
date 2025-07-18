@@ -5,7 +5,6 @@ import NextAuth, {
   User,
   SessionStrategy,
 } from "next-auth";
-import { JWT } from "next-auth/jwt";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "../../../../lib/prisma"; // Asegúrate que esta ruta es correcta
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -51,7 +50,8 @@ export const authOptions: AuthOptions = {
           throw new Error("Credenciales inválidas");
         }
 
-        return user;
+        const { hashedPassword, ...userWithoutPassword } = user;
+        return userWithoutPassword;
       },
     }),
   ],
@@ -64,6 +64,7 @@ export const authOptions: AuthOptions = {
 
   session: {
     strategy: "jwt" as SessionStrategy, // 🔄 Cambiado de "database" a "jwt"
+    maxAge: 5 * 60, // 5 minutos
   },
 
   secret: process.env.NEXTAUTH_SECRET,
