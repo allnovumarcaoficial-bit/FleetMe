@@ -4,7 +4,7 @@ import "@ant-design/v5-patch-for-react-19";
 import { SidebarProvider } from "@/components/Layouts/sidebar/sidebar-context";
 import { ThemeProvider, useTheme } from "next-themes";
 import { SessionProvider } from "next-auth/react";
-import { ConfigProvider, theme } from "antd";
+import { App, ConfigProvider, theme } from "antd";
 import es_ES from "antd/locale/es_ES";
 import { Session } from "next-auth";
 import { useEffect, useState } from "react";
@@ -36,7 +36,7 @@ function AntdProvider({ children }: { children: React.ReactNode }) {
             : theme.defaultAlgorithm,
       }}
     >
-      {children}
+      <App>{children}</App>
     </ConfigProvider>
   );
 }

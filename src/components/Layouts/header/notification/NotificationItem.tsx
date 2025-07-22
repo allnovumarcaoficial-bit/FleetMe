@@ -1,40 +1,39 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Notification, NotificationType } from '@/types/notification';
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Notification, NotificationType } from "@/types/notification";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   InfoCircleOutlined,
   CheckCircleOutlined,
   WarningOutlined,
   CloseCircleOutlined,
   ExclamationCircleOutlined,
-} from '@ant-design/icons';
-import { Button } from 'antd';
-import { DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+} from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: string) => void;
   onDelete: (id: string) => void;
-  onViewDetails?: (notification: Notification) => void;
 }
 
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return <InfoCircleOutlined style={{ color: '#1890ff' }} />;
-    case 'success':
-      return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
-    case 'warning':
-      return <WarningOutlined style={{ color: '#faad14' }} />;
-    case 'error':
-      return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
-    case 'critical':
-      return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
+    case "info":
+      return <InfoCircleOutlined style={{ color: "#1890ff" }} />;
+    case "success":
+      return <CheckCircleOutlined style={{ color: "#52c41a" }} />;
+    case "warning":
+      return <WarningOutlined style={{ color: "#faad14" }} />;
+    case "error":
+      return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+    case "critical":
+      return <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />;
     default:
       return null;
   }
@@ -42,17 +41,17 @@ const getNotificationIcon = (type: NotificationType) => {
 
 const getNotificationColorClass = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return 'border-blue-500';
-    case 'success':
-      return 'border-green-500';
-    case 'warning':
-      return 'border-orange-500';
-    case 'error':
-    case 'critical':
-      return 'border-red-500';
+    case "info":
+      return "border-blue-500";
+    case "success":
+      return "border-green-500";
+    case "warning":
+      return "border-orange-500";
+    case "error":
+    case "critical":
+      return "border-red-500";
     default:
-      return 'border-gray-300';
+      return "border-gray-300";
   }
 };
 
@@ -60,63 +59,63 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   onMarkAsRead,
   onDelete,
-  onViewDetails,
 }) => {
-  const timeAgo = formatDistanceToNow(new Date(notification.date), { addSuffix: true, locale: es });
+  const timeAgo = formatDistanceToNow(new Date(notification.date), {
+    addSuffix: true,
+    locale: es,
+  });
+
+  const handleItemClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (!notification.read) {
+      onMarkAsRead(notification.id);
+    }
+    if (notification.link) {
+      window.location.href = notification.link;
+    }
+  };
 
   return (
     <li
-      role="menuitem"
-      className={`flex items-center gap-4 rounded-lg px-2 py-1.5 outline-none hover:bg-gray-2 focus-visible:bg-gray-2 dark:hover:bg-dark-3 dark:focus-visible:bg-dark-3 ${
-        notification.read ? 'opacity-60' : ''
+      className={`group flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-gray-2 dark:hover:bg-dark-3 ${
+        notification.read ? "opacity-70" : ""
       } border-l-4 ${getNotificationColorClass(notification.type)}`}
     >
-      <div className="flex-shrink-0">
+      <div className="mt-0.5 flex-shrink-0 text-lg">
         {getNotificationIcon(notification.type)}
       </div>
 
-      <Link
-        href="#"
-        onClick={(e) => {
-          e.preventDefault();
-          onMarkAsRead(notification.id);
-          if (onViewDetails) onViewDetails(notification);
-        }}
-        className="flex-grow"
-      >
-        <div>
-          <strong className="block text-sm font-medium text-dark dark:text-white">
+      <div className="flex-grow">
+        <Link
+          href={notification.link || "#"}
+          onClick={handleItemClick}
+          className="block outline-none"
+        >
+          <p className="font-semibold text-dark dark:text-white">
             {notification.message}
-          </strong>
+          </p>
           {notification.details && (
-            <span className="truncate text-sm font-medium text-dark-5 dark:text-dark-6">
+            <p className="text-sm text-dark-5 dark:text-dark-6">
               {notification.details}
-            </span>
+            </p>
           )}
-          <span className="block text-xs text-gray-500 dark:text-gray-400">
-            {timeAgo}
-          </span>
-        </div>
-      </Link>
-      <div className="flex flex-col gap-2">
-        {!notification.read && (
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => onMarkAsRead(notification.id)}
-            size="small"
-            title="Marcar como leída"
-          />
-        )}
+          <p className="text-xs text-dark-4 dark:text-dark-5">{timeAgo}</p>
+        </Link>
+      </div>
+
+      <Tooltip title="Eliminar Notificación">
         <Button
           type="text"
+          shape="circle"
           icon={<DeleteOutlined />}
-          onClick={() => onDelete(notification.id)}
-          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(notification.id);
+          }}
+          className="opacity-0 group-hover:opacity-100"
           danger
-          title="Eliminar"
         />
-      </div>
+      </Tooltip>
     </li>
   );
 };

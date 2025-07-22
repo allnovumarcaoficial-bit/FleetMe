@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Drawer, Table, Button, Tag, Space, Popconfirm } from 'antd';
-import type { TableProps } from 'antd';
-import { Notification, NotificationType } from '@/types/notification';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import React, { useState, useEffect } from "react";
+import { Drawer, Table, Button, Tag, Space, Popconfirm } from "antd";
+import type { TableProps } from "antd";
+import { Notification, NotificationType } from "@/types/notification";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   InfoCircleOutlined,
   CheckCircleOutlined,
@@ -14,7 +14,8 @@ import {
   ExclamationCircleOutlined,
   DeleteOutlined,
   EyeOutlined,
-} from '@ant-design/icons';
+  LinkOutlined,
+} from "@ant-design/icons";
 
 interface NotificationDrawerProps {
   open: boolean;
@@ -27,16 +28,16 @@ interface NotificationDrawerProps {
 
 const getNotificationIcon = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return <InfoCircleOutlined style={{ color: '#1890ff' }} />;
-    case 'success':
-      return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
-    case 'warning':
-      return <WarningOutlined style={{ color: '#faad14' }} />;
-    case 'error':
-      return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
-    case 'critical':
-      return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
+    case "info":
+      return <InfoCircleOutlined style={{ color: "#1890ff" }} />;
+    case "success":
+      return <CheckCircleOutlined style={{ color: "#52c41a" }} />;
+    case "warning":
+      return <WarningOutlined style={{ color: "#faad14" }} />;
+    case "error":
+      return <CloseCircleOutlined style={{ color: "#ff4d4f" }} />;
+    case "critical":
+      return <ExclamationCircleOutlined style={{ color: "#ff4d4f" }} />;
     default:
       return null;
   }
@@ -44,17 +45,17 @@ const getNotificationIcon = (type: NotificationType) => {
 
 const getNotificationColor = (type: NotificationType) => {
   switch (type) {
-    case 'info':
-      return 'blue';
-    case 'success':
-      return 'green';
-    case 'warning':
-      return 'orange';
-    case 'error':
-    case 'critical':
-      return 'red';
+    case "info":
+      return "blue";
+    case "success":
+      return "green";
+    case "warning":
+      return "orange";
+    case "error":
+    case "critical":
+      return "red";
     default:
-      return 'default';
+      return "default";
   }
 };
 
@@ -66,77 +67,82 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
   onDeleteNotification,
   onMarkAllAsRead,
 }) => {
-  const [drawerWidth, setDrawerWidth] = useState('100%');
+  const [drawerWidth, setDrawerWidth] = useState("100%");
 
   useEffect(() => {
     const handleResize = () => {
-      setDrawerWidth(window.innerWidth > 768 ? '50%' : '100%');
+      setDrawerWidth(window.innerWidth > 768 ? "50%" : "100%");
     };
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       handleResize(); // Set initial width when drawer opens
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
     }
 
     return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleResize);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize);
       }
     };
   }, [open]);
 
-  const columns: TableProps<Notification>['columns'] = [
+  const columns: TableProps<Notification>["columns"] = [
     {
-      title: 'Tipo',
-      dataIndex: 'type',
-      key: 'type',
+      title: "Tipo",
+      dataIndex: "type",
+      key: "type",
       render: (type: NotificationType) => (
-        <Tag icon={getNotificationIcon(type)} color={getNotificationColor(type)}>
+        <Tag
+          icon={getNotificationIcon(type)}
+          color={getNotificationColor(type)}
+        >
           {type.toUpperCase()}
         </Tag>
       ),
       filters: [
-        { text: 'Info', value: 'info' },
-        { text: 'Éxito', value: 'success' },
-        { text: 'Advertencia', value: 'warning' },
-        { text: 'Error', value: 'error' },
-        { text: 'Crítica', value: 'critical' },
+        { text: "Info", value: "info" },
+        { text: "Éxito", value: "success" },
+        { text: "Advertencia", value: "warning" },
+        { text: "Error", value: "error" },
+        { text: "Crítica", value: "critical" },
       ],
       onFilter: (value, record) => record.type.indexOf(value as string) === 0,
     },
     {
-      title: 'Mensaje',
-      dataIndex: 'message',
-      key: 'message',
+      title: "Mensaje",
+      dataIndex: "message",
+      key: "message",
     },
     {
-      title: 'Detalles',
-      dataIndex: 'details',
-      key: 'details',
-      render: (text) => text || '-',
+      title: "Detalles",
+      dataIndex: "details",
+      key: "details",
+      render: (text) => text || "-",
     },
     {
-      title: 'Fecha',
-      dataIndex: 'date',
-      key: 'date',
-      render: (date: string) => format(new Date(date), 'dd/MM/yyyy HH:mm', { locale: es }),
+      title: "Fecha",
+      dataIndex: "date",
+      key: "date",
+      render: (date: string) =>
+        format(new Date(date), "dd/MM/yyyy HH:mm", { locale: es }),
       sorter: (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      defaultSortOrder: 'descend',
+      defaultSortOrder: "descend",
     },
     {
-      title: 'Leída',
-      dataIndex: 'read',
-      key: 'read',
-      render: (read: boolean) => (read ? <Tag color="green">Sí</Tag> : <Tag color="red">No</Tag>),
+      title: "Leída",
+      dataIndex: "read",
+      key: "read",
+      render: (read: boolean) =>
+        read ? <Tag color="green">Sí</Tag> : <Tag color="red">No</Tag>,
       filters: [
-        { text: 'Leída', value: true },
-        { text: 'No Leída', value: false },
+        { text: "Leída", value: true },
+        { text: "No Leída", value: false },
       ],
       onFilter: (value, record) => record.read === value,
     },
     {
-      title: 'Acciones',
-      key: 'actions',
+      title: "Acciones",
+      key: "actions",
       render: (_, record) => (
         <Space size="middle">
           {!record.read && (
@@ -144,6 +150,16 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
               icon={<EyeOutlined />}
               onClick={() => onMarkAsRead(record.id)}
               title="Marcar como leída"
+            />
+          )}
+          {record.link && (
+            <Button
+              icon={<LinkOutlined />}
+              onClick={() => {
+                onMarkAsRead(record.id);
+                window.location.href = record.link!;
+              }}
+              title="Ir al detalle"
             />
           )}
           <Popconfirm
@@ -167,7 +183,10 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
       open={open}
       width={drawerWidth}
       extra={
-        <Button onClick={onMarkAllAsRead} disabled={notifications.every(n => n.read)}>
+        <Button
+          onClick={onMarkAllAsRead}
+          disabled={notifications.every((n) => n.read)}
+        >
           Marcar todas como leídas
         </Button>
       }
@@ -177,7 +196,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({
         dataSource={notifications}
         rowKey="id"
         pagination={{ pageSize: 10 }}
-        scroll={{ x: 'max-content' }}
+        scroll={{ x: "max-content" }}
       />
     </Drawer>
   );

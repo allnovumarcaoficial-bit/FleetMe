@@ -1,4 +1,9 @@
-export type NotificationType = 'info' | 'success' | 'warning' | 'error' | 'critical';
+export type NotificationType =
+  | "info"
+  | "success"
+  | "warning"
+  | "error"
+  | "critical";
 
 export interface Notification {
   id: string;
@@ -8,4 +13,5 @@ export interface Notification {
   date: string; // ISO string
   read: boolean;
   userId: string;
+  link?: string;
 }

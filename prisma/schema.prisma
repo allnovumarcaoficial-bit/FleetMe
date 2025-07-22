@@ -21,6 +21,29 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  notifications Notification[]
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  type      NotificationType
+  message   String
+  details   String?
+  date      DateTime  @default(now())
+  read      Boolean   @default(false)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link      String?   // Opcional: para redirigir al usuario a una página específica
+
+  @@index([userId])
+}
+
+enum NotificationType {
+  info
+  success
+  warning
+  error
+  critical
 }
 
 enum Role {
