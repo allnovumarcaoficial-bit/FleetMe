@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Notification, NotificationType } from "@/types/notification";
 import { useNotificationDisplay } from "./notifications/useNotificationDisplay";
@@ -17,21 +17,53 @@ interface UseNotificationsHook {
     },
     showToast?: boolean,
   ) => Promise<void>;
-  markAsRead: (id: string) => Promise<void>;
+  markAsRead: (
+    id: string,
+    updatedData?: Partial<Notification>,
+  ) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
+  markAsUnread: (
+    id: string,
+    updatedData?: Partial<Notification>,
+  ) => Promise<void>;
 }
 
 export const useNotifications = (): UseNotificationsHook => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session } = useSession();
 
-  const markAsRead = useCallback(async (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    );
-    await fetch(`/api/notifications/${id}`, { method: "PATCH" });
-  }, []);
+  const markAsRead = useCallback(
+    async (id: string, updatedData?: Partial<Notification>) => {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, read: true, ...updatedData } : n,
+        ),
+      );
+      await fetch(`/api/notifications/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ read: true, ...updatedData }),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    [],
+  );
+
+  const markAsUnread = useCallback(
+    async (id: string, updatedData?: Partial<Notification>) => {
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n.id === id ? { ...n, read: false, ...updatedData } : n,
+        ),
+      );
+      await fetch(`/api/notifications/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ read: false, ...updatedData }),
+        headers: { "Content-Type": "application/json" },
+      });
+    },
+    [],
+  );
 
   const markAllAsRead = useCallback(async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
@@ -48,11 +80,6 @@ export const useNotifications = (): UseNotificationsHook => {
     setNotifications,
     displayNotification,
   );
-  const { checkLicenses } = useLicenseCheckNotifications(
-    addNotification,
-    displayNotification,
-  );
-
   const fetchNotifications = useCallback(async () => {
     if (!session) return;
     try {
@@ -65,6 +92,12 @@ export const useNotifications = (): UseNotificationsHook => {
       console.error("Error fetching notifications:", error);
     }
   }, [session]);
+
+  const { checkLicenses } = useLicenseCheckNotifications(
+    addNotification,
+    displayNotification,
+    markAsUnread,
+  );
 
   useEffect(() => {
     fetchNotifications();
@@ -83,5 +116,6 @@ export const useNotifications = (): UseNotificationsHook => {
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    markAsUnread,
   };
 };

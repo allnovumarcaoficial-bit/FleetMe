@@ -24,6 +24,10 @@ export const useLicenseCheckNotifications = (
     showToast?: boolean,
   ) => Promise<void>,
   displayNotification: (notif: Notification) => void,
+  markAsUnread: (
+    id: string,
+    updatedData?: Partial<Notification>,
+  ) => Promise<void>,
 ): UseLicenseCheckNotificationsHook => {
   const { data: session } = useSession();
   const licenseCheckCompletedForSession = useRef<string | null>(null);
@@ -109,7 +113,17 @@ export const useLicenseCheckNotifications = (
                 n.type === "critical",
             );
             if (existingCriticalNotif) {
-              displayNotification(existingCriticalNotif);
+              const updatedMessage = `Licencia Vencida: ${driver.nombre}`;
+              const updatedDetails = `La licencia de conducción del conductor ${driver.nombre} ha vencido.`;
+              await markAsUnread(existingCriticalNotif.id, {
+                message: updatedMessage,
+                details: updatedDetails,
+              }); // Mark as unread and update data
+              displayNotification({
+                ...existingCriticalNotif,
+                message: updatedMessage,
+                details: updatedDetails,
+              });
             }
           }
         } else if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0) {
@@ -130,13 +144,23 @@ export const useLicenseCheckNotifications = (
             console.log(
               `[Notifications] RE-DISPLAYING WARNING notification for ${driver.nombre}.`,
             );
+            const updatedMessage = `Licencia Próxima a Vencer: ${driver.nombre}`;
+            const updatedDetails = `La licencia del conductor ${driver.nombre} vencerá en ${daysUntilExpiration} días.`;
             const existingWarningNotif = existingNotifications.find(
               (n: Notification) =>
                 n.link === `/fleet/drivers/${driver.id}` &&
                 n.type === "warning",
             );
             if (existingWarningNotif) {
-              displayNotification(existingWarningNotif);
+              await markAsUnread(existingWarningNotif.id, {
+                message: updatedMessage,
+                details: updatedDetails,
+              }); // Mark as unread and update data
+              displayNotification({
+                ...existingWarningNotif,
+                message: updatedMessage,
+                details: updatedDetails,
+              });
             }
           }
         } else {
@@ -148,7 +172,7 @@ export const useLicenseCheckNotifications = (
     } catch (error) {
       console.error("Error checking driver licenses:", error);
     }
-  }, [session, addNotification, displayNotification]);
+  }, [session, addNotification, displayNotification, markAsUnread]);
 
   useEffect(() => {
     checkLicenses();
