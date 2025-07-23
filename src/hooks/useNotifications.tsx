@@ -73,7 +73,7 @@ export const useNotifications = (): UseNotificationsHook => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session } = useSession();
   const { notification, modal } = App.useApp();
-  const licenseCheckCompleted = useRef(false); // Ref to prevent double-execution in Strict Mode
+  const licenseCheckCompletedForSession = useRef<string | null>(null); // Stores session ID or null
 
   const fetchNotifications = useCallback(async () => {
     if (!session) return;
@@ -91,6 +91,36 @@ export const useNotifications = (): UseNotificationsHook => {
   useEffect(() => {
     fetchNotifications();
   }, [fetchNotifications]);
+
+  // Helper function to display a notification (toast or modal)
+  const displayNotification = useCallback(
+    (notif: Notification) => {
+      if (notif.type === "critical") {
+        modal.error({
+          title: "Notificación Crítica",
+          content: notif.message,
+          okText: "Entendido",
+          icon: getNotificationIcon(notif.type),
+          centered: true,
+          onOk: () => markAsRead(notif.id),
+        });
+      } else {
+        notification.open({
+          message: notif.message,
+          description: notif.details,
+          icon: getNotificationIcon(notif.type),
+          style: {
+            borderLeft: `5px solid ${getNotificationColor(notif.type)}`,
+          },
+          onClick: () => {
+            markAsRead(notif.id);
+            if (notif.link) window.location.href = notif.link;
+          },
+        });
+      }
+    },
+    [notification, modal], // Add notification and modal to dependencies
+  );
 
   const addNotification = useCallback(
     async (
@@ -119,34 +149,11 @@ export const useNotifications = (): UseNotificationsHook => {
         );
 
         if (showToast) {
-          if (notificationData.type === "critical") {
-            modal.error({
-              title: "Notificación Crítica",
-              content: notificationData.message,
-              okText: "Entendido",
-              icon: getNotificationIcon(notificationData.type),
-              centered: true,
-              onOk: () => markAsRead(newNotification.id),
-            });
-          } else {
-            notification.open({
-              message: newNotification.message,
-              description: newNotification.details,
-              icon: getNotificationIcon(notificationData.type),
-              style: {
-                borderLeft: `5px solid ${getNotificationColor(notificationData.type)}`,
-              },
-              onClick: () => {
-                markAsRead(newNotification.id);
-                if (notificationData.link)
-                  window.location.href = notificationData.link;
-              },
-            });
-          }
+          displayNotification(newNotification); // Use the new display function
         }
       }
     },
-    [session],
+    [session, displayNotification], // Add displayNotification to dependencies
   );
 
   const markAsRead = useCallback(async (id: string) => {
@@ -174,17 +181,19 @@ export const useNotifications = (): UseNotificationsHook => {
         console.log(
           "[Notifications] No session found, skipping driver license check.",
         );
+        // If session is null, reset the flag so it runs on next login
+        licenseCheckCompletedForSession.current = null;
         return;
       }
 
-      // Prevent effect from running twice in development (Strict Mode)
-      if (licenseCheckCompleted.current) {
+      // Only run if session ID has changed or it's the first run for this session
+      if (licenseCheckCompletedForSession.current === session.user.id) {
         console.log(
-          "[Notifications] Initial license check already performed. Skipping.",
+          "[Notifications] Initial license check already performed for this session. Skipping.",
         );
         return;
       }
-      licenseCheckCompleted.current = true;
+      licenseCheckCompletedForSession.current = session.user.id; // Mark as completed for this session
 
       try {
         console.log(
@@ -220,13 +229,13 @@ export const useNotifications = (): UseNotificationsHook => {
             `[Notifications] Checking driver: ${driver.nombre}, License expires on: ${expirationDate.toLocaleDateString()}, Days left: ${daysUntilExpiration}`,
           );
 
-          // Use a more reliable check based on the link to avoid duplicates
+          // Use existingNotifications (from DB) for existence checks
           const warningExists = existingNotifications.some(
-            (n) =>
+            (n: Notification) =>
               n.link === `/fleet/drivers/${driver.id}` && n.type === "warning",
           );
           const criticalExists = existingNotifications.some(
-            (n) =>
+            (n: Notification) =>
               n.link === `/fleet/drivers/${driver.id}` && n.type === "critical",
           );
 
@@ -246,8 +255,16 @@ export const useNotifications = (): UseNotificationsHook => {
               );
             } else {
               console.log(
-                `[Notifications] SKIPPING CRITICAL notification for ${driver.nombre} (already exists).`,
+                `[Notifications] RE-DISPLAYING CRITICAL notification for ${driver.nombre}.`,
               );
+              const existingCriticalNotif = existingNotifications.find(
+                (n: Notification) =>
+                  n.link === `/fleet/drivers/${driver.id}` &&
+                  n.type === "critical",
+              );
+              if (existingCriticalNotif) {
+                displayNotification(existingCriticalNotif);
+              }
             }
           } else if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0) {
             if (!warningExists) {
@@ -265,8 +282,16 @@ export const useNotifications = (): UseNotificationsHook => {
               );
             } else {
               console.log(
-                `[Notifications] SKIPPING WARNING notification for ${driver.nombre} (already exists).`,
+                `[Notifications] RE-DISPLAYING WARNING notification for ${driver.nombre}.`,
               );
+              const existingWarningNotif = existingNotifications.find(
+                (n: Notification) =>
+                  n.link === `/fleet/drivers/${driver.id}` &&
+                  n.type === "warning",
+              );
+              if (existingWarningNotif) {
+                displayNotification(existingWarningNotif);
+              }
             }
           } else {
             console.log(
@@ -285,7 +310,7 @@ export const useNotifications = (): UseNotificationsHook => {
       86400000,
     ); // Check once a day
     return () => clearInterval(interval);
-  }, [session, addNotification]);
+  }, [session, addNotification, displayNotification]); // Added displayNotification to dependencies
 
   return {
     notifications,

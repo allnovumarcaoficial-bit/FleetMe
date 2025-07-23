@@ -5,10 +5,10 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   const session = await getServerSession(authOptions);
-  const id = params.id;
+  const { id } = await Promise.resolve(context.params); // Workaround for Next.js warning
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -36,10 +36,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } },
+  context: { params: { id: string } },
 ) {
   const session = await getServerSession(authOptions);
-  const id = params.id;
+  const { id } = await Promise.resolve(context.params); // Workaround for Next.js warning
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
