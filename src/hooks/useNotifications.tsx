@@ -137,9 +137,8 @@ export const useNotifications = (): UseNotificationsHook => {
   }, [session]);
 
   const { checkLicenses } = useLicenseCheckNotifications(
-    addNotification,
+    fetchNotifications,
     displayNotification,
-    markAsUnread,
   );
 
   useEffect(() => {
