@@ -61,6 +61,7 @@ export const useNotificationDisplay = (
       });
     } else {
       notification.open({
+        key: notif.id,
         message: notif.message,
         description: notif.details,
         icon: getNotificationIcon(notif.type),
