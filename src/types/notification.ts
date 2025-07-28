@@ -9,9 +9,9 @@ export interface Notification {
   id: string;
   type: NotificationType;
   message: string;
-  details?: string;
-  date: string; // ISO string
+  details: string | null;
+  date: Date;
   read: boolean;
   userId: string;
-  link?: string;
+  link: string | null;
 }
