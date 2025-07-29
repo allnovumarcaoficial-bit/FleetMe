@@ -15,3 +15,7 @@ export interface Notification {
   userId: string;
   link: string | null;
 }
+
+export interface NotificationChecker {
+  check(userId: string): Promise<Notification[]>;
+}

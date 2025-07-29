@@ -3,39 +3,39 @@ import { useSession } from "next-auth/react";
 
 import { Notification } from "@/types/notification";
 
-interface UseLicenseCheckNotificationsHook {
-  checkLicenses: () => Promise<void>;
+interface UseNotificationGeneratorHook {
+  generateNotifications: () => Promise<void>;
 }
 
-export const useLicenseCheckNotifications = (
+export const useNotificationGenerator = (
   refreshNotifications: () => Promise<void>,
   displayNotification: (notif: Notification) => void,
-): UseLicenseCheckNotificationsHook => {
+): UseNotificationGeneratorHook => {
   const { data: session } = useSession();
-  const licenseCheckCompletedForSession = useRef<string | null>(null);
+  const generationCompletedForSession = useRef<string | null>(null);
 
-  const checkLicenses = useCallback(async () => {
+  const generateNotifications = useCallback(async () => {
     if (!session || !session.user || !session.user.id) {
       console.log(
-        "[Notifications] No session found or user ID, skipping driver license check.",
+        "[Notifications] No session found or user ID, skipping notification generation.",
       );
-      licenseCheckCompletedForSession.current = null;
+      generationCompletedForSession.current = null;
       return;
     }
 
-    if (licenseCheckCompletedForSession.current === session.user.id) {
+    if (generationCompletedForSession.current === session.user.id) {
       console.log(
-        "[Notifications] Initial license check already performed for this session. Skipping.",
+        "[Notifications] Initial generation already performed for this session. Skipping.",
       );
       return;
     }
-    licenseCheckCompletedForSession.current = session.user.id;
+    generationCompletedForSession.current = session.user.id;
 
     try {
       console.log(
-        "[Notifications] Calling backend for license expiration check...",
+        "[Notifications] Calling backend for notification generation...",
       );
-      const response = await fetch("/api/notifications/check-licenses", {
+      const response = await fetch("/api/notifications/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -45,12 +45,12 @@ export const useLicenseCheckNotifications = (
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `Failed to check licenses: ${errorData.message || response.statusText}`,
+          `Failed to generate notifications: ${errorData.message || response.statusText}`,
         );
       }
 
       const result = await response.json();
-      console.log("[Notifications] Backend check complete:", result);
+      console.log("[Notifications] Backend generation complete:", result);
 
       if (result.notifications && Array.isArray(result.notifications)) {
         result.notifications.forEach((notif: Notification) => {
@@ -62,18 +62,18 @@ export const useLicenseCheckNotifications = (
 
       await refreshNotifications();
     } catch (error) {
-      console.error("Error checking driver licenses:", error);
+      console.error("Error generating notifications:", error);
     }
   }, [session, refreshNotifications, displayNotification]);
 
   useEffect(() => {
     if (
       session?.user?.id &&
-      licenseCheckCompletedForSession.current !== session.user.id
+      generationCompletedForSession.current !== session.user.id
     ) {
-      checkLicenses();
+      generateNotifications();
     }
-  }, [session, checkLicenses]);
+  }, [session, generateNotifications]);
 
-  return { checkLicenses };
+  return { generateNotifications };
 };

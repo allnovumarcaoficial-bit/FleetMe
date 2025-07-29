@@ -1,10 +1,11 @@
 import prisma from "@/lib/prisma";
 import { differenceInDays, isPast } from "date-fns";
 import { notificationService } from "@/services/notification.service";
-import { Notification } from "@/types/notification";
+import { Notification, NotificationChecker } from "@/types/notification";
+import { notificationManager } from "../notificationManager.service";
 
-export const licenseNotificationGeneratorService = {
-  async checkAndGenerateNotifications(userId: string) {
+class LicenseChecker implements NotificationChecker {
+  async check(userId: string): Promise<Notification[]> {
     const drivers = await prisma.driver.findMany({
       where: {
         fecha_vencimiento_licencia: {
@@ -14,10 +15,7 @@ export const licenseNotificationGeneratorService = {
     });
 
     if (drivers.length === 0) {
-      return {
-        message: "No drivers found with expiring or expired licenses.",
-        notifications: [],
-      };
+      return [];
     }
 
     const existingNotifications =
@@ -61,9 +59,9 @@ export const licenseNotificationGeneratorService = {
       });
     }
 
-    return {
-      message: "License check and notifications updated successfully.",
-      notifications: notificationsToCreateOrUpdate,
-    };
-  },
-};
+    return notificationsToCreateOrUpdate;
+  }
+}
+
+export const licenseChecker = new LicenseChecker();
+notificationManager.register(licenseChecker);

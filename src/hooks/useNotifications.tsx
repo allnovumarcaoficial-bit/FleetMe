@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { Notification, NotificationType } from "@/types/notification";
 import { useNotificationDisplay } from "./notifications/useNotificationDisplay";
 import { useNotificationCreation } from "./notifications/useNotificationCreation";
-import { useLicenseCheckNotifications } from "./notifications/useLicenseCheckNotifications";
+import { useNotificationGenerator } from "./notifications/useNotificationGenerator";
 
 // Suponiendo que tiene una función para mostrar toasts/mensajes de error
 const showErrorMessage = (message: string) => {
@@ -166,18 +166,19 @@ export const useNotifications = (): UseNotificationsHook => {
     }
   }, [session]);
 
-  const { checkLicenses } = useLicenseCheckNotifications(
+  const { generateNotifications } = useNotificationGenerator(
     fetchNotifications,
     displayNotification,
   );
 
   useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
-
-  useEffect(() => {
-    checkLicenses();
-  }, [checkLicenses]);
+    if (session) {
+      // generateNotifications ya se encarga de llamar a fetchNotifications
+      // a través del callback refreshNotifications.
+      generateNotifications();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session]); // Solo debe ejecutarse cuando la sesión cambia.
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
