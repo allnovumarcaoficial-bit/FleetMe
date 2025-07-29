@@ -42,7 +42,12 @@ class LicenseChecker implements NotificationChecker {
           daysUntilExpiration,
           existingNotifications,
         );
-
+      if (isExpired && driver.estado !== "Inactivo") {
+        await prisma.driver.update({
+          where: { id: driver.id },
+          data: { estado: "Inactivo" },
+        });
+      }
       if (createdOrUpdatedNotification) {
         notificationsToCreateOrUpdate.push(createdOrUpdatedNotification);
       }
