@@ -88,44 +88,37 @@ model VerificationToken {
 }
 
 model Vehicle {
-  id                                Int      @id @default(autoincrement())
-  marca                             String
-  modelo                            String
-  vin                               String   @unique
-  matricula                         String   @unique
-  fecha_compra                      DateTime
+  id                                 Int      @id @default(autoincrement())
+  marca                              String
+  modelo                             String
+  vin                                String   @unique
+  matricula                          String   @unique
+  fecha_compra                       DateTime
   fecha_vencimiento_licencia_operativa DateTime
-  fecha_vencimiento_circulacion     DateTime
-  fecha_vencimiento_somaton         DateTime
-  estado                            String
-  gps                               Boolean
-  listado_municipios                String   // Stored as JSON string for SQLite
-  tipoNombre                        String? // Store vehicle type as a string
-  driverId                          Int?     @unique // 1-to-1 relation with Driver
-  driver                            Driver?  @relation(fields: [driverId], references: [id])
-  mantenimientos                    Mantenimiento[]
-  servicios                         Servicio[]
-  fuelDistributions                 FuelDistribution[]
-}
-
-model VehicleType {
-  id                        Int      @id @default(autoincrement())
-  nombre                    String   @unique
-  cantidad_neumaticos       Int
-  tipo_neumaticos           String
-  capacidad_carga           String // e.g., "1000 kg" or "5 personas"
-  cantidad_conductores      Int
-  ciclo_mantenimiento_km    Int
-  es_electrico              Boolean
-  // Campos para vehículos eléctricos
-  cantidad_baterias         Int?
-  tipo_bateria              String?
-  amperage                  Float?
-  voltage                   Float?
-  // Campos para vehículos no eléctricos
-  tipo_combustible          String?
-  capacidad_tanque          Float?
-  indice_consumo            Float?
+  fecha_vencimiento_circulacion      DateTime
+  fecha_vencimiento_somaton          DateTime
+  estado                             String
+  gps                                Boolean
+  listado_municipios                 String   // Stored as JSON string for SQLite
+  tipo_vehiculo                      String?
+  cantidad_neumaticos                Int?
+  tipo_neumaticos                    String?
+  capacidad_carga                    String?
+  cantidad_conductores               Int?
+  ciclo_mantenimiento_km             Int?
+  es_electrico                       Boolean?
+  cantidad_baterias                  Int?
+  tipo_bateria                       String?
+  amperage                           Float?
+  voltage                            Float?
+  tipo_combustible                   String?
+  capacidad_tanque                   Float?
+  indice_consumo                     Float?
+  driverId                           Int?     @unique
+  driver                             Driver?  @relation(fields: [driverId], references: [id])
+  mantenimientos                     Mantenimiento[]
+  servicios                          Servicio[]
+  fuelDistributions                  FuelDistribution[]
 }
 
 model Driver {

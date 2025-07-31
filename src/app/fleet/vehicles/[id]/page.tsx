@@ -187,14 +187,78 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
             </p>
             <p>
               <strong>Municipios:</strong>{" "}
-              {typeof vehicle.listado_municipios === "string"
-                ? JSON.parse(vehicle.listado_municipios || "[]").join(", ")
+              {Array.isArray(vehicle.listado_municipios)
+                ? vehicle.listado_municipios.join(", ")
                 : "N/A"}
             </p>
             <p>
-              <strong>Tipo de Vehículo:</strong> {vehicle.tipoNombre || "N/A"}
+              <strong>Tipo de Vehículo:</strong>{" "}
+              {vehicle.tipo_vehiculo || "N/A"}
+            </p>
+            <p>
+              <strong>Cantidad de Neumáticos:</strong>{" "}
+              {vehicle.cantidad_neumaticos ?? "N/A"}
+            </p>
+            <p>
+              <strong>Tipo de Neumáticos:</strong>{" "}
+              {vehicle.tipo_neumaticos || "N/A"}
+            </p>
+            <p>
+              <strong>Capacidad de Carga:</strong>{" "}
+              {vehicle.capacidad_carga || "N/A"}
+            </p>
+            <p>
+              <strong>Cantidad de Conductores:</strong>{" "}
+              {vehicle.cantidad_conductores ?? "N/A"}
+            </p>
+            <p>
+              <strong>Ciclo de Mantenimiento (km):</strong>{" "}
+              {vehicle.ciclo_mantenimiento_km ?? "N/A"}
+            </p>
+            <p>
+              <strong>Eléctrico:</strong> {vehicle.es_electrico ? "Sí" : "No"}
             </p>
           </div>
+
+          {vehicle.es_electrico ? (
+            <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+              <h3 className="col-span-1 text-lg font-semibold md:col-span-2">
+                Detalles del Vehículo Eléctrico
+              </h3>
+              <p>
+                <strong>Cantidad de Baterías:</strong>{" "}
+                {vehicle.cantidad_baterias ?? "N/A"}
+              </p>
+              <p>
+                <strong>Tipo de Batería:</strong>{" "}
+                {vehicle.tipo_bateria || "N/A"}
+              </p>
+              <p>
+                <strong>Amperaje (Ah):</strong> {vehicle.amperage ?? "N/A"}
+              </p>
+              <p>
+                <strong>Voltaje (V):</strong> {vehicle.voltage ?? "N/A"}
+              </p>
+            </div>
+          ) : (
+            <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+              <h3 className="col-span-1 text-lg font-semibold md:col-span-2">
+                Detalles del Vehículo de Combustión
+              </h3>
+              <p>
+                <strong>Tipo de Combustible:</strong>{" "}
+                {vehicle.tipo_combustible || "N/A"}
+              </p>
+              <p>
+                <strong>Capacidad del Tanque (L):</strong>{" "}
+                {vehicle.capacidad_tanque ?? "N/A"}
+              </p>
+              <p>
+                <strong>Índice de Consumo (L/100km):</strong>{" "}
+                {vehicle.indice_consumo ?? "N/A"}
+              </p>
+            </div>
+          )}
 
           <DetailsButtons
             handleDelete={handleDelete}

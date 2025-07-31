@@ -29,11 +29,6 @@ export const NAV_DATA = [
             title: "Vehículos",
             url: "/fleet/vehicles",
           },
-          // New: Add Vehicle Types link here
-          {
-            title: "Tipos de Vehículos",
-            url: "/fleet/vehicle-types",
-          },
           {
             title: "Conductores",
             url: "/fleet/drivers",

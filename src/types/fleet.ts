@@ -9,8 +9,8 @@ export interface Driver {
   vehicleId?: number | null; // Add this for form handling
 }
 
-export type DriverStatus = 'Activo' | 'Inactivo' | 'Vacaciones'; // New type for driver status
-export type VehicleStatus = 'Activo' | 'Inactivo' | 'En Mantenimiento' | 'Baja';
+export type DriverStatus = "Activo" | "Inactivo" | "Vacaciones"; // New type for driver status
+export type VehicleStatus = "Activo" | "Inactivo" | "En Mantenimiento" | "Baja";
 
 export interface Vehicle {
   id: number;
@@ -24,31 +24,26 @@ export interface Vehicle {
   fecha_vencimiento_somaton: Date | null;
   estado: VehicleStatus;
   gps: boolean;
-  listado_municipios: string[]; // Array of strings
-  tipoNombre?: string | null; // Store vehicle type as a string
-  driverId?: number | null; // 1-to-1 relation with Driver
+  listado_municipios: string[];
+  tipo_vehiculo?: string | null;
+  cantidad_neumaticos?: number | null;
+  tipo_neumaticos?: string | null;
+  capacidad_carga?: string | null;
+  cantidad_conductores?: number | null;
+  ciclo_mantenimiento_km?: number | null;
+  es_electrico?: boolean | null;
+  cantidad_baterias?: number | null;
+  tipo_bateria?: string | null;
+  amperage?: number | null;
+  voltage?: number | null;
+  tipo_combustible?: string | null;
+  capacidad_tanque?: number | null;
+  indice_consumo?: number | null;
+  driverId?: number | null;
   driver?: Driver | null;
   mantenimientos?: Mantenimiento[];
   servicios?: Servicio[];
   fuelDistributions?: FuelDistribution[];
-}
-
-export interface VehicleType {
-  id: number;
-  nombre: string;
-  cantidad_neumaticos: number;
-  tipo_neumaticos: string;
-  capacidad_carga: string;
-  cantidad_conductores: number;
-  ciclo_mantenimiento_km: number;
-  es_electrico: boolean;
-  cantidad_baterias?: number;
-  tipo_bateria?: string;
-  amperage?: number;
-  voltage?: number;
-  tipo_combustible?: string;
-  capacidad_tanque?: number;
-  indice_consumo?: number;
 }
 
 export enum MantenimientoTipo {
@@ -77,7 +72,7 @@ export interface Mantenimiento {
   vehicle?: Vehicle;
 }
 
-export type MantenimientoEstado = 'Pendiente' | 'Ejecutado' | 'Cancelado';
+export type MantenimientoEstado = "Pendiente" | "Ejecutado" | "Cancelado";
 
 export interface FuelCard {
   id: number;

@@ -73,7 +73,7 @@ const VehiclesTable = () => {
       type: "dateRange",
     },
     { key: "gps", title: "GPS", type: "boolean" },
-    { key: "tipoNombre", title: "Tipo de Vehículo", type: "text" },
+    { key: "tipo_vehiculo", title: "Tipo de Vehículo", type: "text" },
     { key: "driver", title: "Conductor Asignado", type: "text" },
   ];
 
@@ -282,6 +282,14 @@ const VehiclesTable = () => {
                   Estado{" "}
                   {sortBy === "estado" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleSort("tipo_vehiculo")}
+                >
+                  Tipo{" "}
+                  {sortBy === "tipo_vehiculo" &&
+                    (sortOrder === "asc" ? "▲" : "▼")}
+                </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -326,6 +334,11 @@ const VehiclesTable = () => {
                     >
                       {vehicle.estado}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-dark dark:text-white">
+                      {vehicle.tipo_vehiculo}
+                    </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
                     <div className="flex items-center justify-end gap-x-3.5">

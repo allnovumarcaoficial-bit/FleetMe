@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Vehicle, VehicleType, Driver, VehicleStatus } from "@/types/fleet";
+import { Vehicle, Driver } from "@/types/fleet";
 import InputGroup from "@/components/FormElements/InputGroup";
 import MultiSelect from "@/components/FormElements/MultiSelect";
 import { Select } from "@/components/FormElements/select";
 import { Alert } from "@/components/ui-elements/alert";
 import { useRouter } from "next/navigation";
-// import { cn } from '@/lib/utils'; // For styling native select/multiselect - Re-add if needed for other elements, otherwise remove.
 
-// Minor change to trigger type re-evaluation
 interface VehicleFormProps {
   initialData?: Vehicle;
   onSuccess?: () => void;
@@ -23,8 +21,37 @@ const VehicleForm = ({
 }: VehicleFormProps) => {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<Vehicle>>(() => {
+    const defaults: Partial<Vehicle> = {
+      marca: "",
+      modelo: "",
+      vin: "",
+      matricula: "",
+      fecha_compra: null,
+      fecha_vencimiento_licencia_operativa: null,
+      fecha_vencimiento_circulacion: null,
+      fecha_vencimiento_somaton: null,
+      estado: "Activo",
+      gps: false,
+      listado_municipios: [],
+      tipo_vehiculo: "",
+      cantidad_neumaticos: 0,
+      tipo_neumaticos: "",
+      capacidad_carga: "",
+      cantidad_conductores: 1,
+      ciclo_mantenimiento_km: 10000,
+      es_electrico: false,
+      cantidad_baterias: 0,
+      tipo_bateria: "",
+      amperage: 0,
+      voltage: 0,
+      tipo_combustible: "Gasolina",
+      capacidad_tanque: 0,
+      indice_consumo: 0,
+    };
+
     if (initialData) {
       return {
+        ...defaults,
         ...initialData,
         fecha_compra: initialData.fecha_compra
           ? new Date(initialData.fecha_compra)
@@ -44,43 +71,22 @@ const VehicleForm = ({
           : [],
       };
     }
-    return {
-      marca: "",
-      modelo: "",
-      vin: "",
-      matricula: "",
-      fecha_compra: null,
-      fecha_vencimiento_licencia_operativa: null,
-      fecha_vencimiento_circulacion: null,
-      fecha_vencimiento_somaton: null,
-      estado: "Activo", // Default to 'Activo'
-      gps: false,
-      listado_municipios: [],
-      tipoNombre: null,
-    };
+    return defaults;
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
     type: "success" | "error" | "";
     message: string;
   }>({ type: "", message: "" });
-  const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDependencies = async () => {
       try {
-        // Fetch Vehicle Types
-        const typesRes = await fetch("/api/vehicle-types");
-        const typesData = await typesRes.json();
-        setVehicleTypes(typesData.data || []);
-
-        // Fetch Drivers
         const driversRes = await fetch("/api/drivers");
         const driversData = await driversRes.json();
         setDrivers(driversData.data || []);
-
         setLoading(false);
       } catch (err) {
         console.error("Error fetching form dependencies:", err);
@@ -97,7 +103,7 @@ const VehicleForm = ({
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
-        ...prev, // Keep existing state for fields not in initialData
+        ...prev,
         ...initialData,
         fecha_compra: initialData.fecha_compra
           ? new Date(initialData.fecha_compra)
@@ -125,6 +131,7 @@ const VehicleForm = ({
       case "marca":
       case "modelo":
       case "estado":
+      case "tipo_vehiculo":
         if (!value) error = "Este campo es requerido.";
         break;
       case "vin":
@@ -137,9 +144,6 @@ const VehicleForm = ({
         if (value && value.length < 6)
           error = "Matrícula debe tener al menos 6 caracteres.";
         break;
-      case "tipoNombre": // Changed from tipoVehiculoId
-        if (!value) error = "Debe seleccionar un tipo de vehículo."; // No value === 0 check for string
-        break;
       case "fecha_compra":
       case "fecha_vencimiento_licencia_operativa":
       case "fecha_vencimiento_circulacion":
@@ -151,6 +155,11 @@ const VehicleForm = ({
         if (!Array.isArray(value) || value.length === 0) {
           error = "Debe seleccionar al menos un municipio.";
         }
+        break;
+      case "cantidad_neumaticos":
+      case "cantidad_conductores":
+      case "ciclo_mantenimiento_km":
+        if (value < 0) error = "El valor no puede ser negativo.";
         break;
     }
     return error;
@@ -167,15 +176,25 @@ const VehicleForm = ({
     if (type === "checkbox") {
       newValue = (e.target as HTMLInputElement).checked;
     } else if (type === "date") {
-      newValue = new Date(value);
-    } else if (name === "tipoNombre") {
-      newValue = value;
+      newValue = value ? new Date(value) : null;
+    } else if (
+      [
+        "cantidad_neumaticos",
+        "cantidad_conductores",
+        "ciclo_mantenimiento_km",
+        "cantidad_baterias",
+        "amperage",
+        "voltage",
+        "capacidad_tanque",
+        "indice_consumo",
+      ].includes(name)
+    ) {
+      newValue = value === "" ? null : parseFloat(value);
     }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
     const fieldError = validateField(name, newValue);
     setErrors((prev) => ({ ...prev, [name]: fieldError }));
-    console.log(`handleChange: ${name} = ${newValue}, error = ${fieldError}`);
   };
 
   const handleMunicipiosChange = (selectedMunicipios: string[]) => {
@@ -266,12 +285,7 @@ const VehicleForm = ({
     }
   };
 
-  if (
-    loading &&
-    vehicleTypes.length === 0 &&
-    drivers.length === 0 &&
-    !initialData
-  )
+  if (loading && drivers.length === 0 && !initialData)
     return <p>Cargando formulario...</p>;
 
   const municipalityOptions = [
@@ -635,33 +649,189 @@ const VehicleForm = ({
             )}
           </div>
           <div>
-            <label
-              htmlFor="tipoNombre"
-              className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
-            >
-              Tipo de Vehículo
-            </label>
-            <select
-              id="tipoNombre"
-              name="tipoNombre"
-              value={formData.tipoNombre || ""}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
-            >
-              <option value="" disabled>
-                Selecciona un tipo
-              </option>
-              {vehicleTypes.map((type) => (
-                <option key={type.id} value={type.nombre}>
-                  {type.nombre}
-                </option>
-              ))}
-            </select>
-            {errors.tipoNombre && (
-              <p className="mt-1 text-sm text-red-500">{errors.tipoNombre}</p>
+            <InputGroup
+              label="Tipo de Vehículo"
+              name="tipo_vehiculo"
+              type="text"
+              placeholder="Ej: Camión, Auto, Moto"
+              value={formData.tipo_vehiculo || ""}
+              handleChange={handleChange}
+            />
+            {errors.tipo_vehiculo && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.tipo_vehiculo}
+              </p>
             )}
           </div>
+          <div>
+            <InputGroup
+              label="Cantidad de Neumáticos"
+              name="cantidad_neumaticos"
+              type="number"
+              placeholder="Introduce la cantidad"
+              value={String(formData.cantidad_neumaticos || "")}
+              handleChange={handleChange}
+            />
+            {errors.cantidad_neumaticos && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.cantidad_neumaticos}
+              </p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Tipo de Neumáticos"
+              name="tipo_neumaticos"
+              type="text"
+              placeholder="Ej: P225/65R17"
+              value={formData.tipo_neumaticos || ""}
+              handleChange={handleChange}
+            />
+          </div>
+          <div>
+            <InputGroup
+              label="Capacidad de Carga"
+              name="capacidad_carga"
+              type="text"
+              placeholder="Ej: 1000 kg o 5 personas"
+              value={formData.capacidad_carga || ""}
+              handleChange={handleChange}
+            />
+          </div>
+          <div>
+            <InputGroup
+              label="Cantidad de Conductores"
+              name="cantidad_conductores"
+              type="number"
+              placeholder="Introduce la cantidad"
+              value={String(formData.cantidad_conductores || "")}
+              handleChange={handleChange}
+            />
+            {errors.cantidad_conductores && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.cantidad_conductores}
+              </p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Ciclo de Mantenimiento (km)"
+              name="ciclo_mantenimiento_km"
+              type="number"
+              placeholder="Introduce los kilómetros"
+              value={String(formData.ciclo_mantenimiento_km || "")}
+              handleChange={handleChange}
+            />
+            {errors.ciclo_mantenimiento_km && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.ciclo_mantenimiento_km}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="es_electrico"
+              name="es_electrico"
+              checked={formData.es_electrico || false}
+              onChange={handleChange}
+              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label htmlFor="es_electrico" className="text-dark dark:text-white">
+              Es Eléctrico
+            </label>
+          </div>
         </div>
+
+        {formData.es_electrico ? (
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <h3 className="col-span-1 text-lg font-semibold text-dark dark:text-white md:col-span-2">
+              Detalles del Vehículo Eléctrico
+            </h3>
+            <div>
+              <InputGroup
+                label="Cantidad de Baterías"
+                name="cantidad_baterias"
+                type="number"
+                placeholder="Introduce la cantidad"
+                value={String(formData.cantidad_baterias || "")}
+                handleChange={handleChange}
+              />
+            </div>
+            <div>
+              <InputGroup
+                label="Tipo de Batería"
+                name="tipo_bateria"
+                type="text"
+                placeholder="Ej: Li-ion"
+                value={formData.tipo_bateria || ""}
+                handleChange={handleChange}
+              />
+            </div>
+            <div>
+              <InputGroup
+                label="Amperaje (Ah)"
+                name="amperage"
+                type="number"
+                placeholder="Introduce el amperaje"
+                value={String(formData.amperage || "")}
+                handleChange={handleChange}
+              />
+            </div>
+            <div>
+              <InputGroup
+                label="Voltaje (V)"
+                name="voltage"
+                type="number"
+                placeholder="Introduce el voltaje"
+                value={String(formData.voltage || "")}
+                handleChange={handleChange}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+            <h3 className="col-span-1 text-lg font-semibold text-dark dark:text-white md:col-span-2">
+              Detalles del Vehículo de Combustión
+            </h3>
+            <div>
+              <Select
+                label="Tipo de Combustible"
+                name="tipo_combustible"
+                placeholder="Selecciona un tipo"
+                items={[
+                  { value: "Gasolina", label: "Gasolina" },
+                  { value: "Diesel", label: "Diesel" },
+                  { value: "Gas", label: "Gas" },
+                ]}
+                value={formData.tipo_combustible || ""}
+                onChange={(e) =>
+                  handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+                }
+              />
+            </div>
+            <div>
+              <InputGroup
+                label="Capacidad del Tanque (L)"
+                name="capacidad_tanque"
+                type="number"
+                placeholder="Introduce la capacidad"
+                value={String(formData.capacidad_tanque || "")}
+                handleChange={handleChange}
+              />
+            </div>
+            <div>
+              <InputGroup
+                label="Índice de Consumo (L/100km)"
+                name="indice_consumo"
+                type="number"
+                placeholder="Introduce el índice"
+                value={String(formData.indice_consumo || "")}
+                handleChange={handleChange}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 flex justify-end gap-4">
           <button
