@@ -75,6 +75,7 @@ export async function PUT(
       capacidad_tanque,
       indice_consumo,
       driverId,
+      destino, // Nuevo campo
     } = body;
 
     // Validate required date fields
@@ -169,6 +170,7 @@ export async function PUT(
         capacidad_tanque,
         indice_consumo,
         driver: driverId ? { connect: { id: driverId } } : undefined,
+        destino, // Nuevo campo
       },
     });
 

@@ -47,6 +47,7 @@ const VehicleForm = ({
       tipo_combustible: "Gasolina",
       capacidad_tanque: 0,
       indice_consumo: 0,
+      destino: "Administrativo", // Nuevo campo
     };
 
     if (initialData) {
@@ -80,6 +81,7 @@ const VehicleForm = ({
   }>({ type: "", message: "" });
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
+  const showMunicipios = formData.destino === "Reparto";
 
   useEffect(() => {
     const fetchDependencies = async () => {
@@ -160,6 +162,9 @@ const VehicleForm = ({
       case "cantidad_conductores":
       case "ciclo_mantenimiento_km":
         if (value < 0) error = "El valor no puede ser negativo.";
+        break;
+      case "destino":
+        if (!value) error = "Este campo es requerido.";
         break;
     }
     return error;
@@ -636,18 +641,39 @@ const VehicleForm = ({
             </label>
           </div>
           <div>
-            <MultiSelect
-              label="Municipios"
-              options={municipalityOptions}
-              selectedValues={(formData.listado_municipios as string[]) || []}
-              onChange={handleMunicipiosChange}
+            <Select
+              label="Destino"
+              name="destino"
+              items={[
+                { value: "Administrativo", label: "Administrativo" },
+                { value: "Logistico", label: "Logístico" },
+                { value: "Reparto", label: "Reparto" },
+              ]}
+              value={formData.destino || ""}
+              placeholder="Selecciona un destino"
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
             />
-            {errors.listado_municipios && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.listado_municipios}
-              </p>
+            {errors.destino && (
+              <p className="mt-1 text-sm text-red-500">{errors.destino}</p>
             )}
           </div>
+          {showMunicipios && (
+            <div>
+              <MultiSelect
+                label="Municipios"
+                options={municipalityOptions}
+                selectedValues={(formData.listado_municipios as string[]) || []}
+                onChange={handleMunicipiosChange}
+              />
+              {errors.listado_municipios && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.listado_municipios}
+                </p>
+              )}
+            </div>
+          )}
           <div>
             <InputGroup
               label="Tipo de Vehículo"

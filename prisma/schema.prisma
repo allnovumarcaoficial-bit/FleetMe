@@ -119,6 +119,13 @@ model Vehicle {
   mantenimientos                     Mantenimiento[]
   servicios                          Servicio[]
   fuelDistributions                  FuelDistribution[]
+  destino                            DestinoVehiculo @default(Administrativo)
+}
+
+enum DestinoVehiculo {
+  Administrativo
+  Logistico
+  Reparto
 }
 
 model Driver {

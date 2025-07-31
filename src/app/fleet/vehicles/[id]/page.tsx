@@ -218,6 +218,9 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
             <p>
               <strong>Eléctrico:</strong> {vehicle.es_electrico ? "Sí" : "No"}
             </p>
+            <p>
+              <strong>Destino:</strong> {vehicle.destino || "N/A"}
+            </p>
           </div>
 
           {vehicle.es_electrico ? (

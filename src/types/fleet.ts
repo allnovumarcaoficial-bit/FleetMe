@@ -44,7 +44,10 @@ export interface Vehicle {
   mantenimientos?: Mantenimiento[];
   servicios?: Servicio[];
   fuelDistributions?: FuelDistribution[];
+  destino: DestinoVehiculo;
 }
+
+export type DestinoVehiculo = "Administrativo" | "Logistico" | "Reparto";
 
 export enum MantenimientoTipo {
   Correctivo = "Correctivo",
