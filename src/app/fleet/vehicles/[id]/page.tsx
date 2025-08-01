@@ -131,7 +131,7 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
         ]}
       />
 
-      <ShowcaseSection title="Detalles:" className="!p-7">
+      <ShowcaseSection title="Detalles Generales:" className="!p-7">
         <div className="">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <p>
@@ -180,54 +180,66 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
                 : "N/A"}
             </p>
             <p>
-              <strong>Estado:</strong> {vehicle.estado}
-            </p>
-            <p>
               <strong>GPS:</strong> {vehicle.gps ? "Sí" : "No"}
             </p>
             <p>
-              <strong>Municipios:</strong>{" "}
-              {Array.isArray(vehicle.listado_municipios)
-                ? vehicle.listado_municipios.join(", ")
-                : "N/A"}
-            </p>
-            <p>
-              <strong>Tipo de Vehículo:</strong>{" "}
-              {vehicle.tipo_vehiculo || "N/A"}
-            </p>
-            <p>
-              <strong>Cantidad de Neumáticos:</strong>{" "}
-              {vehicle.cantidad_neumaticos ?? "N/A"}
-            </p>
-            <p>
-              <strong>Tipo de Neumáticos:</strong>{" "}
-              {vehicle.tipo_neumaticos || "N/A"}
-            </p>
-            <p>
-              <strong>Capacidad de Carga:</strong>{" "}
-              {vehicle.capacidad_carga || "N/A"}
-            </p>
-            <p>
-              <strong>Cantidad de Conductores:</strong>{" "}
-              {vehicle.cantidad_conductores ?? "N/A"}
-            </p>
-            <p>
-              <strong>Ciclo de Mantenimiento (km):</strong>{" "}
-              {vehicle.ciclo_mantenimiento_km ?? "N/A"}
-            </p>
-            <p>
-              <strong>Eléctrico:</strong> {vehicle.es_electrico ? "Sí" : "No"}
+              <strong>Estado:</strong> {vehicle.estado}
             </p>
             <p>
               <strong>Destino:</strong> {vehicle.destino || "N/A"}
             </p>
+            {vehicle.destino === "Reparto" && (
+              <p>
+                <strong>Municipios:</strong>{" "}
+                {vehicle.listado_municipios &&
+                vehicle.listado_municipios !== "[]"
+                  ? JSON.parse(vehicle.listado_municipios).join(", ")
+                  : "N/A"}
+              </p>
+            )}
+            <p>
+              <strong>Estado:</strong> {vehicle.estado}
+            </p>
           </div>
-
-          {vehicle.es_electrico ? (
+        </div>
+      </ShowcaseSection>
+      <ShowcaseSection title="Detalles Técnicos:" className="!p-7">
+        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+          <p>
+            <strong>Tipo de Vehículo:</strong> {vehicle.tipo_vehiculo || "N/A"}
+          </p>
+          <p>
+            <strong>Cantidad de Neumáticos:</strong>{" "}
+            {vehicle.cantidad_neumaticos ?? "N/A"}
+          </p>
+          <p>
+            <strong>Tipo de Neumáticos:</strong>{" "}
+            {vehicle.tipo_neumaticos || "N/A"}
+          </p>
+          <p>
+            <strong>Capacidad de Carga:</strong>{" "}
+            {vehicle.capacidad_carga || "N/A"}
+          </p>
+          <p>
+            <strong>Cantidad de Conductores:</strong>{" "}
+            {vehicle.cantidad_conductores ?? "N/A"}
+          </p>
+          <p>
+            <strong>Ciclo de Mantenimiento (km):</strong>{" "}
+            {vehicle.ciclo_mantenimiento_km ?? "N/A"}
+          </p>
+          <p>
+            <strong>Eléctrico:</strong> {vehicle.es_electrico ? "Sí" : "No"}
+          </p>
+        </div>
+      </ShowcaseSection>
+      {vehicle.es_electrico ? (
+        <ShowcaseSection
+          title="Detalles del Vehículo Eléctrico:"
+          className="!p-7"
+        >
+          <div className="">
             <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-              <h3 className="col-span-1 text-lg font-semibold md:col-span-2">
-                Detalles del Vehículo Eléctrico
-              </h3>
               <p>
                 <strong>Cantidad de Baterías:</strong>{" "}
                 {vehicle.cantidad_baterias ?? "N/A"}
@@ -243,11 +255,15 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
                 <strong>Voltaje (V):</strong> {vehicle.voltage ?? "N/A"}
               </p>
             </div>
-          ) : (
+          </div>
+        </ShowcaseSection>
+      ) : (
+        <ShowcaseSection
+          title="Detalles del Vehículo de Combustión:"
+          className="!p-7"
+        >
+          <div className="">
             <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-              <h3 className="col-span-1 text-lg font-semibold md:col-span-2">
-                Detalles del Vehículo de Combustión
-              </h3>
               <p>
                 <strong>Tipo de Combustible:</strong>{" "}
                 {vehicle.tipo_combustible || "N/A"}
@@ -261,15 +277,15 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
                 {vehicle.indice_consumo ?? "N/A"}
               </p>
             </div>
-          )}
+          </div>
+        </ShowcaseSection>
+      )}
 
-          <DetailsButtons
-            handleDelete={handleDelete}
-            handleEdit={handleEdit}
-            handleBack={() => router.push("/fleet/vehicles")}
-          />
-        </div>
-      </ShowcaseSection>
+      <DetailsButtons
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+        handleBack={() => router.push("/fleet/vehicles")}
+      />
     </>
   );
 };

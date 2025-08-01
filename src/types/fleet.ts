@@ -24,7 +24,7 @@ export interface Vehicle {
   fecha_vencimiento_somaton: Date | null;
   estado: VehicleStatus;
   gps: boolean;
-  listado_municipios: string[];
+  listado_municipios: string; // Cambiado a string
   tipo_vehiculo?: string | null;
   cantidad_neumaticos?: number | null;
   tipo_neumaticos?: string | null;
