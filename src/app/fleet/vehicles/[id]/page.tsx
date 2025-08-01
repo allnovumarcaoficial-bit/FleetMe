@@ -200,6 +200,10 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
             <p>
               <strong>Estado:</strong> {vehicle.estado}
             </p>
+            <p>
+              <strong>Conductor Asignado:</strong>{" "}
+              {vehicle.driver ? vehicle.driver.nombre : "Ninguno"}
+            </p>
           </div>
         </div>
       </ShowcaseSection>

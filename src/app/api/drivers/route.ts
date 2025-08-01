@@ -27,6 +27,7 @@ export async function GET(request: Request) {
     const carnet_peritage = searchParams.get("carnet_peritage"); // 'true' or 'false' string
     const estado = searchParams.get("estado") || "";
     const vehicleSearch = searchParams.get("vehicle") || ""; // For vehicle text search
+    const unassigned = searchParams.get("unassigned"); // 'true' or 'false' string
 
     const skip = (page - 1) * limit;
 
@@ -70,6 +71,10 @@ export async function GET(request: Request) {
       };
     }
 
+    if (unassigned === "true") {
+      where.vehicle = null;
+    }
+
     const orderBy: any = {
       [sortBy]: sortOrder,
     };
@@ -111,30 +116,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const {
-      nombre,
-      licencia,
-      fecha_vencimiento_licencia,
-      carnet_peritage,
-      vehicleId, // Optional: for connecting an existing vehicle
-    } = body;
+    const { nombre, licencia, fecha_vencimiento_licencia, carnet_peritage } =
+      body;
 
     const parsedFechaVencimientoLicencia = new Date(fecha_vencimiento_licencia);
-
-    // Check if the provided vehicleId already has a driver
-    if (vehicleId) {
-      const existingVehicle = await prisma.vehicle.findUnique({
-        where: { id: vehicleId },
-        include: { driver: true },
-      });
-
-      if (existingVehicle && existingVehicle.driver) {
-        return NextResponse.json(
-          { error: "El vehículo seleccionado ya tiene un conductor asignado." },
-          { status: 409 },
-        );
-      }
-    }
 
     const newDriver = await prisma.driver.create({
       data: {
@@ -142,11 +127,6 @@ export async function POST(request: Request) {
         licencia,
         fecha_vencimiento_licencia: parsedFechaVencimientoLicencia,
         carnet_peritage,
-        ...(vehicleId && {
-          vehicle: {
-            connect: { id: vehicleId },
-          },
-        }),
       },
     });
 

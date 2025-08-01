@@ -17,6 +17,9 @@ export async function GET(
 
     const vehicle = await prisma.vehicle.findUnique({
       where: { id },
+      include: {
+        driver: true,
+      },
     });
 
     if (!vehicle) {
@@ -169,7 +172,7 @@ export async function PUT(
         tipo_combustible,
         capacidad_tanque,
         indice_consumo,
-        driver: driverId ? { connect: { id: driverId } } : undefined,
+        driver: driverId ? { connect: { id: driverId } } : { disconnect: true },
         destino, // Nuevo campo
       },
     });

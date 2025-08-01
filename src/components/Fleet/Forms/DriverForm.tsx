@@ -22,7 +22,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           fecha_vencimiento_licencia: initialData.fecha_vencimiento_licencia
             ? new Date(initialData.fecha_vencimiento_licencia)
             : null,
-          vehicleId: initialData.vehicle?.id || null, // Initialize with existing vehicle ID
         }
       : {
           nombre: "",
@@ -30,7 +29,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           fecha_vencimiento_licencia: null,
           carnet_peritage: false,
           estado: "Activo", // Default to 'Activo'
-          vehicleId: null,
         },
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -38,35 +36,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     type: "success" | "error" | "";
     message: string;
   }>({ type: "", message: "" });
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchDependencies = async () => {
-      try {
-        // Fetch available vehicles (those not already assigned to a driver, or the one currently assigned to this driver)
-        const vehiclesRes = await fetch("/api/vehicles");
-        const vehiclesData = await vehiclesRes.json();
-
-        // Filter out vehicles that already have a driver, unless it's the vehicle currently assigned to this driver
-        const availableVehicles = vehiclesData.data.filter(
-          (v: Vehicle) =>
-            !v.driverId || (initialData && v.driverId === initialData.id),
-        );
-        setVehicles(availableVehicles || []);
-
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching form dependencies:", err);
-        setFormStatus({
-          type: "error",
-          message: "Error al cargar datos necesarios para el formulario.",
-        });
-        setLoading(false);
-      }
-    };
-    fetchDependencies();
-  }, [initialData]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -75,7 +45,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         fecha_vencimiento_licencia: initialData.fecha_vencimiento_licencia
           ? new Date(initialData.fecha_vencimiento_licencia)
           : null,
-        vehicleId: initialData.vehicle?.id || null,
       });
     }
   }, [initialData]);
@@ -108,8 +77,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
       newValue = (e.target as HTMLInputElement).checked;
     } else if (type === "date") {
       newValue = new Date(value);
-    } else if (name === "vehicleId") {
-      newValue = value === "" ? null : parseInt(value); // Convert to number or null
     }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
@@ -188,8 +155,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     }
   };
 
-  if (loading && vehicles.length === 0 && !initialData)
-    return <p>Cargando formulario...</p>;
+  if (loading && !initialData) return <p>Cargando formulario...</p>;
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -282,31 +248,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
             />
             {errors.estado && (
               <p className="mt-1 text-sm text-red-500">{errors.estado}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="vehicleId"
-              className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
-            >
-              Vehículo Asignado
-            </label>
-            <select
-              id="vehicleId"
-              name="vehicleId"
-              value={formData.vehicleId || ""}
-              onChange={handleChange}
-              className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
-            >
-              <option value="">Sin Vehículo Asignado</option>
-              {vehicles.map((vehicle) => (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
-                </option>
-              ))}
-            </select>
-            {errors.vehicleId && (
-              <p className="mt-1 text-sm text-red-500">{errors.vehicleId}</p>
             )}
           </div>
         </div>

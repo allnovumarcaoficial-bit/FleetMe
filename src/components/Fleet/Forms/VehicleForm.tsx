@@ -8,6 +8,10 @@ import { Select } from "@/components/FormElements/select";
 import { Alert } from "@/components/ui-elements/alert";
 import { useRouter } from "next/navigation";
 
+interface VehicleFormData extends Omit<Vehicle, "listado_municipios"> {
+  listado_municipios: string[];
+}
+
 interface VehicleFormProps {
   initialData?: Vehicle;
   onSuccess?: () => void;
@@ -20,8 +24,8 @@ const VehicleForm = ({
   onCancel,
 }: VehicleFormProps) => {
   const router = useRouter();
-  const [formData, setFormData] = useState<Partial<Vehicle>>(() => {
-    const defaults: Partial<Vehicle> = {
+  const [formData, setFormData] = useState<Partial<VehicleFormData>>(() => {
+    const defaults: Partial<VehicleFormData> = {
       marca: "",
       modelo: "",
       vin: "",
@@ -48,6 +52,7 @@ const VehicleForm = ({
       capacidad_tanque: 0,
       indice_consumo: 0,
       destino: "Administrativo", // Nuevo campo
+      driverId: null,
     };
 
     if (initialData) {
@@ -70,6 +75,7 @@ const VehicleForm = ({
         listado_municipios: initialData.listado_municipios
           ? JSON.parse(initialData.listado_municipios as unknown as string)
           : [],
+        driverId: initialData.driverId,
       };
     }
     return defaults;
@@ -86,9 +92,23 @@ const VehicleForm = ({
   useEffect(() => {
     const fetchDependencies = async () => {
       try {
-        const driversRes = await fetch("/api/drivers");
+        const driversRes = await fetch(
+          "/api/drivers?estado=Activo&unassigned=true",
+        );
         const driversData = await driversRes.json();
-        setDrivers(driversData.data || []);
+        let availableDrivers = driversData.data || [];
+
+        // If editing a vehicle that has a driver, ensure that driver is in the list
+        if (initialData?.driver) {
+          const isCurrentDriverInList = availableDrivers.some(
+            (d: Driver) => d.id === initialData.driver!.id,
+          );
+          if (!isCurrentDriverInList) {
+            availableDrivers = [initialData.driver, ...availableDrivers];
+          }
+        }
+
+        setDrivers(availableDrivers);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching form dependencies:", err);
@@ -100,7 +120,7 @@ const VehicleForm = ({
       }
     };
     fetchDependencies();
-  }, []);
+  }, [initialData]);
 
   useEffect(() => {
     if (initialData) {
@@ -123,6 +143,7 @@ const VehicleForm = ({
         listado_municipios: initialData.listado_municipios
           ? JSON.parse(initialData.listado_municipios as unknown as string)
           : [],
+        driverId: initialData.driverId,
       }));
     }
   }, [initialData]);
@@ -192,9 +213,10 @@ const VehicleForm = ({
         "voltage",
         "capacidad_tanque",
         "indice_consumo",
+        "driverId",
       ].includes(name)
     ) {
-      newValue = value === "" ? null : parseFloat(value);
+      newValue = value === "" ? null : parseInt(value, 10);
     }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
@@ -664,7 +686,7 @@ const VehicleForm = ({
               <MultiSelect
                 label="Municipios"
                 options={municipalityOptions}
-                selectedValues={(formData.listado_municipios as string[]) || []}
+                selectedValues={formData.listado_municipios || []}
                 onChange={handleMunicipiosChange}
               />
               {errors.listado_municipios && (
@@ -766,6 +788,24 @@ const VehicleForm = ({
             <label htmlFor="es_electrico" className="text-dark dark:text-white">
               Es Eléctrico
             </label>
+          </div>
+          <div>
+            <Select
+              label="Conductor Asignado"
+              name="driverId"
+              items={[
+                { value: "", label: "Sin Conductor Asignado" },
+                ...(drivers.map((driver) => ({
+                  value: driver.id.toString(),
+                  label: driver.nombre,
+                })) || []),
+              ]}
+              value={formData.driverId?.toString() || ""}
+              placeholder="Selecciona un conductor"
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
+            />
           </div>
         </div>
 

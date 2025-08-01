@@ -61,7 +61,6 @@ const DriverTable = ({}: DriverTableProps) => {
         { value: "Vacaciones", label: "Vacaciones" },
       ],
     },
-    { key: "vehicle", title: "Vehículo Asignado", type: "text" },
   ];
 
   const fetchDrivers = useCallback(async () => {
@@ -252,7 +251,6 @@ const DriverTable = ({}: DriverTableProps) => {
                   Estado{" "}
                   {sortBy === "estado" && (sortOrder === "asc" ? "▲" : "▼")}
                 </TableHead>
-                <TableHead>Vehículo Asignado</TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -303,13 +301,6 @@ const DriverTable = ({}: DriverTableProps) => {
                     >
                       {driver.estado}
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {driver.vehicle
-                        ? `${driver.vehicle.marca} ${driver.vehicle.modelo} (${driver.vehicle.matricula})`
-                        : "Ninguno"}
-                    </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
                     <div className="flex items-center justify-end gap-x-3.5">

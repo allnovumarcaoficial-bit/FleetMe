@@ -6,7 +6,6 @@ export interface Driver {
   carnet_peritage: boolean;
   estado: DriverStatus; // Add this field
   vehicle?: Vehicle | null; // 1-to-1 relation with Vehicle
-  vehicleId?: number | null; // Add this for form handling
 }
 
 export type DriverStatus = "Activo" | "Inactivo" | "Vacaciones"; // New type for driver status
