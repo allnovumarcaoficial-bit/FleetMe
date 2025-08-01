@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { notificationManager } from "@/services/notificationManager.service";
 import "@/services/checkers/license.checker"; // Import for side-effect: registers the checker
+import "@/services/checkers/vehicle.checker"; // Import for side-effect: registers the checker
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);

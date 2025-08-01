@@ -111,4 +111,85 @@ export const notificationService = {
     }
     return { createdOrUpdatedNotification, notificationsToDelete };
   },
+
+  async handleVehicleNotification(
+    userId: string,
+    vehicleId: number,
+    vehicleMatricula: string,
+    documentType: string,
+    expirationDate: Date,
+    isExpired: boolean,
+    daysUntilExpiration: number,
+    existingNotifications: Notification[],
+  ) {
+    const link = `/fleet/vehicles/${vehicleId}`;
+    const notificationIdentifier = `${link}-${documentType.replace(/\s+/g, "-")}`;
+
+    const existingWarningNotif = existingNotifications.find(
+      (n) => n.link === notificationIdentifier && n.type === "warning",
+    );
+    const existingCriticalNotif = existingNotifications.find(
+      (n) => n.link === notificationIdentifier && n.type === "critical",
+    );
+
+    let createdOrUpdatedNotification: Notification | null = null;
+    const notificationsToDelete: string[] = [];
+
+    if (isExpired) {
+      // Documento vencido: Notificación crítica
+      const message = `${documentType} Vencido: ${vehicleMatricula}`;
+      const details = `El documento '${documentType}' del vehículo con matrícula ${vehicleMatricula} ha vencido.`;
+
+      if (!existingCriticalNotif) {
+        createdOrUpdatedNotification = await this.createNotification({
+          userId: userId,
+          type: "critical",
+          message,
+          details,
+          link: notificationIdentifier,
+          read: false,
+        });
+      } else {
+        createdOrUpdatedNotification = await this.updateNotification(
+          existingCriticalNotif.id,
+          { message, details, read: false },
+        );
+      }
+      if (existingWarningNotif) {
+        notificationsToDelete.push(existingWarningNotif.id);
+      }
+    } else if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0) {
+      // Documento próximo a vencer: Notificación de advertencia
+      const message = `${documentType} Próximo a Vencer: ${vehicleMatricula}`;
+      const details = `El documento '${documentType}' del vehículo con matrícula ${vehicleMatricula} vencerá en ${daysUntilExpiration} días.`;
+
+      if (!existingWarningNotif) {
+        createdOrUpdatedNotification = await this.createNotification({
+          userId: userId,
+          type: "warning",
+          message,
+          details,
+          link: notificationIdentifier,
+          read: false,
+        });
+      } else {
+        createdOrUpdatedNotification = await this.updateNotification(
+          existingWarningNotif.id,
+          { message, details, read: false },
+        );
+      }
+      if (existingCriticalNotif) {
+        notificationsToDelete.push(existingCriticalNotif.id);
+      }
+    } else {
+      // Si el documento no está vencido ni próximo a vencer, eliminar cualquier notificación existente para él
+      if (existingWarningNotif) {
+        notificationsToDelete.push(existingWarningNotif.id);
+      }
+      if (existingCriticalNotif) {
+        notificationsToDelete.push(existingCriticalNotif.id);
+      }
+    }
+    return { createdOrUpdatedNotification, notificationsToDelete };
+  },
 };

@@ -143,6 +143,35 @@ export async function PUT(
       );
     }
 
+    if (estado === "Activo") {
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id },
+      });
+
+      if (vehicle) {
+        const now = new Date();
+        const isLicenciaOperativaExpired =
+          new Date(vehicle.fecha_vencimiento_licencia_operativa) < now;
+        const isCirculacionExpired =
+          new Date(vehicle.fecha_vencimiento_circulacion) < now;
+        const isSomatonExpired =
+          new Date(vehicle.fecha_vencimiento_somaton) < now;
+
+        if (
+          isLicenciaOperativaExpired ||
+          isCirculacionExpired ||
+          isSomatonExpired
+        ) {
+          return NextResponse.json(
+            {
+              error: "No se puede activar un vehículo con documentos vencidos.",
+            },
+            { status: 400 },
+          );
+        }
+      }
+    }
+
     const updatedVehicle = await prisma.vehicle.update({
       where: { id },
       data: {
