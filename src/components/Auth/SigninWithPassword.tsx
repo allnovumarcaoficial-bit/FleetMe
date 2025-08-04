@@ -3,12 +3,15 @@ import { EmailIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import InputGroup from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 
 export default function SigninWithPassword() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
+
   const [data, setData] = useState({
     email: "",
     password: "",
@@ -36,8 +39,8 @@ export default function SigninWithPassword() {
     setLoading(false);
 
     if (result?.ok) {
-      // Si el inicio de sesión es exitoso, redirigir al dashboard
-      router.push("/");
+      // Si el inicio de sesión es exitoso, redirigir a la URL de retorno o al dashboard
+      router.push(callbackUrl || "/");
     } else {
       // Si hay un error, mostrarlo
       setError(result?.error || "An unknown error occurred");

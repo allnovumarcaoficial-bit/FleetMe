@@ -13,7 +13,11 @@ const useIdleTimeout = (timeout: number) => {
     }
     if (session) {
       timeoutId.current = setTimeout(() => {
-        signOut({ callbackUrl: "/auth/signin?error=SessionExpired" });
+        signOut({
+          callbackUrl: `/auth/signin?callbackUrl=${encodeURIComponent(
+            window.location.pathname,
+          )}&error=SessionExpired`,
+        });
       }, timeout);
     }
   };
