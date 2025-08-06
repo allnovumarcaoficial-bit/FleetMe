@@ -8,11 +8,11 @@ import type { Metadata } from "next";
 import type { PropsWithChildren } from "react";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { Providers } from "./providers";
 import ConditionalLayout from "@/components/Layouts/ConditionalLayout";
 import NextTopLoader from "nextjs-toploader";
 import SessionManager from "@/components/SessionManager";
+import { authOptions } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: {
