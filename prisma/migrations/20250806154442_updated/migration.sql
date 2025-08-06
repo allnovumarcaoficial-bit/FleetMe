@@ -1,4 +1,63 @@
 -- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT,
+    "email" TEXT,
+    "emailVerified" DATETIME,
+    "image" TEXT,
+    "hashedPassword" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "role" TEXT NOT NULL DEFAULT 'USER'
+);
+
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "type" TEXT NOT NULL,
+    "message" TEXT NOT NULL,
+    "details" TEXT,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT NOT NULL,
+    "link" TEXT,
+    CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Account" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "provider" TEXT NOT NULL,
+    "providerAccountId" TEXT NOT NULL,
+    "refresh_token" TEXT,
+    "access_token" TEXT,
+    "expires_at" INTEGER,
+    "token_type" TEXT,
+    "scope" TEXT,
+    "id_token" TEXT,
+    "session_state" TEXT,
+    CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Session" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "sessionToken" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "expires" DATETIME NOT NULL,
+    CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "VerificationToken" (
+    "identifier" TEXT NOT NULL,
+    "token" TEXT NOT NULL,
+    "expires" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "Vehicle" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "marca" TEXT NOT NULL,
@@ -12,28 +71,23 @@ CREATE TABLE "Vehicle" (
     "estado" TEXT NOT NULL,
     "gps" BOOLEAN NOT NULL,
     "listado_municipios" TEXT NOT NULL,
-    "tipoNombre" TEXT,
-    "driverId" INTEGER,
-    CONSTRAINT "Vehicle_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE SET NULL ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "VehicleType" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "nombre" TEXT NOT NULL,
-    "cantidad_neumaticos" INTEGER NOT NULL,
-    "tipo_neumaticos" TEXT NOT NULL,
-    "capacidad_carga" TEXT NOT NULL,
-    "cantidad_conductores" INTEGER NOT NULL,
-    "ciclo_mantenimiento_km" INTEGER NOT NULL,
-    "es_electrico" BOOLEAN NOT NULL,
+    "tipo_vehiculo" TEXT,
+    "cantidad_neumaticos" INTEGER,
+    "tipo_neumaticos" TEXT,
+    "capacidad_carga" TEXT,
+    "cantidad_conductores" INTEGER,
+    "ciclo_mantenimiento_km" INTEGER,
+    "es_electrico" BOOLEAN,
     "cantidad_baterias" INTEGER,
     "tipo_bateria" TEXT,
     "amperage" REAL,
     "voltage" REAL,
     "tipo_combustible" TEXT,
     "capacidad_tanque" REAL,
-    "indice_consumo" REAL
+    "indice_consumo" REAL,
+    "driverId" INTEGER,
+    "destino" TEXT NOT NULL DEFAULT 'Administrativo',
+    CONSTRAINT "Vehicle_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -55,6 +109,7 @@ CREATE TABLE "Mantenimiento" (
     "descripcion" TEXT NOT NULL,
     "lista_de_piezas" TEXT NOT NULL,
     "cambio_de_pieza" BOOLEAN NOT NULL,
+    "estado" TEXT NOT NULL DEFAULT 'Pendiente',
     "numero_serie_anterior" TEXT,
     "numero_serie_nueva" TEXT,
     "vehicleId" INTEGER NOT NULL,
@@ -119,6 +174,24 @@ CREATE TABLE "FuelDistribution" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provider", "providerAccountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON "Session"("sessionToken");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Vehicle_vin_key" ON "Vehicle"("vin");
 
 -- CreateIndex
@@ -126,9 +199,6 @@ CREATE UNIQUE INDEX "Vehicle_matricula_key" ON "Vehicle"("matricula");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Vehicle_driverId_key" ON "Vehicle"("driverId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "VehicleType_nombre_key" ON "VehicleType"("nombre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Driver_licencia_key" ON "Driver"("licencia");
