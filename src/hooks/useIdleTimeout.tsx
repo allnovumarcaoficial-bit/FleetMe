@@ -14,7 +14,7 @@ const useIdleTimeout = (timeout: number) => {
     if (session) {
       timeoutId.current = setTimeout(() => {
         signOut({
-          callbackUrl: `/auth/signin?callbackUrl=${encodeURIComponent(
+          callbackUrl: `https://fleetme.netlify.app/auth/signin?callbackUrl=${encodeURIComponent(
             window.location.pathname,
           )}&error=SessionExpired`,
         });
