@@ -20,7 +20,6 @@ import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from "../PageElements/AdvancedTableFilter";
-import moment from "moment";
 import type { Dayjs } from "dayjs";
 
 const FuelCardTable = () => {

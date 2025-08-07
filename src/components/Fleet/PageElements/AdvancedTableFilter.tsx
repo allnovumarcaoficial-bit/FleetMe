@@ -20,8 +20,7 @@ import {
   ClearOutlined,
 } from "@ant-design/icons";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { MenuProps } from "antd";
-import moment from "moment"; // Keep moment for now for compatibility with existing data if any
+import type { MenuProps } from "antd"; // Keep moment for now for compatibility with existing data if any
 import type { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;

@@ -5,14 +5,9 @@ import FuelCardForm from "@/components/Fleet/Forms/FuelCardForm";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { FuelCard } from "@/types/fleet";
+import { FuelCardDetailsPageProps } from "../page";
 
-interface EditFuelCardPageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
-
-const EditFuelCardPage = ({ params }: EditFuelCardPageProps) => {
+const EditFuelCardPage = ({ params }: FuelCardDetailsPageProps) => {
   const router = useRouter();
   const [fuelCard, setFuelCard] = useState<FuelCard | null>(null);
   const [loading, setLoading] = useState(true);

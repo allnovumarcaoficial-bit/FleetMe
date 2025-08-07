@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import DetailsButtons from "@/components/Fleet/PageElements/DetailsButtons";
 
-interface FuelCardDetailsPageProps {
+export interface FuelCardDetailsPageProps {
   params: Promise<{
     id: string;
   }>;

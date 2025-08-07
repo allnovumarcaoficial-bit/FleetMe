@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
   request: Request,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
   const { id } = await Promise.resolve(context.params); // Workaround for Next.js warning
@@ -36,7 +36,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
   const { id } = await Promise.resolve(context.params); // Workaround for Next.js warning
