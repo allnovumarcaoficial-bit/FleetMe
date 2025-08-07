@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && prisma generate",
-    "postinstall:prisma": "prisma generate",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint --fix",
     "test": "vitest",
