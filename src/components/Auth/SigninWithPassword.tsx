@@ -40,7 +40,7 @@ export default function SigninWithPassword() {
 
     if (result?.ok) {
       // Si el inicio de sesión es exitoso, redirigir a la URL de retorno o al dashboard
-      router.push(callbackUrl || "/");
+      router.push(callbackUrl || "https://fleetme.netlify.app/");
     } else {
       // Si hay un error, mostrarlo
       setError(result?.error || "An unknown error occurred");
