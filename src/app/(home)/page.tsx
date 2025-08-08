@@ -21,11 +21,6 @@ export default async function Home({ searchParams }: PropsType) {
 
   return (
     <>
-      <div className="max-xl:hidden">
-        <h1 className="mb-6 text-heading-5 font-bold text-dark dark:text-white">
-          Dashboard
-        </h1>
-      </div>
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>
