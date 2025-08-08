@@ -1,25 +1,26 @@
-import darkLogo from "@/assets/logos/dark.svg";
-import logo from "@/assets/logos/main.svg";
+import darkLogo from "@/assets/logos/fleetLog.png";
+import logo from "@/assets/logos/fleetLog.png";
 import Image from "next/image";
 
 export function Logo() {
   return (
-    <div className="relative h-8 max-w-[10.847rem]">
+    <div className="flex h-20 w-[150px] items-center justify-center">
+      {" "}
+      {/* Contenedor con tamaño fijo */}
       <Image
         src={logo}
-        fill
-        className="dark:hidden"
+        width={120} // Ajusta según el tamaño deseado (ancho)
+        height={40} // Ajusta según el tamaño deseado (alto)
+        className="mb-10 object-contain dark:hidden" // Mantiene la proporción
         alt="NextAdmin logo"
-        role="presentation"
         quality={100}
       />
-
       <Image
         src={darkLogo}
-        fill
-        className="hidden dark:block"
+        width={120} // Mismo tamaño que la imagen clara
+        height={40}
+        className="mb-10 hidden object-contain dark:block"
         alt="NextAdmin logo"
-        role="presentation"
         quality={100}
       />
     </div>
