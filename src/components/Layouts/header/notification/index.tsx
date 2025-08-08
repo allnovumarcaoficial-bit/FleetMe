@@ -19,9 +19,14 @@ export function Notification() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { notifications, unreadCount, markAsRead, markAllAsRead, deleteNotification, addNotification } = useNotifications();
-
-
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    addNotification,
+  } = useNotifications();
 
   return (
     <>
@@ -48,10 +53,10 @@ export function Notification() {
         >
           <div className="mb-1 flex items-center justify-between px-2 py-1.5">
             <span className="text-lg font-medium text-dark dark:text-white">
-              Notifications
+              Notificiones
             </span>
             <span className="rounded-md bg-primary px-[9px] py-0.5 text-xs font-medium text-white">
-              {unreadCount} new
+              {unreadCount} nueva
             </span>
           </div>
 
@@ -61,19 +66,24 @@ export function Notification() {
                 No hay notificaciones.
               </li>
             ) : (
-              notifications.slice(0, 5).map((notification) => ( // Show last 5 notifications in dropdown
-                <NotificationItem
-                  key={notification.id}
-                  notification={notification}
-                  onMarkAsRead={markAsRead}
-                  onDelete={deleteNotification}
-                />
-              ))
+              notifications.slice(0, 5).map(
+                (
+                  notification, // Show last 5 notifications in dropdown
+                ) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onMarkAsRead={markAsRead}
+                    onDelete={deleteNotification}
+                  />
+                ),
+              )
             )}
           </ul>
 
           <Link
             href="#"
+            prefetch={false}
             onClick={(e) => {
               e.preventDefault();
               setIsOpen(false);
@@ -81,7 +91,7 @@ export function Notification() {
             }}
             className="block rounded-lg border border-primary p-2 text-center text-sm font-medium tracking-wide text-primary outline-none transition-colors hover:bg-blue-light-5 focus:bg-blue-light-5 focus:text-primary focus-visible:border-primary dark:border-dark-3 dark:text-dark-6 dark:hover:border-dark-5 dark:hover:bg-dark-3 dark:hover:text-dark-7 dark:focus-visible:border-dark-5 dark:focus-visible:bg-dark-3 dark:focus-visible:text-dark-7"
           >
-            See all notifications
+            Ver todas las notificaciones
           </Link>
         </DropdownContent>
       </Dropdown>
