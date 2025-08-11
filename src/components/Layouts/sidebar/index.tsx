@@ -142,7 +142,8 @@ export function Sidebar() {
                                         <MenuItem
                                           onClick={() =>
                                             signOut({
-                                              callbackUrl: "/auth/signin",
+                                              callbackUrl:
+                                                "https://fleetme.netlify.app/",
                                             })
                                           }
                                           isActive={pathname === subItem.url}
