@@ -141,7 +141,9 @@ export function Sidebar() {
                                       {subItem.title === "Cerrar Sesión" ? (
                                         <MenuItem
                                           onClick={() =>
-                                            signOut({ callbackUrl: "/" })
+                                            signOut({
+                                              callbackUrl: "/auth/signin",
+                                            })
                                           }
                                           isActive={pathname === subItem.url}
                                         >
