@@ -62,7 +62,7 @@ export async function PUT(
       fecha_vencimiento_somaton,
       estado,
       gps,
-      listado_municipios,
+      listado_municipios = "[]", // Default to empty JSON array if not provided
       tipo_vehiculo,
       cantidad_neumaticos,
       tipo_neumaticos,
@@ -186,7 +186,7 @@ export async function PUT(
         fecha_vencimiento_somaton: parsedFechaVencimientoSomaton,
         estado,
         gps,
-        listado_municipios,
+        listado_municipios, // Ensure it's a valid JSON string
         tipo_vehiculo,
         cantidad_neumaticos,
         tipo_neumaticos,

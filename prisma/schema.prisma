@@ -99,7 +99,7 @@ model Vehicle {
   fecha_vencimiento_somaton          DateTime
   estado                             String
   gps                                Boolean
-  listado_municipios                 String   // Stored as JSON string for SQLite
+  listado_municipios                 String?   // Stored as JSON string for SQLite
   tipo_vehiculo                      String?
   cantidad_neumaticos                Int?
   tipo_neumaticos                    String?
@@ -135,7 +135,7 @@ model Driver {
   fecha_vencimiento_licencia        DateTime
   carnet_peritage                   Boolean
   estado                            String @default("Activo")
-  vehicle                           Vehicle?
+  vehicle                           Vehicle? 
 }
 
 model Mantenimiento {
@@ -150,7 +150,7 @@ model Mantenimiento {
   numero_serie_anterior     String?
   numero_serie_nueva        String?
   vehicleId                 Int
-  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 model FuelCard {
@@ -180,7 +180,7 @@ model Servicio {
   kilometrosRecorridos Int
   estado              String
   vehicleId           Int
-  vehicle             Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle             Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 model FuelOperation {
@@ -204,6 +204,6 @@ model FuelDistribution {
   fuelOperationId Int
   fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)
   vehicleId       Int
-  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id])
+  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
   liters          Float
 }

@@ -240,7 +240,11 @@ const VehicleForm = ({
     const newErrors: Record<string, string> = {};
     let isValid = true;
     for (const key in formData) {
-      const value = (formData as any)[key]; // Get value from formData
+      const value = (formData as any)[key];
+      const destiny = (formData as any)["destino"];
+      if (key === "listado_municipios" && destiny !== "Reparto") {
+        return isValid;
+      } // Get value from formData
       const error = validateField(key, value); // Pass value to validateField
       if (error) {
         newErrors[key] = error;
