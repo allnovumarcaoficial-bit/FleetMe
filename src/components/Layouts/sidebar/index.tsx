@@ -140,7 +140,11 @@ export function Sidebar() {
                                     <li key={subItem.title} role="none">
                                       {subItem.title === "Cerrar Sesión" ? (
                                         <MenuItem
-                                          onClick={() => signOut()}
+                                          onClick={() =>
+                                            signOut({
+                                              callbackUrl: "/auth/signin",
+                                            })
+                                          }
                                           isActive={pathname === subItem.url}
                                         >
                                           <span>{subItem.title}</span>
