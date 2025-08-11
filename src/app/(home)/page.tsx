@@ -8,7 +8,11 @@ import { Suspense } from "react";
 import { ChatsCard } from "./_components/chats-card";
 import { OverviewCardsGroup } from "./_components/overview-cards";
 import { OverviewCardsSkeleton } from "./_components/overview-cards/skeleton";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Fleet Me",
+};
 type PropsType = {
   searchParams: Promise<{
     selected_time_frame?: string;

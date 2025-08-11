@@ -150,7 +150,7 @@ model Mantenimiento {
   numero_serie_anterior     String?
   numero_serie_nueva        String?
   vehicleId                 Int
-  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 }
 
 model FuelCard {
