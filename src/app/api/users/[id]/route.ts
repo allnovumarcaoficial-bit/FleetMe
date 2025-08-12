@@ -21,12 +21,6 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await getServerSession(authOptions);
-
-  if (session?.user?.role !== Role.ADMIN) {
-    return new NextResponse("Forbidden", { status: 403 });
-  }
-
   try {
     const { id } = await params;
     const user = await prisma.user.findUnique({
@@ -46,10 +40,6 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
-
-  if (session?.user?.role !== Role.ADMIN) {
-    return new NextResponse("Forbidden", { status: 403 });
-  }
 
   try {
     const { id } = await params;

@@ -70,6 +70,10 @@ export const NAV_DATA = [
             url: "/gestionarusuarios",
           },
           {
+            title: "Editar Usuario",
+            url: "/editarusuario",
+          },
+          {
             title: "Cerrar Sesión",
             url: "/auth/signin",
           },

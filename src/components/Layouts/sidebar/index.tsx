@@ -133,8 +133,14 @@ export function Sidebar() {
                                 {item.items
                                   .filter(
                                     (subItem) =>
-                                      subItem.title !== "Gestionar Usuarios" ||
-                                      session?.user?.role === Role.ADMIN,
+                                      subItem.title === "Cerrar Sesión" || // siempre mostrar
+                                      (session?.user?.role === Role.ADMIN &&
+                                        subItem.title ===
+                                          "Gestionar Usuarios") ||
+                                      (session?.user?.role !== Role.ADMIN &&
+                                        subItem.title === "Editar Usuario") ||
+                                      (subItem.title !== "Gestionar Usuarios" &&
+                                        subItem.title !== "Editar Usuario"),
                                   )
                                   .map((subItem) => (
                                     <li key={subItem.title} role="none">
