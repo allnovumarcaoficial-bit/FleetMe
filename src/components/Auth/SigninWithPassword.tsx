@@ -1,10 +1,10 @@
 "use client";
-import { EmailIcon, PasswordIcon } from "@/assets/icons";
+import { EmailIcon, EyeIcon, EyeOffIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import InputGroup from "../FormElements/InputGroup";
+import InputGroup, { InputGroupPass } from "../FormElements/InputGroup";
 import { Checkbox } from "../FormElements/checkbox";
 
 export default function SigninWithPassword() {
@@ -18,6 +18,7 @@ export default function SigninWithPassword() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isVible, setIsVible] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setData({
@@ -65,15 +66,16 @@ export default function SigninWithPassword() {
         icon={<EmailIcon />}
       />
 
-      <InputGroup
-        type="password"
+      <InputGroupPass
+        type={isVible ? "text" : "password"}
         label="Contraseña"
         className="mb-5 [&_input]:py-[15px]"
         placeholder="Enter your password"
         name="password"
         handleChange={handleChange}
         value={data.password}
-        icon={<PasswordIcon />}
+        setVisible={setIsVible}
+        icon={isVible ? <EyeIcon /> : <EyeOffIcon />}
       />
 
       <div className="mb-6 flex items-center justify-between gap-2 py-2 font-medium">
