@@ -57,11 +57,6 @@ export const NAV_DATA = [
     label: "OTROS",
     items: [
       {
-        title: "Configuración",
-        icon: Icons.SettingsIcon,
-        url: "/settings",
-      },
-      {
         title: "Autenticación",
         icon: Icons.Authentication,
         items: [
