@@ -95,6 +95,7 @@ model Vehicle {
   matricula                            String   @unique
   fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
+  km_recorrido                         Float @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime
   fecha_vencimiento_somaton            DateTime
@@ -139,11 +140,13 @@ model Driver {
   carnet                            String?
   address                           String?
   createdAt                         DateTime @default(now())
-  updatedAt                         DateTime @updatedAt
+  updatedAt                         DateTime @updatedAt @default(now())
   photo                             String?
   estado                            String @default("Activo")
   vehicleId                         Int?
   vehicle                           Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  Servicio Servicio[]
 }
 
 model Mantenimiento {
@@ -192,9 +195,11 @@ model Servicio {
   destino             String?
   descripcion         String?
   kilometrosRecorridos Int
+  driver_id           Int?
   estado              String
   vehicleId           Int?
   vehicle             Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  driver              Driver? @relation(fields: [driver_id], references: [id], onDelete: SetNull)
 }
 
 model FuelOperation {
@@ -207,6 +212,8 @@ model FuelOperation {
   saldoFinal                Float
   saldoFinalLitros          Float
   fuelCardId                Int
+  descripcion               String?
+  ubicacion_cupet           String?
   fuelCard                  FuelCard @relation(fields: [fuelCardId], references: [id])
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt

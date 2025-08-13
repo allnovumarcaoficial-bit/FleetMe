@@ -15,8 +15,27 @@ export default async function SignIn() {
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="flex flex-wrap items-center">
+        {/* Logo solo en móvil */}
+        <div className="block w-full items-center justify-center p-6 text-center xl:hidden">
+          <div className="mb-4 flex-col items-center justify-center">
+            <Image
+              className="mx-auto hidden items-center justify-center dark:block"
+              src={"/images/logo/fleetLog.png"}
+              alt="Logo"
+              width={176}
+              height={32}
+            />
+            <h1 className="mb-4 text-2xl font-bold text-dark dark:text-white sm:text-heading-3">
+              ¡Bienvenido de nuevo!
+            </h1>
+            <p className="mx-auto w-full max-w-[375px] items-center justify-center text-center font-medium text-dark-4 dark:text-dark-6">
+              Por favor, inicia sesión en tu cuenta completando los campos
+              necesarios a continuación
+            </p>
+          </div>
+        </div>
         <div className="w-full xl:w-1/2">
-          <div className="w-full p-4 sm:p-12.5 xl:p-15">
+          <div className="w-full p-2 sm:p-12.5 xl:p-15">
             <Signin />
           </div>
         </div>
