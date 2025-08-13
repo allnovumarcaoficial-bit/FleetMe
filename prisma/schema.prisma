@@ -88,16 +88,17 @@ model VerificationToken {
 }
 
 model Vehicle {
-  id                                 Int      @id @default(autoincrement())
-  marca                              String
-  modelo                             String
-  vin                                String   @unique
-  matricula                          String   @unique
-  fecha_compra                       DateTime
+  id                                   Int      @id @default(autoincrement())
+  marca                                String
+  modelo                               String
+  vin                                  String   @unique
+  matricula                            String   @unique
+  fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
-  fecha_vencimiento_circulacion      DateTime
-  fecha_vencimiento_somaton          DateTime
-  estado                             String
+  photo_Car                            String?
+  fecha_vencimiento_circulacion        DateTime
+  fecha_vencimiento_somaton            DateTime
+  estado                               String
   gps                                Boolean
   listado_municipios                 String?   // Stored as JSON string for SQLite
   tipo_vehiculo                      String?
@@ -106,6 +107,7 @@ model Vehicle {
   capacidad_carga                    String?
   cantidad_conductores               Int?
   ciclo_mantenimiento_km             Int?
+  odometro                           BigInt?
   es_electrico                       Boolean?
   cantidad_baterias                  Int?
   tipo_bateria                       String?
@@ -114,8 +116,7 @@ model Vehicle {
   tipo_combustible                   String?
   capacidad_tanque                   Float?
   indice_consumo                     Float?
-  driverId                           Int?     @unique
-  driver                             Driver?  @relation(fields: [driverId], references: [id])
+  driver                             Driver[]
   mantenimientos                     Mantenimiento[]
   servicios                          Servicio[]
   fuelDistributions                  FuelDistribution[]
@@ -134,8 +135,15 @@ model Driver {
   licencia                          String   @unique
   fecha_vencimiento_licencia        DateTime
   carnet_peritage                   Boolean
+  phone                             String?
+  carnet                            String?
+  address                           String?
+  createdAt                         DateTime @default(now())
+  updatedAt                         DateTime @updatedAt
+  photo                             String?
   estado                            String @default("Activo")
-  vehicle                           Vehicle? 
+  vehicleId                         Int?
+  vehicle                           Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 }
 
 model Mantenimiento {
@@ -149,24 +157,30 @@ model Mantenimiento {
   estado                    String @default("Pendiente")
   numero_serie_anterior     String?
   numero_serie_nueva        String?
-  vehicleId                 Int
-  vehicle                   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleId                 Int?
+  vehicle                   Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 }
 
 model FuelCard {
   id                        Int      @id @default(autoincrement())
   numeroDeTarjeta           String   @unique
   tipoDeTarjeta             String
-  tipoDeCombustible         String
-  precioCombustible         Float
   moneda                    String
+  saldo                     Float?
   fechaVencimiento          DateTime
-  esReservorio              Boolean
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
   fuelOperations            FuelOperation[] // Add relation to FuelOperation
 }
-
+model Reservorio {
+  id                  String @id @default(cuid())
+  nombre              String
+  capacidad_actual    String
+  capacidad_total     String
+  fuelOperations      FuelOperation[] // Opposite relation field added
+  tipoCombustibleId   Int?
+  tipoCombustible     TipoComustible? @relation(fields: [tipoCombustibleId], references: [id], onDelete: SetNull)
+}
 model Servicio {
   id                  Int      @id @default(autoincrement())
   tipoServicio        String
@@ -179,8 +193,8 @@ model Servicio {
   descripcion         String?
   kilometrosRecorridos Int
   estado              String
-  vehicleId           Int
-  vehicle             Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleId           Int?
+  vehicle             Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 }
 
 model FuelOperation {
@@ -196,7 +210,10 @@ model FuelOperation {
   fuelCard                  FuelCard @relation(fields: [fuelCardId], references: [id])
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
+  reservorioId              String?
+  reservorio                Reservorio? @relation(fields: [reservorioId], references: [id], onDelete: SetNull)
   fuelDistributions         FuelDistribution[]
+  operationTipos            OperationTipo[]
 }
 
 model FuelDistribution {
@@ -206,4 +223,29 @@ model FuelDistribution {
   vehicleId       Int
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
   liters          Float
+  
+}
+model OperationTipo{
+  id                    String @id @default(cuid())
+  fuelOperationId       Int?
+  id_operation          FuelOperation? @relation(fields: [fuelOperationId], references: [id], onDelete: SetNull)
+  tipoComustible_id     Int?
+  id_fuel_type          TipoComustible? @relation(fields: [tipoComustible_id], references: [id], onDelete: SetNull) 
+}
+model TipoComustible{
+  id                        Int      @id @default(autoincrement())
+  nombre                    String   @unique
+  precio                    Float
+  fechaUpdate               DateTime @default(now())
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  tipoCombustibleEnum       TipoCombustibleEnum
+  operationTipos            OperationTipo[] // Opposite relation field added
+  reservorios               Reservorio[] // Opposite relation field for Reservorio
+}
+
+enum TipoCombustibleEnum {
+  Gasolina_Regular
+  Diesel
+  Gasolina_Especial
 }

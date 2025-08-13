@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputGroup, { InputGroupPass } from "../FormElements/InputGroup";
-import { Checkbox } from "../FormElements/checkbox";
 
 export default function SigninWithPassword() {
   const router = useRouter();
