@@ -95,6 +95,7 @@ model Vehicle {
   matricula                            String   @unique
   fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
+  km_recorrido                         Float
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime
   fecha_vencimiento_somaton            DateTime
