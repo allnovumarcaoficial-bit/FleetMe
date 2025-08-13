@@ -95,7 +95,7 @@ model Vehicle {
   matricula                            String   @unique
   fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
-  km_recorrido                         Float
+  km_recorrido                         Float @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime
   fecha_vencimiento_somaton            DateTime
@@ -140,7 +140,7 @@ model Driver {
   carnet                            String?
   address                           String?
   createdAt                         DateTime @default(now())
-  updatedAt                         DateTime @updatedAt
+  updatedAt                         DateTime @updatedAt @default(now())
   photo                             String?
   estado                            String @default("Activo")
   vehicleId                         Int?
