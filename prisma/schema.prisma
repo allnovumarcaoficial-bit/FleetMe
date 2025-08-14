@@ -3,37 +3,37 @@ generator client {
 }
 
 datasource db {
- provider = "postgresql"
- url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Modelo de Usuario modificado
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
   hashedPassword String? // Campo para la contraseña encriptada
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          Role      @default(USER) // Nuevo campo de rol
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  role           Role      @default(USER) // Nuevo campo de rol
 
-  accounts Account[]
-  sessions Session[]
+  accounts      Account[]
+  sessions      Session[]
   notifications Notification[]
 }
 
 model Notification {
-  id        String    @id @default(cuid())
-  type      NotificationType
-  message   String
-  details   String?
-  date      DateTime  @default(now())
-  read      Boolean   @default(false)
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  link      String?   // Opcional: para redirigir al usuario a una página específica
+  id      String           @id @default(cuid())
+  type    NotificationType
+  message String
+  details String?
+  date    DateTime         @default(now())
+  read    Boolean          @default(false)
+  userId  String
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  link    String? // Opcional: para redirigir al usuario a una página específica
 
   @@index([userId])
 }
@@ -88,40 +88,40 @@ model VerificationToken {
 }
 
 model Vehicle {
-  id                                   Int      @id @default(autoincrement())
+  id                                   Int                @id @default(autoincrement())
   marca                                String
   modelo                               String
-  vin                                  String   @unique
-  matricula                            String   @unique
+  vin                                  String             @unique
+  matricula                            String             @unique
   fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
-  km_recorrido                         Float @default(0) // Nuevo campo para el kilometraje recorrido
+  km_recorrido                         BigInt             @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime
   fecha_vencimiento_somaton            DateTime
   estado                               String
-  gps                                Boolean
-  listado_municipios                 String?   // Stored as JSON string for SQLite
-  tipo_vehiculo                      String?
-  cantidad_neumaticos                Int?
-  tipo_neumaticos                    String?
-  capacidad_carga                    String?
-  cantidad_conductores               Int?
-  ciclo_mantenimiento_km             Int?
-  odometro                           BigInt?
-  es_electrico                       Boolean?
-  cantidad_baterias                  Int?
-  tipo_bateria                       String?
-  amperage                           Float?
-  voltage                            Float?
-  tipo_combustible                   String?
-  capacidad_tanque                   Float?
-  indice_consumo                     Float?
-  driver                             Driver[]
-  mantenimientos                     Mantenimiento[]
-  servicios                          Servicio[]
-  fuelDistributions                  FuelDistribution[]
-  destino                            DestinoVehiculo @default(Administrativo)
+  gps                                  Boolean
+  listado_municipios                   String? // Stored as JSON string for SQLite
+  tipo_vehiculo                        String?
+  cantidad_neumaticos                  Int?
+  tipo_neumaticos                      String?
+  capacidad_carga                      String?
+  cantidad_conductores                 Int?
+  ciclo_mantenimiento_km               Int?
+  odometro                             BigInt?
+  es_electrico                         Boolean?
+  cantidad_baterias                    Int?
+  tipo_bateria                         String?
+  amperage                             Float?
+  voltage                              Float?
+  tipo_combustible                     String?
+  capacidad_tanque                     Float?
+  indice_consumo                       Float?
+  driver                               Driver[]
+  mantenimientos                       Mantenimiento[]
+  servicios                            Servicio[]
+  fuelDistributions                    FuelDistribution[]
+  destino                              DestinoVehiculo    @default(Administrativo)
 }
 
 enum DestinoVehiculo {
@@ -131,130 +131,171 @@ enum DestinoVehiculo {
 }
 
 model Driver {
-  id                                Int      @id @default(autoincrement())
-  nombre                            String
-  licencia                          String   @unique
-  fecha_vencimiento_licencia        DateTime
-  carnet_peritage                   Boolean
-  phone                             String?
-  carnet                            String?
-  address                           String?
-  createdAt                         DateTime @default(now())
-  updatedAt                         DateTime @updatedAt @default(now())
-  photo                             String?
-  estado                            String @default("Activo")
-  vehicleId                         Int?
-  vehicle                           Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
-  Servicio                          Servicio[]
+  id                         Int        @id @default(autoincrement())
+  nombre                     String
+  licencia                   String     @unique
+  fecha_vencimiento_licencia DateTime
+  carnet_peritage            Boolean
+  phone                      String?
+  carnet                     String?
+  address                    String?
+  createdAt                  DateTime   @default(now())
+  updatedAt                  DateTime   @updatedAt
+  photo                      String?
+  estado                     String     @default("Activo")
+  vehicleId                  Int?
+  vehicle                    Vehicle?   @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  Servicio                   Servicio[]
 }
 
 model Mantenimiento {
-  id                        Int      @id @default(autoincrement())
-  tipo                      String // "Correctivo" o "Preventivo"
-  fecha                     DateTime
-  costo                     Float
-  descripcion               String
-  lista_de_piezas           String // Stored as JSON string
-  cambio_de_pieza           Boolean
-  estado                    String @default("Pendiente")
-  numero_serie_anterior     String?
-  numero_serie_nueva        String?
-  vehicleId                 Int?
-  vehicle                   Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  id                    Int                 @id @default(autoincrement())
+  tipo                  MantenimientoTipo
+  fecha                 DateTime
+  costo                 Float
+  descripcion           String
+  lista_de_piezas       String // Stored as JSON string
+  cambio_de_pieza       Boolean
+  estado                MantenimientoEstado @default(Pendiente)
+  numero_serie_anterior String?
+  numero_serie_nueva    String?
+  vehicleId             Int?
+  vehicle               Vehicle?            @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
 }
 
 model FuelCard {
-  id                        Int      @id @default(autoincrement())
-  numeroDeTarjeta           String   @unique
-  tipoDeTarjeta             String
-  moneda                    String
-  saldo                     Float?
-  fechaVencimiento          DateTime
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-  fuelOperations            FuelOperation[] // Add relation to FuelOperation
+  id               Int             @id @default(autoincrement())
+  numeroDeTarjeta  String          @unique
+  tipoDeTarjeta    String
+  moneda           String
+  saldo            Float?
+  fechaVencimiento DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  fuelOperations   FuelOperation[] // Add relation to FuelOperation
 }
 
 model Reservorio {
-  id                  String @id @default(cuid())
+  id                  String                @id @default(cuid())
   nombre              String
-  capacidad_actual    String
-  capacidad_total     String
-  fuelOperations      FuelOperation[] // Opposite relation field added
+  capacidad_actual    Float
+  capacidad_total     Float
+  operationReservorio OperationReservorio[] // Opposite relation field added
   tipoCombustibleId   Int?
-  tipoCombustible     TipoComustible? @relation(fields: [tipoCombustibleId], references: [id], onDelete: SetNull)
+  tipoCombustible     TipoCombustible?      @relation(fields: [tipoCombustibleId], references: [id], onDelete: SetNull)
+}
+
+model OperationReservorio {
+  id              String        @id @default(cuid())
+  fuelOperationId Int
+  id_operation    FuelOperation @relation(fields: [fuelOperationId], references: [id])
+  reservorio_id   String
+  reservorio      Reservorio    @relation(fields: [reservorio_id], references: [id])
+  operationType   String?
+
+  @@unique([fuelOperationId, reservorio_id])
 }
 
 model Servicio {
-  id                  Int      @id @default(autoincrement())
-  tipoServicio        String
-  fecha               DateTime
-  odometroInicial     Int
-  odometroFinal       Int?
-  cantidadPedidos     Int?
-  origen              String?
-  destino             String?
-  descripcion         String?
-  kilometrosRecorridos Int
-  driver_id           Int?
-  estado              String
-  vehicleId           Int?
-  vehicle             Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
-  driver              Driver? @relation(fields: [driver_id], references: [id], onDelete: SetNull)
+  id                   Int            @id @default(autoincrement())
+  tipoServicio         ServicioTipo
+  fecha                DateTime
+  odometroInicial      BigInt
+  odometroFinal        BigInt?
+  cantidadPedidos      Int?
+  origen               String?
+  destino              String?
+  descripcion          String?
+  kilometrosRecorridos Int?
+  driver_id            Int?
+  estado               ServicioEstado
+  vehicleId            Int?
+  vehicle              Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  driver               Driver?        @relation(fields: [driver_id], references: [id], onDelete: SetNull)
 }
 
 model FuelOperation {
-  id                        Int      @id @default(autoincrement())
-  tipoOperacion             String // "Carga" or "Consumo"
-  fecha                     DateTime
-  saldoInicio               Float
-  valorOperacionDinero      Float
-  valorOperacionLitros      Float
-  saldoFinal                Float
-  saldoFinalLitros          Float
-  fuelCardId                Int
-  descripcion               String?
-  ubicacion_cupet           String?
-  fuelCard                  FuelCard @relation(fields: [fuelCardId], references: [id])
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-  reservorio                Reservorio[]
-  fuelDistributions         FuelDistribution[]
-  operationTipos            OperationTipo[]
+  id                   Int                   @id @default(autoincrement())
+  tipoOperacion        FuelOperationType
+  fecha                DateTime
+  saldoInicio          Float
+  valorOperacionDinero Float
+  valorOperacionLitros Float
+  saldoFinal           Float
+  saldoFinalLitros     Float
+  fuelCardId           Int
+  descripcion          String?
+  ubicacion_cupet      String?
+  fuelCard             FuelCard              @relation(fields: [fuelCardId], references: [id])
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  operationReservorio  OperationReservorio[]
+  fuelDistributions    FuelDistribution[]
+  operationTipos       OperationTipo[]
 }
 
 model FuelDistribution {
-  id              Int           @id @default(autoincrement())
-  fuelOperationId Int
-  vehicleId       Int
-  liters          Float
-  odometro_Vehicle Float?
-  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
-  fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)  
+  id               Int            @id @default(autoincrement())
+  fuelOperationId  Int?
+  vehicleId        Int?
+  liters           Float
+  odometro_Vehicle BigInt?
+  vehicle          Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  fuelOperation    FuelOperation? @relation(fields: [fuelOperationId], references: [id], onDelete: SetNull)
 }
 
-model OperationTipo{
-  id                    String @id @default(cuid())
-  fuelOperationId       Int?
-  id_operation          FuelOperation? @relation(fields: [fuelOperationId], references: [id], onDelete: SetNull)
-  tipoComustible_id     Int?
-  id_fuel_type          TipoComustible? @relation(fields: [tipoComustible_id], references: [id], onDelete: SetNull) 
+model OperationTipo {
+  id                 String          @id @default(cuid())
+  fuelOperationId    Int
+  id_operation       FuelOperation   @relation(fields: [fuelOperationId], references: [id])
+  tipoCombustible_id Int
+  id_fuel_type       TipoCombustible @relation(fields: [tipoCombustible_id], references: [id])
+
+  @@unique([fuelOperationId, tipoCombustible_id])
 }
 
-model TipoComustible{
-  id                        Int      @id @default(autoincrement())
-  nombre                    String   @unique
-  precio                    Float
-  fechaUpdate               DateTime @default(now())
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @updatedAt
-  tipoCombustibleEnum       TipoCombustibleEnum
-  operationTipos            OperationTipo[] // Opposite relation field added
-  reservorios               Reservorio[] // Opposite relation field for Reservorio
+model TipoCombustible {
+  id                  Int                 @id @default(autoincrement())
+  nombre              String              @unique
+  precio              Float
+  fechaUpdate         DateTime            @default(now())
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  tipoCombustibleEnum TipoCombustibleEnum
+  operationTipos      OperationTipo[] // Opposite relation field added
+  reservorios         Reservorio[] // Opposite relation field for Reservorio
 }
 
 enum TipoCombustibleEnum {
   Gasolina_Regular
   Diesel
   Gasolina_Especial
+}
+
+enum MantenimientoTipo {
+  Correctivo
+  Preventivo
+}
+
+enum MantenimientoEstado {
+  Pendiente
+  Ejecutado
+  Cancelado
+}
+
+enum ServicioTipo {
+  EntregaDePedidos
+  Logistico
+  Administrativo
+}
+
+enum ServicioEstado {
+  Pendiente
+  Completado
+  Cancelado
+}
+
+enum FuelOperationType {
+  Carga
+  Consumo
 }
