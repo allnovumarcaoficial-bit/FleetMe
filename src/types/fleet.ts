@@ -6,6 +6,13 @@ export interface Driver {
   carnet_peritage: boolean;
   estado: DriverStatus; // Add this field
   vehicle?: Vehicle | null; // 1-to-1 relation with Vehicle
+  photo?: string | null;
+  address?: string | null;
+  carnet?: string | null;
+  phone?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  vehicleId?: number | null; // Foreign key to Vehicle
 }
 
 export type DriverStatus = "Activo" | "Inactivo" | "Vacaciones"; // New type for driver status

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Driver, Vehicle, DriverStatus } from "@/types/fleet";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select"; // Import Select component
@@ -40,16 +40,17 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
 
   useEffect(() => {
     if (initialData) {
-      setFormData({
+      setFormData((prev) => ({
+        ...prev,
         ...initialData,
         fecha_vencimiento_licencia: initialData.fecha_vencimiento_licencia
           ? new Date(initialData.fecha_vencimiento_licencia)
           : null,
-      });
+      }));
     }
   }, [initialData]);
 
-  const validateField = (name: string, value: any): string => {
+  const validateField = useCallback((name: string, value: any): string => {
     let error = "";
     switch (name) {
       case "nombre":
@@ -61,9 +62,25 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         if (!value || isNaN(new Date(value).getTime()))
           error = "Fecha inválida.";
         break;
+      case "carnet":
+        if (!value) {
+          error = "El carnet es requerido.";
+        } else if (!/^\d{7,10}$/.test(value)) {
+          error = "El carnet debe tener entre 7 y 10 dígitos.";
+        }
+        break;
+
+      case "phone":
+        if (!value) error = "El teléfono es requerido.";
+        else if (!/^\+?\d{7,15}$/.test(value))
+          error = "Número de teléfono inválido.";
+        break;
+      case "address":
+        if (!value) error = "La dirección es requerida.";
+        break;
     }
     return error;
-  };
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -80,34 +97,41 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
-    const fieldError = validateField(name, newValue);
-    setErrors((prev) => ({ ...prev, [name]: fieldError }));
-    console.log(`handleChange: ${name} = ${newValue}, error = ${fieldError}`);
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, newValue) }));
   };
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
-    for (const key in formData) {
-      const value = (formData as any)[key];
-      const error = validateField(key, value);
+    const fieldsToValidate: (keyof Driver)[] = [
+      "address",
+      "carnet",
+      "phone",
+      "licencia",
+      "estado",
+      "fecha_vencimiento_licencia",
+      "nombre",
+    ];
+
+    fieldsToValidate.forEach((field) => {
+      const value = formData[field];
+      const error = validateField(field as string, value);
       if (error) {
-        newErrors[key] = error;
+        newErrors[field as string] = error;
         isValid = false;
       }
-    }
+    });
+
     setErrors(newErrors);
-    console.log("validateForm: newErrors", newErrors);
     return isValid;
-  };
+  }, [formData, validateField]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus({ type: "", message: "" });
 
-    console.log("handleSubmit: formData before validation", formData);
     if (!validateForm()) {
-      console.log("handleSubmit: Validation failed, errors:", errors);
+      console.log(validateForm());
       setFormStatus({
         type: "error",
         message: "Por favor, corrige los errores del formulario.",
@@ -180,6 +204,58 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
             />
             {errors.nombre && (
               <p className="mt-1 text-sm text-red-500">{errors.nombre}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Carnet"
+              name="carnet"
+              type="text"
+              placeholder="Introduce el Carnet de Identidad"
+              value={formData.carnet || ""}
+              handleChange={handleChange}
+            />
+            {errors.carnet && (
+              <p className="mt-1 text-sm text-red-500">{errors.carnet}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Teléfono"
+              name="phone"
+              type="text"
+              placeholder="Introduce el número de teléfono"
+              value={formData.phone || ""}
+              handleChange={handleChange}
+            />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Dirección"
+              name="address"
+              type="text"
+              placeholder="Introduzca su dirección"
+              value={formData.address || ""}
+              handleChange={handleChange}
+            />
+            {errors.address && (
+              <p className="mt-1 text-sm text-red-500">{errors.address}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Foto de Perfil"
+              name="photo"
+              type="file"
+              placeholder="Introduzca su foto de perfil"
+              value={formData.photo || ""}
+              handleChange={handleChange}
+            />
+            {errors.photo && (
+              <p className="mt-1 text-sm text-red-500">{errors.photo}</p>
             )}
           </div>
           <div>

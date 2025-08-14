@@ -116,8 +116,17 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { nombre, licencia, fecha_vencimiento_licencia, carnet_peritage } =
-      body;
+    const {
+      nombre,
+      licencia,
+      fecha_vencimiento_licencia,
+      carnet_peritage,
+      photo,
+      address,
+      carnet,
+      phone,
+      estado,
+    } = body;
 
     const parsedFechaVencimientoLicencia = new Date(fecha_vencimiento_licencia);
 
@@ -127,6 +136,11 @@ export async function POST(request: Request) {
         licencia,
         fecha_vencimiento_licencia: parsedFechaVencimientoLicencia,
         carnet_peritage,
+        photo: photo || null, // Ensure undefined becomes null
+        address: address || null, // Ensure undefined becomes null
+        carnet: carnet || null, // Ensure undefined becomes null
+        phone: phone || null, // Ensure undefined becomes null
+        estado: estado || "activo", // Default to 'activo' if not provided
       },
     });
 
