@@ -145,8 +145,7 @@ model Driver {
   estado                            String @default("Activo")
   vehicleId                         Int?
   vehicle                           Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
-
-  Servicio Servicio[]
+  Servicio                          Servicio[]
 }
 
 model Mantenimiento {
@@ -175,6 +174,7 @@ model FuelCard {
   updatedAt                 DateTime @updatedAt
   fuelOperations            FuelOperation[] // Add relation to FuelOperation
 }
+
 model Reservorio {
   id                  String @id @default(cuid())
   nombre              String
@@ -184,6 +184,7 @@ model Reservorio {
   tipoCombustibleId   Int?
   tipoCombustible     TipoComustible? @relation(fields: [tipoCombustibleId], references: [id], onDelete: SetNull)
 }
+
 model Servicio {
   id                  Int      @id @default(autoincrement())
   tipoServicio        String
@@ -229,9 +230,9 @@ model FuelDistribution {
   liters          Float
   odometro_Vehicle Float?
   vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
-  fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)
-  
+  fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)  
 }
+
 model OperationTipo{
   id                    String @id @default(cuid())
   fuelOperationId       Int?
@@ -239,6 +240,7 @@ model OperationTipo{
   tipoComustible_id     Int?
   id_fuel_type          TipoComustible? @relation(fields: [tipoComustible_id], references: [id], onDelete: SetNull) 
 }
+
 model TipoComustible{
   id                        Int      @id @default(autoincrement())
   nombre                    String   @unique
