@@ -15,6 +15,8 @@ interface DriverFormProps {
 
 const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   const router = useRouter();
+  const [selectedFecha, setSelectedFecha] = useState<Date>(new Date());
+  const [lisStado, setEstado] = useState<DriverStatus>("Activo");
   const [formData, setFormData] = useState<Partial<Driver>>(
     initialData
       ? {
@@ -59,14 +61,15 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         if (!value) error = "Este campo es requerido.";
         break;
       case "fecha_vencimiento_licencia":
+        setSelectedFecha(value);
         if (!value || isNaN(new Date(value).getTime()))
           error = "Fecha inválida.";
         break;
       case "carnet":
         if (!value) {
           error = "El carnet es requerido.";
-        } else if (!/^\d{7,10}$/.test(value)) {
-          error = "El carnet debe tener entre 7 y 10 dígitos.";
+        } else if (!/^\d{7,11}$/.test(value)) {
+          error = "El carnet debe tener entre 7 y 11 dígitos.";
         }
         break;
 
@@ -178,6 +181,11 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
       setLoading(false);
     }
   };
+  if (selectedFecha < new Date()) {
+    formData.estado = "Inactivo";
+  } else if (selectedFecha > new Date()) {
+    formData.estado = "Activo";
+  }
 
   if (loading && !initialData) return <p>Cargando formulario...</p>;
 

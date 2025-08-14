@@ -37,7 +37,6 @@ export async function PUT(request: Request, context: any) {
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid driver ID" }, { status: 400 });
     }
-
     const body = await request.json();
     const {
       nombre,
@@ -65,21 +64,6 @@ export async function PUT(request: Request, context: any) {
       vehicleUpdateData = { disconnect: true };
     } else if (vehicleId !== undefined) {
       // Connect to a new vehicle, or update existing connection
-      const existingVehicle = await prisma.vehicle.findUnique({
-        where: { id: vehicleId },
-        include: { driver: true },
-      });
-
-      if (
-        existingVehicle &&
-        existingVehicle.driver &&
-        existingVehicle.driver.id !== id
-      ) {
-        return NextResponse.json(
-          { error: "El vehículo seleccionado ya tiene un conductor asignado." },
-          { status: 409 },
-        );
-      }
       vehicleUpdateData = { connect: { id: vehicleId } };
     }
 
@@ -121,12 +105,6 @@ export async function DELETE(request: Request, context: any) {
     if (isNaN(id)) {
       return NextResponse.json({ error: "Invalid driver ID" }, { status: 400 });
     }
-
-    // Before deleting the driver, disconnect them from any associated vehicle
-    await prisma.vehicle.updateMany({
-      where: { driverId: id },
-      data: { driverId: null },
-    });
 
     await prisma.driver.delete({
       where: { id },
