@@ -892,7 +892,7 @@ const VehicleForm = ({
             </div>
             <div>
               <InputGroup
-                label="Índice de Consumo (L/100km)"
+                label="Índice de Consumo (km/L)"
                 name="indice_consumo"
                 type="number"
                 placeholder="Introduce el índice"
