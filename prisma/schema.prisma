@@ -217,8 +217,7 @@ model FuelOperation {
   fuelCard                  FuelCard @relation(fields: [fuelCardId], references: [id])
   createdAt                 DateTime @default(now())
   updatedAt                 DateTime @updatedAt
-  reservorioId              String?
-  reservorio                Reservorio? @relation(fields: [reservorioId], references: [id], onDelete: SetNull)
+  reservorio                Reservorio[]
   fuelDistributions         FuelDistribution[]
   operationTipos            OperationTipo[]
 }
@@ -226,10 +225,11 @@ model FuelOperation {
 model FuelDistribution {
   id              Int           @id @default(autoincrement())
   fuelOperationId Int
-  fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)
   vehicleId       Int
-  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
   liters          Float
+  odometro_Vehicle Float?
+  vehicle         Vehicle       @relation(fields: [vehicleId], references: [id] , onDelete: Cascade)
+  fuelOperation   FuelOperation @relation(fields: [fuelOperationId], references: [id], onDelete: Cascade)
   
 }
 model OperationTipo{
