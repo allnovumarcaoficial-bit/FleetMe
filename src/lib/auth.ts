@@ -1,10 +1,11 @@
-import { AuthOptions, NextAuthOptions, SessionStrategy } from "next-auth";
+import { AuthOptions, SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "./prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { Adapter } from "next-auth/adapters";
 import { Role, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
 type UserWithHashedPassword = User & {
   hashedPassword?: string | null;
   role: Role;
@@ -50,17 +51,15 @@ export const authOptions: AuthOptions = {
   ],
 
   pages: {
-    signIn: "/auth/signin", // Tu ruta personalizada de login
+    signIn: "/auth/signin",
   },
 
   debug: process.env.NODE_ENV === "development",
 
   session: {
-    strategy: "jwt" as SessionStrategy, // 🔄 Cambiado de "database" a "jwt"
-    maxAge: 5 * 60, // 5 minutos
+    strategy: "jwt" as SessionStrategy,
+    maxAge: 24 * 60 * 60, // 1 día
   },
-
-  secret: process.env.NEXTAUTH_SECRET,
 
   callbacks: {
     async jwt({ token, user }) {
@@ -72,6 +71,7 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token }) {
+      // Mantenemos el objeto session válido incluso si necesitamos forzar logout
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;

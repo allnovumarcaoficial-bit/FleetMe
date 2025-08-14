@@ -1,7 +1,7 @@
 "use client";
 import { EmailIcon, EyeIcon, EyeOffIcon, PasswordIcon } from "@/assets/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputGroup, { InputGroupPass } from "../FormElements/InputGroup";
@@ -25,6 +25,16 @@ export default function SigninWithPassword() {
       [e.target.name]: e.target.value,
     });
   };
+  useEffect(() => {
+    // Verificar si el inicio de sesión fue exitoso
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get("error");
+
+    if (!error) {
+      // Establecer el flag de sesión activa
+      sessionStorage.setItem("next-auth-session-active", "true");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,6 +49,7 @@ export default function SigninWithPassword() {
     setLoading(false);
 
     if (result?.ok) {
+      sessionStorage.setItem("next-auth-session-active", "true");
       // Si el inicio de sesión es exitoso, redirigir a la URL de retorno o al dashboard
       router.push("/");
     } else {

@@ -8,7 +8,7 @@ import { getTitle } from "@/lib/titles";
 
 export default function DashboardLayout({ children }: PropsWithChildren) {
   const pathname = usePathname();
-  const isSignInPage = pathname === "/auth/sign-in";
+  const isSignInPage = pathname === "/auth/signin";
   const title = getTitle(pathname);
 
   if (isSignInPage) {

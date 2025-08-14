@@ -5,13 +5,6 @@ import { authOptions } from "@/lib/auth";
 import Image from "next/image";
 
 export default async function SignIn() {
-  const session = await getServerSession(authOptions);
-
-  // Si el usuario ya está autenticado, redirigir al dashboard
-  if (session) {
-    redirect("/");
-  }
-
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="flex flex-wrap items-center">

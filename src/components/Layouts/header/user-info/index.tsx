@@ -32,7 +32,7 @@ export function UserInfo() {
 
   if (status === "unauthenticated" || !session?.user) {
     return (
-      <Link href="/auth/sign-in" className="text-primary">
+      <Link href="/auth/signin" className="text-primary">
         Iniciar Sesión
       </Link>
     );

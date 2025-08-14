@@ -13,6 +13,7 @@ import ConditionalLayout from "@/components/Layouts/ConditionalLayout";
 import NextTopLoader from "nextjs-toploader";
 import SessionManager from "@/components/SessionManager";
 import { authOptions } from "@/lib/auth";
+import SessionChecker from "@/components/SessionChecker";
 
 export const metadata: Metadata = {
   title: {
@@ -30,7 +31,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     <html lang="es" suppressHydrationWarning>
       <body>
         <Providers session={session}>
-          <SessionManager />
+          <SessionChecker />
           <NextTopLoader color="#5750F1" showSpinner={false} />
           <ConditionalLayout>{children}</ConditionalLayout>
         </Providers>

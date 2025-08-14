@@ -38,7 +38,8 @@ interface UseNotificationsHook {
 
 export const useNotifications = (): UseNotificationsHook => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const [sessionValidated, setSessionValidated] = useState(false);
 
   const markAsRead = useCallback(
     async (id: string, updatedData?: Partial<Notification>) => {
@@ -151,7 +152,7 @@ export const useNotifications = (): UseNotificationsHook => {
     displayNotification,
   );
   const fetchNotifications = useCallback(async () => {
-    if (!session) return;
+    if (status !== "authenticated" || !sessionValidated) return;
     try {
       const response = await fetch("/api/notifications");
       if (response.ok) {
@@ -164,7 +165,7 @@ export const useNotifications = (): UseNotificationsHook => {
       console.error("Error fetching notifications:", error);
       showErrorMessage("No se pudieron cargar las notificaciones.");
     }
-  }, [session]);
+  }, [status, sessionValidated]);
 
   const { generateNotifications } = useNotificationGenerator(
     fetchNotifications,
@@ -172,13 +173,21 @@ export const useNotifications = (): UseNotificationsHook => {
   );
 
   useEffect(() => {
-    if (session) {
-      // generateNotifications ya se encarga de llamar a fetchNotifications
-      // a través del callback refreshNotifications.
+    // Esperar a que el SessionChecker valide la sesión
+    const checkValidation = () => {
+      const isValid =
+        sessionStorage.getItem("next-auth-session-active") === "true";
+      setSessionValidated(isValid);
+    };
+
+    checkValidation();
+  }, []);
+
+  useEffect(() => {
+    if (sessionValidated && status === "authenticated") {
       generateNotifications();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session]); // Solo debe ejecutarse cuando la sesión cambia.
+  }, [sessionValidated, status, generateNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
