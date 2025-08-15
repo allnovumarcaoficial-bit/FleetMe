@@ -136,6 +136,15 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
               <strong>Nombre:</strong> {driver.nombre}
             </p>
             <p>
+              <strong>Télefono:</strong> {driver.phone}
+            </p>
+            <p>
+              <strong>Dirección:</strong> {driver.address}
+            </p>
+            <p>
+              <strong>Foto:</strong> {driver.photo}
+            </p>
+            <p>
               <strong>Licencia:</strong> {driver.licencia}
             </p>
             <p>

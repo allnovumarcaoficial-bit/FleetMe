@@ -116,7 +116,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
-    console.log(name, value);
 
     if (type === "checkbox") {
       newValue = (e.target as HTMLInputElement).checked;
@@ -156,7 +155,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
     setFormStatus({ type: "", message: "" });
 
     if (!validateForm()) {
