@@ -46,6 +46,7 @@ export async function PUT(request: Request, context: any) {
       estado, // Add estado field
       vehicleId, // Optional: for connecting/disconnecting a vehicle
     } = body;
+    console.log("Received data:", body);
     if (estado) {
       const validation = await canUpdateDriverStatus(id, estado);
       if (!validation.canUpdate) {

@@ -49,8 +49,32 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           ? new Date(initialData.fecha_vencimiento_licencia)
           : null,
       }));
+      setSelectedFecha(
+        initialData.fecha_vencimiento_licencia
+          ? new Date(initialData.fecha_vencimiento_licencia)
+          : new Date(),
+      );
     }
   }, [initialData]);
+  useEffect(() => {
+    // Solo actualiza si `selectedFecha` cambia
+    if (selectedFecha < new Date()) {
+      setFormData((prev) => ({
+        ...prev,
+        estado: "Inactivo", // Fuerza "Inactivo" si la fecha está vencida
+      }));
+    } else if (selectedFecha > new Date()) {
+      setFormData((prev) => {
+        if (prev.estado === "Inactivo") {
+          return {
+            ...prev,
+            estado: "Activo", // Fuerza "Activo" si estaba "Inactivo" y la fecha es futura
+          };
+        }
+        return prev;
+      });
+    }
+  }, [selectedFecha]);
 
   const validateField = useCallback((name: string, value: any): string => {
     let error = "";
@@ -92,6 +116,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
+    console.log(name, value);
 
     if (type === "checkbox") {
       newValue = (e.target as HTMLInputElement).checked;
@@ -131,6 +156,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(formData);
     setFormStatus({ type: "", message: "" });
 
     if (!validateForm()) {
@@ -181,12 +207,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
       setLoading(false);
     }
   };
-  if (selectedFecha < new Date()) {
-    formData.estado = "Inactivo";
-  } else if (selectedFecha > new Date()) {
-    formData.estado = "Activo";
-  }
-
   if (loading && !initialData) return <p>Cargando formulario...</p>;
 
   return (
@@ -318,16 +338,25 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           <div>
             <Select
               label="Estado"
-              items={[
-                { value: "Activo", label: "Activo" },
-                { value: "Inactivo", label: "Inactivo" },
-                { value: "Vacaciones", label: "Vacaciones" },
-              ]}
-              value={formData.estado || ""}
-              placeholder="Selecciona un estado"
-              onChange={(e) =>
-                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              items={
+                selectedFecha < new Date()
+                  ? [{ value: "Inactivo", label: "Inactivo" }]
+                  : [
+                      { value: "Activo", label: "Activo" },
+                      { value: "Vacaciones", label: "Vacaciones" },
+                    ]
               }
+              value={
+                selectedFecha < new Date()
+                  ? "Inactivo"
+                  : formData.estado === "Inactivo"
+                    ? "Activo"
+                    : formData.estado || "Activo"
+              }
+              placeholder="Selecciona un estado"
+              onChange={(
+                e, // Solo permite cambios si la fecha es futura
+              ) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
               name="estado"
             />
             {errors.estado && (
