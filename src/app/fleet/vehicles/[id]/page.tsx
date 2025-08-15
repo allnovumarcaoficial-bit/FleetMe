@@ -201,8 +201,10 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
               <strong>Estado:</strong> {vehicle.estado}
             </p>
             <p>
-              <strong>Conductor Asignado:</strong>{" "}
-              {vehicle.driver ? vehicle.driver.nombre : "Ninguno"}
+              <strong>Conductores Asignados:</strong>{" "}
+              {vehicle.driver
+                ? vehicle.driver.map((driver) => driver.nombre).join(", ")
+                : "Ninguno asignado"}
             </p>
           </div>
         </div>

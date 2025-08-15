@@ -31,7 +31,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
     <html lang="es" suppressHydrationWarning>
       <body>
         <Providers session={session}>
-          <SessionChecker />
+          {/* <SessionChecker /> */}
           <NextTopLoader color="#5750F1" showSpinner={false} />
           <ConditionalLayout>{children}</ConditionalLayout>
         </Providers>

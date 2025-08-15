@@ -22,6 +22,7 @@ import AdvancedTableFilter, {
 } from "../PageElements/AdvancedTableFilter";
 import { Alert } from "@/components/ui-elements/alert";
 import type { Dayjs } from "dayjs";
+import { Button } from "antd";
 
 const VehiclesTable = () => {
   const router = useRouter();
@@ -349,13 +350,21 @@ const VehiclesTable = () => {
                         <span className="sr-only">Ver Vehículo</span>
                         <PreviewIcon />
                       </Link>
-                      <Link
-                        href={`/fleet/vehicles/${vehicle.id}/edit`}
-                        className="hover:text-primary"
+                      <Button
+                        variant="dashed"
+                        size="small"
+                        ghost
+                        className="border-none hover:bg-transparent"
+                        disabled={true ? vehicle.estado === "Inactivo" : false}
                       >
-                        <span className="sr-only">Editar Vehículo</span>
-                        <PencilSquareIcon />
-                      </Link>
+                        <Link
+                          href={`/fleet/vehicles/${vehicle.id}/edit`}
+                          className="hover:text-primary"
+                        >
+                          <span className="sr-only">Editar Vehículo</span>
+                          <PencilSquareIcon className="text-black hover:text-primary dark:text-white dark:hover:text-primary" />
+                        </Link>
+                      </Button>
                       <button
                         onClick={() => handleDelete(vehicle.id)}
                         className="hover:text-primary"

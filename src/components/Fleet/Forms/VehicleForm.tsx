@@ -24,6 +24,7 @@ const VehicleForm = ({
   onCancel,
 }: VehicleFormProps) => {
   const router = useRouter();
+  const [IsDisabled, setIsDisabled] = useState(false);
   const [formData, setFormData] = useState<Partial<VehicleFormData>>(() => {
     const defaults: Partial<VehicleFormData> = {
       marca: "",
@@ -52,7 +53,8 @@ const VehicleForm = ({
       capacidad_tanque: 0,
       indice_consumo: 0,
       destino: "Administrativo", // Nuevo campo
-      driverId: null,
+      driver: [],
+      odometro: 0,
     };
 
     if (initialData) {
@@ -75,7 +77,7 @@ const VehicleForm = ({
         listado_municipios: initialData.listado_municipios
           ? JSON.parse(initialData.listado_municipios as unknown as string)
           : [],
-        driverId: initialData.driverId,
+        driver: initialData.driver,
       };
     }
     return defaults;
@@ -101,7 +103,7 @@ const VehicleForm = ({
         // If editing a vehicle that has a driver, ensure that driver is in the list
         if (initialData?.driver) {
           const isCurrentDriverInList = availableDrivers.some(
-            (d: Driver) => d.id === initialData.driver!.id,
+            (d: Driver) => d.id === initialData.driver!.map((d) => d.id)[0],
           );
           if (!isCurrentDriverInList) {
             availableDrivers = [initialData.driver, ...availableDrivers];
@@ -143,11 +145,11 @@ const VehicleForm = ({
         listado_municipios: initialData.listado_municipios
           ? JSON.parse(initialData.listado_municipios as unknown as string)
           : [],
-        driverId: initialData.driverId,
+        driver: initialData.driver,
       }));
     }
   }, [initialData]);
-
+  console.log("VehicleForm: initialData", initialData);
   const validateField = (name: string, value: any): string => {
     let error = "";
     switch (name) {
@@ -179,10 +181,22 @@ const VehicleForm = ({
           error = "Debe seleccionar al menos un municipio.";
         }
         break;
+      case "odometro":
+        if (value === null || value === undefined || isNaN(value)) {
+          error = "El odómetro es requerido y debe ser un número.";
+        }
       case "cantidad_neumaticos":
       case "cantidad_conductores":
       case "ciclo_mantenimiento_km":
         if (value < 0) error = "El valor no puede ser negativo.";
+        break;
+      case "driver":
+        if (!Array.isArray(value) || value.length === 0) {
+          error = "Debe seleccionar al menos un conductor.";
+        }
+        if (value.length > formData.cantidad_conductores!) {
+          error = `No puede seleccionar más de ${formData.cantidad_conductores} conductores.`;
+        }
         break;
       case "destino":
         if (!value) error = "Este campo es requerido.";
@@ -213,7 +227,7 @@ const VehicleForm = ({
         "voltage",
         "capacidad_tanque",
         "indice_consumo",
-        "driverId",
+        "odometro",
       ].includes(name)
     ) {
       newValue = value === "" ? null : parseInt(value, 10);
@@ -234,6 +248,28 @@ const VehicleForm = ({
     console.log(
       `handleMunicipiosChange: listado_municipios = ${selectedMunicipios}, error = ${fieldError}`,
     );
+  };
+
+  const handleDriversChange = (
+    selectedDriverIds: string[],
+    sizeConductores: number,
+  ) => {
+    if (selectedDriverIds.length === 0) {
+      return;
+    }
+    const flatDrivers = drivers.flat();
+    // Filtrar drivers usando los IDs seleccionados
+    const selectedDrivers = flatDrivers
+      .filter((driver) => selectedDriverIds.includes(driver.id.toString()))
+      .slice(0, sizeConductores); // Limitar al número de conductores permitidosS
+
+    setFormData((prev) => ({
+      ...prev,
+      driver: selectedDrivers,
+    }));
+
+    const fieldError = validateField("driver", selectedDrivers);
+    setErrors((prev) => ({ ...prev, driver: fieldError }));
   };
 
   const validateForm = () => {
@@ -277,6 +313,7 @@ const VehicleForm = ({
       const url = initialData
         ? `/api/vehicles/${initialData.id}`
         : "/api/vehicles";
+      const driverIds = formData.driver?.map((d) => ({ id: d.id })) || [];
       const response = await fetch(url, {
         method,
         headers: {
@@ -291,7 +328,8 @@ const VehicleForm = ({
             formData.fecha_vencimiento_circulacion?.toISOString(),
           fecha_vencimiento_somaton:
             formData.fecha_vencimiento_somaton?.toISOString(),
-          listado_municipios: JSON.stringify(formData.listado_municipios), // Stringify array back to JSON string
+          listado_municipios: JSON.stringify(formData.listado_municipios),
+          driverIds,
         }),
       });
 
@@ -767,6 +805,20 @@ const VehicleForm = ({
           </div>
           <div>
             <InputGroup
+              label="Odómetro"
+              name="odometro"
+              type="number"
+              placeholder="Introduce el odómetro"
+              value={String(formData.odometro || 0)}
+              handleChange={handleChange}
+              disabled={!!initialData}
+            />
+            {errors.odometro && (
+              <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
               label="Ciclo de Mantenimiento (km)"
               name="ciclo_mantenimiento_km"
               type="number"
@@ -778,6 +830,45 @@ const VehicleForm = ({
               <p className="mt-1 text-sm text-red-500">
                 {errors.ciclo_mantenimiento_km}
               </p>
+            )}
+          </div>
+
+          <div>
+            <MultiSelect
+              label="Conductores Asignados"
+              options={[
+                ...drivers
+                  .filter(
+                    (driver) =>
+                      driver.estado !== "Inactivo" &&
+                      (driver.vehicleId === null ||
+                        driver.vehicleId === initialData?.id),
+                  )
+                  .map((driver) => ({
+                    value: driver.id.toString(),
+                    label: driver.nombre,
+                  })),
+                ...(initialData?.driver || [])
+                  .filter((driver) => !drivers.some((d) => d.id === driver.id))
+                  .map((driver) => ({
+                    value: driver.id.toString(),
+                    label: driver.nombre,
+                  })),
+              ]}
+              selectedValues={
+                (formData.driver || [])
+                  .filter((driver) => driver && driver.id) // Filtra elementos inválidos
+                  .map((driver) => String(driver.id)) || []
+              }
+              onChange={(e) =>
+                handleDriversChange(
+                  e as unknown as string[],
+                  formData.cantidad_conductores || 0,
+                )
+              }
+            />
+            {errors.driverId && (
+              <p className="mt-1 text-sm text-red-500">{errors.driverId}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -792,24 +883,6 @@ const VehicleForm = ({
             <label htmlFor="es_electrico" className="text-dark dark:text-white">
               Es Eléctrico
             </label>
-          </div>
-          <div>
-            <Select
-              label="Conductor Asignado"
-              name="driverId"
-              items={[
-                { value: "", label: "Sin Conductor Asignado" },
-                ...(drivers.map((driver) => ({
-                  value: driver.id.toString(),
-                  label: driver.nombre,
-                })) || []),
-              ]}
-              value={formData.driverId?.toString() || ""}
-              placeholder="Selecciona un conductor"
-              onChange={(e) =>
-                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-              }
-            />
           </div>
         </div>
 

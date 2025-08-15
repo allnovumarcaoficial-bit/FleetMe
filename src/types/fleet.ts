@@ -23,6 +23,7 @@ export interface Vehicle {
   marca: string;
   modelo: string;
   vin: string;
+  odometro: number;
   matricula: string;
   fecha_compra: Date | null;
   fecha_vencimiento_licencia_operativa: Date | null;
@@ -45,8 +46,7 @@ export interface Vehicle {
   tipo_combustible?: string | null;
   capacidad_tanque?: number | null;
   indice_consumo?: number | null;
-  driverId?: number | null;
-  driver?: Driver | null;
+  driver?: Driver[] | null;
   mantenimientos?: Mantenimiento[];
   servicios?: Servicio[];
   fuelDistributions?: FuelDistribution[];

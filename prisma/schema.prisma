@@ -95,7 +95,7 @@ model Vehicle {
   matricula                            String             @unique
   fecha_compra                         DateTime
   fecha_vencimiento_licencia_operativa DateTime
-  km_recorrido                         BigInt             @default(0) // Nuevo campo para el kilometraje recorrido
+  km_recorrido                         Float             @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime
   fecha_vencimiento_somaton            DateTime
@@ -108,7 +108,7 @@ model Vehicle {
   capacidad_carga                      String?
   cantidad_conductores                 Int?
   ciclo_mantenimiento_km               Int?
-  odometro                             BigInt?
+  odometro                             Int?
   es_electrico                         Boolean?
   cantidad_baterias                    Int?
   tipo_bateria                         String?
@@ -200,8 +200,8 @@ model Servicio {
   id                   Int            @id @default(autoincrement())
   tipoServicio         ServicioTipo
   fecha                DateTime
-  odometroInicial      BigInt
-  odometroFinal        BigInt?
+  odometroInicial      Int
+  odometroFinal        Int?
   cantidadPedidos      Int?
   origen               String?
   destino              String?
@@ -239,7 +239,7 @@ model FuelDistribution {
   fuelOperationId  Int?
   vehicleId        Int?
   liters           Float
-  odometro_Vehicle BigInt?
+  odometro_Vehicle Int?
   vehicle          Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   fuelOperation    FuelOperation? @relation(fields: [fuelOperationId], references: [id], onDelete: SetNull)
 }

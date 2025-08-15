@@ -77,7 +77,7 @@ export async function PUT(
       tipo_combustible,
       capacidad_tanque,
       indice_consumo,
-      driverId,
+      driverIds,
       destino, // Nuevo campo
     } = body;
 
@@ -201,11 +201,28 @@ export async function PUT(
         tipo_combustible,
         capacidad_tanque,
         indice_consumo,
-        driver: driverId ? { connect: { id: driverId } } : { disconnect: true },
         destino, // Nuevo campo
+        driver: {
+          connect: driverIds,
+        },
+      },
+      include: {
+        driver: true,
       },
     });
-
+    //  await prisma.driver.updateMany({
+    //   where: { vehicleId: Number(id) },
+    //   data: { vehicleId: null }
+    // });
+    // // Segundo: Conectar los nuevos conductores
+    // console.log(body)
+    // if (driverIds) {
+    //   const a = await prisma.driver.updateMany({
+    //     where: { id: { in: driverIds} },
+    //     data: { vehicleId: Number(id) }
+    //   });
+    //   console.log(a)
+    // }
     return NextResponse.json(updatedVehicle);
   } catch (error: any) {
     console.error("Error updating vehicle:", error);

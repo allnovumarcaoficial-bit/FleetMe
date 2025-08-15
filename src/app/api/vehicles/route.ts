@@ -36,7 +36,6 @@ export async function GET(request: Request) {
     );
     const gps = searchParams.get("gps"); // 'true' or 'false' string
     const tipo_vehiculo = searchParams.get("tipo_vehiculo") || "";
-    const driverSearch = searchParams.get("driver") || "";
 
     const skip = (page - 1) * limit;
 
@@ -50,7 +49,6 @@ export async function GET(request: Request) {
         { vin: { contains: search } },
         { matricula: { contains: search } },
         { tipo_vehiculo: { contains: search } },
-        { driver: { nombre: { contains: search } } },
       ];
     }
 
@@ -102,11 +100,6 @@ export async function GET(request: Request) {
     }
     if (tipo_vehiculo) {
       where.tipo_vehiculo = { contains: tipo_vehiculo };
-    }
-    if (driverSearch) {
-      where.driver = {
-        nombre: { contains: driverSearch },
-      };
     }
 
     const orderBy: any = {
@@ -169,6 +162,7 @@ export async function POST(request: Request) {
       capacidad_tanque,
       indice_consumo,
       driverId,
+      odometro,
       destino, // Nuevo campo
     } = body;
 
@@ -263,6 +257,7 @@ export async function POST(request: Request) {
         capacidad_tanque,
         indice_consumo,
         driver: driverId ? { connect: { id: driverId } } : undefined,
+        odometro,
         destino, // Nuevo campo
       },
     });
