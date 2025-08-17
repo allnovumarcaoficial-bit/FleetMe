@@ -10,6 +10,7 @@ export default function DashboardLayout({ children }: PropsWithChildren) {
   const pathname = usePathname();
   const isSignInPage = pathname === "/auth/signin";
   const title = getTitle(pathname);
+  console.log(title);
 
   if (isSignInPage) {
     return (

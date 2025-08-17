@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Servicio, ServicioTipo, ServicioEstado, Vehicle } from "@/types/fleet";
+import {
+  Servicio,
+  ServicioTipo,
+  ServicioEstado,
+  Vehicle,
+  Driver,
+} from "@/types/fleet";
 import InputGroup from "@/components/FormElements/InputGroup";
 import { Select } from "@/components/FormElements/select";
 import { Alert } from "@/components/ui-elements/alert";
@@ -24,20 +30,26 @@ const ServiceForm = ({
       return {
         ...initialData,
         fecha: initialData.fecha ? new Date(initialData.fecha) : null,
+        vehicle: initialData.vehicle || undefined, // Asegúrate de incluir esto
+        driver: initialData.driver || undefined,
+        driverId: initialData.driver_id || undefined, // Asegúrate de incluir esto
       };
     }
     return {
-      tipoServicio: ServicioTipo.EntregaDePedidos,
+      tipoServicio: Object.keys(ServicioTipo)[0] as ServicioTipo,
       fecha: new Date(),
       odometroInicial: 0,
-      odometroFinal: null,
-      cantidadPedidos: null,
+      odometroFinal: 0,
+      cantidadPedidos: 0,
       origen: "",
       destino: "",
       descripcion: "",
       kilometrosRecorridos: 0,
       estado: ServicioEstado.Pendiente,
-      vehicleId: undefined, // Will be set by the select
+      vehicleId: undefined,
+      vehicle: undefined,
+      driver: undefined,
+      driver_id: undefined,
     };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -46,14 +58,35 @@ const ServiceForm = ({
     message: string;
   }>({ type: "", message: "" });
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
         const res = await fetch("/api/vehicles");
-        const data = await res.json();
-        setVehicles(data.data || []);
+        const data = (await res.json()) as { data: Vehicle[] };
+        const activeVehicles =
+          data.data.filter((car) => car.estado === "Activo") || [];
+        setVehicles(activeVehicles);
+
+        // Si hay datos iniciales, carga el vehículo correspondiente
+        if (initialData?.vehicleId) {
+          const initialVehicle = activeVehicles.find(
+            (v) => v.id === initialData.vehicleId,
+          );
+          if (initialVehicle) {
+            setFormData((prev) => ({
+              ...prev,
+              vehicle: initialVehicle,
+              odometroInicial: initialVehicle.odometro || 0,
+              driver_id: initialData.driver_id || undefined,
+              driver: initialData.driver || undefined,
+            }));
+          }
+        }
+
+        setDrivers(activeVehicles.map((car) => car.driver || []).flat());
         setLoading(false);
       } catch (err) {
         console.error("Error fetching vehicles:", err);
@@ -62,7 +95,7 @@ const ServiceForm = ({
       }
     };
     fetchVehicles();
-  }, []);
+  }, [initialData?.vehicleId]); // Agrega dependencia
 
   useEffect(() => {
     if (initialData) {
@@ -70,10 +103,13 @@ const ServiceForm = ({
         ...prev,
         ...initialData,
         fecha: initialData.fecha ? new Date(initialData.fecha) : null,
+        driver_id: initialData.driver_id,
+        vehicleId: initialData.vehicleId,
+        driver: initialData.driver,
       }));
     }
   }, [initialData]);
-
+  console.log(formData.driver_id);
   // Calculate kilometrosRecorridos whenever odometroInicial or odometroFinal changes
   useEffect(() => {
     const initial = formData.odometroInicial || 0;
@@ -102,7 +138,7 @@ const ServiceForm = ({
           break;
         case "odometroFinal":
           if (
-            formData.estado === ServicioEstado.Terminado &&
+            formData.estado === ServicioEstado.Completado &&
             (!value || value <= 0)
           ) {
             error =
@@ -135,6 +171,11 @@ const ServiceForm = ({
             error = "Descripción es requerida para servicios administrativos.";
           }
           break;
+        case "driver_id":
+          if (value === undefined || value === null) {
+            error = "Selecciona un conductor";
+          }
+          break;
       }
       return error;
     },
@@ -149,6 +190,18 @@ const ServiceForm = ({
     const { name, value, type } = e.target;
     let newValue: any = value;
 
+    if (name === "vehicleId") {
+      const selectedVehicle = vehicles.find((v) => v.id === Number(value));
+      if (selectedVehicle) {
+        setFormData((prev) => ({
+          ...prev,
+          vehicleId: Number(value),
+          vehicle: selectedVehicle,
+          odometroInicial: selectedVehicle.odometro || 0, // Actualiza odómetro automáticamente
+        }));
+      }
+      return;
+    }
     if (type === "number") {
       newValue = value === "" ? null : parseFloat(value);
     } else if (type === "date") {
@@ -173,6 +226,7 @@ const ServiceForm = ({
       "origen",
       "destino",
       "descripcion",
+      "driver_id",
     ];
 
     fieldsToValidate.forEach((field) => {
@@ -212,13 +266,23 @@ const ServiceForm = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...formData,
+          tipoServicio: formData.tipoServicio,
           fecha: formData.fecha?.toISOString(),
-          odometroInicial: formData.odometroInicial,
-          odometroFinal: formData.odometroFinal,
-          cantidadPedidos: formData.cantidadPedidos,
-          kilometrosRecorridos: formData.kilometrosRecorridos,
-          vehicleId: formData.vehicleId,
+          odometroInicial: Number(formData.odometroInicial),
+          odometroFinal: formData.odometroFinal
+            ? Number(formData.odometroFinal)
+            : 0,
+          cantidadPedidos: formData.cantidadPedidos
+            ? Number(formData.cantidadPedidos)
+            : 0,
+          kilometrosRecorridos: Number(formData.kilometrosRecorridos),
+          estado: formData.estado,
+          vehicleId: Number(formData.vehicleId),
+          driver_id: Number(formData.driver_id), // Asegura que sea número
+          // Campos opcionales
+          origen: formData.origen || undefined,
+          destino: formData.destino || undefined,
+          descripcion: formData.descripcion || undefined,
         }),
       });
 
@@ -245,7 +309,6 @@ const ServiceForm = ({
 
   if (loading && vehicles.length === 0 && !initialData)
     return <p>Cargando formulario...</p>;
-
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
@@ -261,11 +324,11 @@ const ServiceForm = ({
           <div>
             <Select
               label="Tipo de Servicio"
-              items={Object.values(ServicioTipo).map((type) => ({
+              items={Object.keys(ServicioTipo).map((type) => ({
                 value: type,
-                label: type,
+                label: ServicioTipo[type as keyof typeof ServicioTipo],
               }))}
-              value={formData.tipoServicio || ""}
+              value={formData.tipoServicio ? formData.tipoServicio : ""}
               placeholder="Selecciona un tipo de servicio"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -297,8 +360,9 @@ const ServiceForm = ({
               name="odometroInicial"
               type="number"
               placeholder="Introduce el odómetro inicial"
-              value={formData.odometroInicial?.toString() || ""}
+              value={formData.vehicle?.odometro?.toString() || "0"}
               handleChange={handleChange}
+              disabled={true}
             />
             {errors.odometroInicial && (
               <p className="mt-1 text-sm text-red-500">
@@ -314,6 +378,9 @@ const ServiceForm = ({
               placeholder="Introduce el odómetro final"
               value={formData.odometroFinal?.toString() || ""}
               handleChange={handleChange}
+              disabled={
+                true ? formData.estado === ServicioEstado.Pendiente : false
+              }
             />
             {errors.odometroFinal && (
               <p className="mt-1 text-sm text-red-500">
@@ -327,7 +394,7 @@ const ServiceForm = ({
               name="kilometrosRecorridos"
               type="number"
               placeholder="Calculado automáticamente"
-              value={formData.kilometrosRecorridos?.toString() || ""}
+              value={formData.kilometrosRecorridos?.toString() || "0"}
               handleChange={() => {}} // Disabled, so no change handler
               disabled={true}
             />
@@ -377,6 +444,26 @@ const ServiceForm = ({
               <p className="mt-1 text-sm text-red-500">{errors.vehicleId}</p>
             )}
           </div>
+          {formData.vehicleId && (
+            <div>
+              <Select
+                label="Conductor"
+                items={drivers.map((driver) => ({
+                  value: driver.id.toString(),
+                  label: driver.nombre,
+                }))}
+                value={formData.driver_id ? formData.driver_id.toString() : ""}
+                placeholder="Selecciona un conductor"
+                onChange={(e) =>
+                  handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+                }
+                name="driver_id"
+              />
+              {errors.driver_id && (
+                <p className="mt-1 text-sm text-red-500">{errors.driver_id}</p>
+              )}
+            </div>
+          )}
 
           {formData.tipoServicio === ServicioTipo.EntregaDePedidos && (
             <div>

@@ -45,7 +45,7 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
       router.push(`/fleet/services/${service.id}/edit`);
     }
   };
-
+  console.log(service);
   const handleDelete = async () => {
     if (!service) return;
 
@@ -157,6 +157,12 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
               <strong>Vehículo:</strong>{" "}
               {service.vehicle
                 ? `${service.vehicle.marca} (${service.vehicle.matricula})`
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Conductor:</strong>{" "}
+              {service.driver
+                ? `${service.driver.nombre} (${service.driver.licencia})`
                 : "N/A"}
             </p>
 

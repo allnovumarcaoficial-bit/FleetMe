@@ -26,6 +26,13 @@ export async function GET(
             modelo: true,
           },
         },
+        driver: {
+          select: {
+            id: true,
+            nombre: true,
+            licencia: true,
+          },
+        },
       },
     });
 
@@ -70,8 +77,9 @@ export async function PUT(
       kilometrosRecorridos,
       estado,
       vehicleId,
+      driver_id,
     } = body;
-
+    console.log(body);
     const parsedFecha = new Date(fecha);
 
     const updatedServicio = await prisma.servicio.update({
@@ -87,15 +95,40 @@ export async function PUT(
         descripcion,
         kilometrosRecorridos: parseInt(kilometrosRecorridos),
         estado,
+        driver: {
+          connect: { id: driver_id },
+        },
         vehicle: {
           connect: { id: parseInt(vehicleId) },
         },
       },
     });
+    if (updatedServicio.odometroFinal !== 0) {
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id: parseInt(vehicleId) },
+        select: {
+          km_recorrido: true,
+        },
+      });
+      await prisma.vehicle.update({
+        where: { id: parseInt(vehicleId) },
+        data: {
+          odometro: updatedServicio.odometroFinal,
+          km_recorrido:
+            (updatedServicio.kilometrosRecorridos || 0) +
+              (vehicle?.km_recorrido || 0) || 0,
+        },
+      });
+    }
 
     return NextResponse.json(updatedServicio);
   } catch (error: any) {
-    console.error("Error updating service:", error);
+    console.error("Error creating service:", {
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      meta: error.meta,
+    });
     return NextResponse.json(
       { error: "Failed to update service", details: error.message },
       { status: 500 },

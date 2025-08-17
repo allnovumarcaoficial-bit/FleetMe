@@ -215,6 +215,12 @@ const VehicleDetailsPage = ({ params }: VehicleDetailsPageProps) => {
             <strong>Tipo de Vehículo:</strong> {vehicle.tipo_vehiculo || "N/A"}
           </p>
           <p>
+            <strong>Odómetro:</strong> {vehicle.odometro || "N/A"}
+          </p>
+          <p>
+            <strong>Km Recorridos:</strong> {vehicle.km_recorrido ?? "N/A"}
+          </p>
+          <p>
             <strong>Cantidad de Neumáticos:</strong>{" "}
             {vehicle.cantidad_neumaticos ?? "N/A"}
           </p>

@@ -51,6 +51,7 @@ export interface Vehicle {
   servicios?: Servicio[];
   fuelDistributions?: FuelDistribution[];
   destino: DestinoVehiculo;
+  km_recorrido?: number | null;
 }
 
 export type DestinoVehiculo = "Administrativo" | "Logistico" | "Reparto";
@@ -105,7 +106,8 @@ export enum ServicioTipo {
 
 export enum ServicioEstado {
   Pendiente = "Pendiente",
-  Terminado = "Terminado",
+  Completado = "Completado",
+  Cancelado = "Cancelado",
 }
 
 export interface Servicio {
@@ -122,6 +124,8 @@ export interface Servicio {
   estado: ServicioEstado;
   vehicleId: number;
   vehicle?: Vehicle;
+  driver_id: number;
+  driver?: Driver;
 }
 
 export interface FuelOperation {

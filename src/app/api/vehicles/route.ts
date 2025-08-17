@@ -111,6 +111,9 @@ export async function GET(request: Request) {
       take: limit,
       where,
       orderBy,
+      include: {
+        driver: true,
+      },
     });
 
     const totalVehicles = await prisma.vehicle.count({ where });
