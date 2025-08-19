@@ -1,3 +1,5 @@
+import { OperationReservorio, TipoCombustible } from "@prisma/client";
+
 export interface Driver {
   id: number;
   nombre: string;
@@ -84,6 +86,19 @@ export interface Mantenimiento {
 
 export type MantenimientoEstado = "Pendiente" | "Ejecutado" | "Cancelado";
 
+export type TipoCombustibleEnum =
+  | "Gasolina_Regular"
+  | "Diesel"
+  | "Gasolina_Especial";
+export interface Reservorio {
+  id: string;
+  nombre: string;
+  capacidad_actual: number;
+  capacidad_total: number;
+  operationReservorio: OperationReservorio[];
+  tipoCombustibleId: number | null;
+  tipoCombustible: TipoCombustible | null;
+}
 export interface FuelCard {
   id: number;
   numeroDeTarjeta: string;

@@ -1,0 +1,33 @@
+"use client";
+
+import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
+import FuelCardForm from "@/components/Fleet/Forms/FuelCardForm";
+import ReservorioForm from "@/components/Fleet/Forms/ReservorioForm";
+import { useRouter } from "next/navigation";
+
+const NewFuelCardPage = () => {
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    console.log("Reservorio created successfully!");
+  };
+
+  const handleCancel = () => {
+    router.push("/fleet/reservorio");
+  };
+
+  return (
+    <>
+      <Breadcrumb
+        pageName="Añadir Nuevo Reservorio"
+        links={[
+          { href: "/fleet", label: "Flota" },
+          { href: "/fleet/reservorio", label: "Reservorio" },
+        ]}
+      />
+      <ReservorioForm onSuccess={handleSuccess} onCancel={handleCancel} />
+    </>
+  );
+};
+
+export default NewFuelCardPage;
