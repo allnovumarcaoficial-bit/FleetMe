@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { FuelCard } from "@/types/fleet";
+import { useState, useEffect, useCallback } from 'react';
+import { FuelCard } from '@/types/fleet';
 import {
   Table,
   TableBody,
@@ -9,18 +9,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
-import { PreviewIcon } from "@/components/Tables/icons";
-import { useRouter } from "next/navigation";
-import { Alert } from "@/components/ui-elements/alert";
-import Link from "next/link";
-import Pagination from "@/components/Tables/Pagination";
+} from '@/components/ui/table';
+import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
+import { PreviewIcon } from '@/components/Tables/icons';
+import { useRouter } from 'next/navigation';
+import { Alert } from '@/components/ui-elements/alert';
+import Link from 'next/link';
+import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
-} from "../PageElements/AdvancedTableFilter";
-import type { Dayjs } from "dayjs";
+} from '../PageElements/AdvancedTableFilter';
+import type { Dayjs } from 'dayjs';
+import { formatDate } from '@/lib/utils';
 
 const FuelCardTable = () => {
   const router = useRouter();
@@ -31,50 +32,50 @@ const FuelCardTable = () => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalFuelCardsCount, setTotalFuelCardsCount] = useState(0);
-  const [sortBy, setSortBy] = useState("numeroDeTarjeta");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState('numeroDeTarjeta');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
 
   const fuelCardColumns: ColumnFilter[] = [
-    { key: "numeroDeTarjeta", title: "Número de Tarjeta", type: "text" },
+    { key: 'numeroDeTarjeta', title: 'Número de Tarjeta', type: 'text' },
     {
-      key: "tipoDeTarjeta",
-      title: "Tipo de Tarjeta",
-      type: "select",
+      key: 'tipoDeTarjeta',
+      title: 'Tipo de Tarjeta',
+      type: 'select',
       options: [
-        { value: "Crédito", label: "Crédito" },
-        { value: "Débito", label: "Débito" },
-        { value: "Prepago", label: "Prepago" },
+        { value: 'Crédito', label: 'Crédito' },
+        { value: 'Débito', label: 'Débito' },
+        { value: 'Prepago', label: 'Prepago' },
       ],
     },
     {
-      key: "tipoDeCombustible",
-      title: "Tipo de Combustible",
-      type: "select",
+      key: 'tipoDeCombustible',
+      title: 'Tipo de Combustible',
+      type: 'select',
       options: [
-        { value: "Gasolina", label: "Gasolina" },
-        { value: "Diésel", label: "Diésel" },
-        { value: "Eléctrico", label: "Eléctrico" },
+        { value: 'Gasolina', label: 'Gasolina' },
+        { value: 'Diésel', label: 'Diésel' },
+        { value: 'Eléctrico', label: 'Eléctrico' },
       ],
     },
-    { key: "precioCombustible", title: "Precio del Combustible", type: "text" },
-    { key: "moneda", title: "Moneda", type: "text" },
+    { key: 'precioCombustible', title: 'Precio del Combustible', type: 'text' },
+    { key: 'moneda', title: 'Moneda', type: 'text' },
     {
-      key: "fechaVencimiento",
-      title: "Fecha de Vencimiento",
-      type: "dateRange",
+      key: 'fechaVencimiento',
+      title: 'Fecha de Vencimiento',
+      type: 'dateRange',
     },
-    { key: "esReservorio", title: "Es Reservorio", type: "boolean" },
+    { key: 'esReservorio', title: 'Es Reservorio', type: 'boolean' },
   ];
 
   const fetchFuelCards = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -84,22 +85,22 @@ const FuelCardTable = () => {
       });
 
       if (activeFilters.globalSearch) {
-        params.append("search", activeFilters.globalSearch);
+        params.append('search', activeFilters.globalSearch);
       }
 
       if (activeFilters.columnFilters) {
         for (const key in activeFilters.columnFilters) {
           const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== "") {
+          if (value !== undefined && value !== null && value !== '') {
             if (Array.isArray(value)) {
-              if (key === "fechaVencimiento" && value[0] && value[1]) {
+              if (key === 'fechaVencimiento' && value[0] && value[1]) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
-                params.append("fechaVencimientoDesde", startDate.toISOString());
-                params.append("fechaVencimientoHasta", endDate.toISOString());
+                params.append('fechaVencimientoDesde', startDate.toISOString());
+                params.append('fechaVencimientoHasta', endDate.toISOString());
               } else if (value.length > 0) {
-                params.append(key, value.join(","));
+                params.append(key, value.join(','));
               }
-            } else if (typeof value === "boolean") {
+            } else if (typeof value === 'boolean') {
               params.append(key, value.toString());
             } else {
               params.append(key, value.toString());
@@ -110,17 +111,17 @@ const FuelCardTable = () => {
 
       const res = await fetch(`/api/fuel-cards?${params.toString()}`);
       if (!res.ok) {
-        throw new Error("Failed to fetch fuel cards");
+        throw new Error('Failed to fetch fuel cards');
       }
       const data = await res.json();
       setFuelCards(data.data);
       setTotalPages(data.totalPages);
       setTotalFuelCardsCount(data.total);
     } catch (err: any) {
-      setError(err.message || "Error al cargar tarjetas de combustible.");
+      setError(err.message || 'Error al cargar tarjetas de combustible.');
       setFormStatus({
-        type: "error",
-        message: err.message || "Error al cargar tarjetas de combustible.",
+        type: 'error',
+        message: err.message || 'Error al cargar tarjetas de combustible.',
       });
     } finally {
       setLoading(false);
@@ -142,44 +143,44 @@ const FuelCardTable = () => {
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder("asc");
+      setSortOrder('asc');
     }
   };
 
   const handleDelete = async (id: number) => {
     if (
       !confirm(
-        "¿Estás seguro de que quieres eliminar esta tarjeta de combustible?",
+        '¿Estás seguro de que quieres eliminar esta tarjeta de combustible?'
       )
     ) {
       return;
     }
     setLoading(true);
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
     try {
       const res = await fetch(`/api/fuel-cards/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(
-          errorData.error || "Error al eliminar la tarjeta de combustible.",
+          errorData.error || 'Error al eliminar la tarjeta de combustible.'
         );
       }
       setFormStatus({
-        type: "success",
-        message: "Tarjeta de combustible eliminada exitosamente.",
+        type: 'success',
+        message: 'Tarjeta de combustible eliminada exitosamente.',
       });
       fetchFuelCards(); // Re-fetch data after deletion
     } catch (err: any) {
       setFormStatus({
-        type: "error",
+        type: 'error',
         message:
           err.message ||
-          "Ocurrió un error al eliminar la tarjeta de combustible.",
+          'Ocurrió un error al eliminar la tarjeta de combustible.',
       });
     } finally {
       setLoading(false);
@@ -190,8 +191,8 @@ const FuelCardTable = () => {
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -222,58 +223,58 @@ const FuelCardTable = () => {
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
                 <TableHead
                   className="min-w-[155px] cursor-pointer xl:pl-7.5"
-                  onClick={() => handleSort("numeroDeTarjeta")}
+                  onClick={() => handleSort('numeroDeTarjeta')}
                 >
-                  Número de Tarjeta{" "}
-                  {sortBy === "numeroDeTarjeta" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Número de Tarjeta{' '}
+                  {sortBy === 'numeroDeTarjeta' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("tipoDeTarjeta")}
+                  onClick={() => handleSort('tipoDeTarjeta')}
                 >
-                  Tipo de Tarjeta{" "}
-                  {sortBy === "tipoDeTarjeta" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Tipo de Tarjeta{' '}
+                  {sortBy === 'tipoDeTarjeta' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("tipoDeCombustible")}
+                  onClick={() => handleSort('tipoDeCombustible')}
                 >
-                  Tipo de Combustible{" "}
-                  {sortBy === "tipoDeCombustible" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Tipo de Combustible{' '}
+                  {sortBy === 'tipoDeCombustible' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("precioCombustible")}
+                  onClick={() => handleSort('precioCombustible')}
                 >
-                  Precio del Combustible{" "}
-                  {sortBy === "precioCombustible" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Precio del Combustible{' '}
+                  {sortBy === 'precioCombustible' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("moneda")}
+                  onClick={() => handleSort('moneda')}
                 >
-                  Moneda{" "}
-                  {sortBy === "moneda" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Moneda{' '}
+                  {sortBy === 'moneda' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("fechaVencimiento")}
+                  onClick={() => handleSort('fechaVencimiento')}
                 >
-                  Fecha de Vencimiento{" "}
-                  {sortBy === "fechaVencimiento" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Fecha de Vencimiento{' '}
+                  {sortBy === 'fechaVencimiento' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("esReservorio")}
+                  onClick={() => handleSort('esReservorio')}
                 >
-                  Es Reservorio{" "}
-                  {sortBy === "esReservorio" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Es Reservorio{' '}
+                  {sortBy === 'esReservorio' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
@@ -313,15 +314,17 @@ const FuelCardTable = () => {
                   <TableCell>
                     <p className="text-dark dark:text-white">
                       {fuelCard.fechaVencimiento
-                        ? new Date(
-                            fuelCard.fechaVencimiento,
-                          ).toLocaleDateString()
-                        : "N/A"}
+                        ? formatDate(
+                            new Date(
+                              fuelCard.fechaVencimiento
+                            ).toLocaleDateString()
+                          )
+                        : 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {fuelCard.esReservorio ? "Sí" : "No"}
+                      {fuelCard.esReservorio ? 'Sí' : 'No'}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">

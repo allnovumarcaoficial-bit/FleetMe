@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, ChangeEvent } from "react";
-import { Servicio, Vehicle, ServicioTipo, ServicioEstado } from "@/types/fleet";
+import { useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { Servicio, Vehicle, ServicioTipo, ServicioEstado } from '@/types/fleet';
 import {
   Table,
   TableBody,
@@ -9,19 +9,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
-import { PreviewIcon } from "@/components/Tables/icons";
-import { useRouter } from "next/navigation";
-import { Alert } from "@/components/ui-elements/alert";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import Pagination from "@/components/Tables/Pagination";
+} from '@/components/ui/table';
+import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
+import { PreviewIcon } from '@/components/Tables/icons';
+import { useRouter } from 'next/navigation';
+import { Alert } from '@/components/ui-elements/alert';
+import Link from 'next/link';
+import { cn, formatDate } from '@/lib/utils';
+import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
-} from "../PageElements/AdvancedTableFilter";
-import type { Dayjs } from "dayjs";
+} from '../PageElements/AdvancedTableFilter';
+import type { Dayjs } from 'dayjs';
 
 interface ServiceTableProps {
   // vehicleId?: number; // This prop will now be handled by AdvancedTableFilter
@@ -40,45 +40,45 @@ const ServiceTable = ({}: ServiceTableProps) => {
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [totalServicesCount, setTotalServicesCount] = useState(0);
-  const [sortBy, setSortBy] = useState("fecha");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortBy, setSortBy] = useState('fecha');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
 
   const serviceColumns: ColumnFilter[] = [
     {
-      key: "tipoServicio",
-      title: "Tipo de Servicio",
-      type: "select",
+      key: 'tipoServicio',
+      title: 'Tipo de Servicio',
+      type: 'select',
       options: [
-        { value: "Entrega de Pedidos", label: "Entrega de Pedidos" },
-        { value: "Logistico", label: "Logistico" },
-        { value: "Administrativo", label: "Administrativo" },
+        { value: 'Entrega de Pedidos', label: 'Entrega de Pedidos' },
+        { value: 'Logistico', label: 'Logistico' },
+        { value: 'Administrativo', label: 'Administrativo' },
       ],
     },
-    { key: "fecha", title: "Fecha", type: "dateRange" },
-    { key: "odometroInicial", title: "Odómetro Inicial", type: "text" },
-    { key: "odometroFinal", title: "Odómetro Final", type: "text" },
-    { key: "kilometrosRecorridos", title: "Km Recorridos", type: "text" },
+    { key: 'fecha', title: 'Fecha', type: 'dateRange' },
+    { key: 'odometroInicial', title: 'Odómetro Inicial', type: 'text' },
+    { key: 'odometroFinal', title: 'Odómetro Final', type: 'text' },
+    { key: 'kilometrosRecorridos', title: 'Km Recorridos', type: 'text' },
     {
-      key: "estado",
-      title: "Estado",
-      type: "select",
+      key: 'estado',
+      title: 'Estado',
+      type: 'select',
       options: [
-        { value: "Pendiente", label: "Pendiente" },
-        { value: "Terminado", label: "Terminado" },
+        { value: 'Pendiente', label: 'Pendiente' },
+        { value: 'Terminado', label: 'Terminado' },
       ],
     },
-    { key: "vehicle", title: "Vehículo", type: "text" }, // For vehicle details
+    { key: 'vehicle', title: 'Vehículo', type: 'text' }, // For vehicle details
   ];
 
   const fetchServices = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -88,22 +88,22 @@ const ServiceTable = ({}: ServiceTableProps) => {
       });
 
       if (activeFilters.globalSearch) {
-        params.append("search", activeFilters.globalSearch);
+        params.append('search', activeFilters.globalSearch);
       }
 
       if (activeFilters.columnFilters) {
         for (const key in activeFilters.columnFilters) {
           const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== "") {
+          if (value !== undefined && value !== null && value !== '') {
             if (Array.isArray(value)) {
-              if (key === "fecha" && value[0] && value[1]) {
+              if (key === 'fecha' && value[0] && value[1]) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
-                params.append("fechaDesde", startDate.toISOString());
-                params.append("fechaHasta", endDate.toISOString());
+                params.append('fechaDesde', startDate.toISOString());
+                params.append('fechaHasta', endDate.toISOString());
               } else if (value.length > 0) {
-                params.append(key, value.join(","));
+                params.append(key, value.join(','));
               }
-            } else if (typeof value === "boolean") {
+            } else if (typeof value === 'boolean') {
               params.append(key, value.toString());
             } else {
               params.append(key, value.toString());
@@ -114,17 +114,17 @@ const ServiceTable = ({}: ServiceTableProps) => {
 
       const res = await fetch(`/api/services?${params.toString()}`);
       if (!res.ok) {
-        throw new Error("Failed to fetch services");
+        throw new Error('Failed to fetch services');
       }
       const data = await res.json();
       setServices(data.data);
       setTotalPages(data.totalPages);
       setTotalServicesCount(data.total);
     } catch (err: any) {
-      setError(err.message || "Error al cargar servicios.");
+      setError(err.message || 'Error al cargar servicios.');
       setFormStatus({
-        type: "error",
-        message: err.message || "Error al cargar servicios.",
+        type: 'error',
+        message: err.message || 'Error al cargar servicios.',
       });
     } finally {
       setLoading(false);
@@ -142,36 +142,36 @@ const ServiceTable = ({}: ServiceTableProps) => {
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder("asc");
+      setSortOrder('asc');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("¿Estás seguro de que quieres eliminar este servicio?")) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este servicio?')) {
       return;
     }
     setLoading(true);
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
     try {
       const res = await fetch(`/api/services/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || "Error al eliminar el servicio.");
+        throw new Error(errorData.error || 'Error al eliminar el servicio.');
       }
       setFormStatus({
-        type: "success",
-        message: "Servicio eliminado exitosamente.",
+        type: 'success',
+        message: 'Servicio eliminado exitosamente.',
       });
       fetchServices(); // Re-fetch data after deletion
     } catch (err: any) {
       setFormStatus({
-        type: "error",
-        message: err.message || "Ocurrió un error al eliminar el servicio.",
+        type: 'error',
+        message: err.message || 'Ocurrió un error al eliminar el servicio.',
       });
     } finally {
       setLoading(false);
@@ -182,8 +182,8 @@ const ServiceTable = ({}: ServiceTableProps) => {
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -214,49 +214,49 @@ const ServiceTable = ({}: ServiceTableProps) => {
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
                 <TableHead
                   className="min-w-[155px] cursor-pointer xl:pl-7.5"
-                  onClick={() => handleSort("tipoServicio")}
+                  onClick={() => handleSort('tipoServicio')}
                 >
-                  Tipo de Servicio{" "}
-                  {sortBy === "tipoServicio" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Tipo de Servicio{' '}
+                  {sortBy === 'tipoServicio' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("fecha")}
+                  onClick={() => handleSort('fecha')}
                 >
-                  Fecha{" "}
-                  {sortBy === "fecha" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Fecha{' '}
+                  {sortBy === 'fecha' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("odometroInicial")}
+                  onClick={() => handleSort('odometroInicial')}
                 >
-                  Odómetro Inicial{" "}
-                  {sortBy === "odometroInicial" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Odómetro Inicial{' '}
+                  {sortBy === 'odometroInicial' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("odometroFinal")}
+                  onClick={() => handleSort('odometroFinal')}
                 >
-                  Odómetro Final{" "}
-                  {sortBy === "odometroFinal" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Odómetro Final{' '}
+                  {sortBy === 'odometroFinal' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("kilometrosRecorridos")}
+                  onClick={() => handleSort('kilometrosRecorridos')}
                 >
-                  Km Recorridos{" "}
-                  {sortBy === "kilometrosRecorridos" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Km Recorridos{' '}
+                  {sortBy === 'kilometrosRecorridos' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("estado")}
+                  onClick={() => handleSort('estado')}
                 >
-                  Estado{" "}
-                  {sortBy === "estado" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Estado{' '}
+                  {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead>Vehículo</TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
@@ -277,8 +277,10 @@ const ServiceTable = ({}: ServiceTableProps) => {
                   <TableCell>
                     <p className="text-dark dark:text-white">
                       {service.fecha
-                        ? new Date(service.fecha).toLocaleDateString()
-                        : "N/A"}
+                        ? formatDate(
+                            new Date(service.fecha).toLocaleDateString()
+                          )
+                        : 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -288,7 +290,7 @@ const ServiceTable = ({}: ServiceTableProps) => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {service.odometroFinal || "N/A"}
+                      {service.odometroFinal || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -299,13 +301,13 @@ const ServiceTable = ({}: ServiceTableProps) => {
                   <TableCell>
                     <div
                       className={cn(
-                        "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+                        'max-w-fit rounded-full px-3.5 py-1 text-sm font-medium',
                         {
-                          "bg-[#219653]/[0.08] text-[#219653]":
-                            service.estado === "Terminado",
-                          "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
-                            service.estado === "Pendiente",
-                        },
+                          'bg-[#219653]/[0.08] text-[#219653]':
+                            service.estado === 'Completado',
+                          'bg-[#FFA70B]/[0.08] text-[#FFA70B]':
+                            service.estado === 'Pendiente',
+                        }
                       )}
                     >
                       {service.estado}
@@ -315,7 +317,7 @@ const ServiceTable = ({}: ServiceTableProps) => {
                     <p className="text-dark dark:text-white">
                       {service.vehicle
                         ? `${service.vehicle.marca} (${service.vehicle.matricula})`
-                        : "N/A"}
+                        : 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
