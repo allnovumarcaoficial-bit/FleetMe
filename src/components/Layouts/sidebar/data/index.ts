@@ -1,80 +1,84 @@
-import * as Icons from "../icons";
+import * as Icons from '../icons';
 
 export const NAV_DATA = [
   {
-    label: "MENÚ PRINCIPAL",
+    label: 'MENÚ PRINCIPAL',
     items: [
       {
-        title: "Dashboard",
+        title: 'Dashboard',
         icon: Icons.HomeIcon,
         items: [
           {
-            title: "Reportes",
-            url: "/",
+            title: 'Reportes',
+            url: '/',
           },
         ],
       },
       {
-        title: "Calendario",
-        url: "/calendar",
+        title: 'Calendario',
+        url: '/calendar',
         icon: Icons.Calendar,
         items: [],
       },
       // New Fleet Management Section
       {
-        title: "Gestión de Flota",
+        title: 'Gestión de Flota',
         icon: Icons.Table, // Using Table icon as a placeholder for now
         items: [
           {
-            title: "Vehículos",
-            url: "/fleet/vehicles",
+            title: 'Vehículos',
+            url: '/fleet/vehicles',
           },
           {
-            title: "Conductores",
-            url: "/fleet/drivers",
+            title: 'Conductores',
+            url: '/fleet/drivers',
           },
           {
-            title: "Mantenimientos",
-            url: "/fleet/mantenimientos",
+            title: 'Mantenimientos',
+            url: '/fleet/mantenimientos',
           },
           {
-            title: "Servicios",
-            url: "/fleet/services",
+            title: 'Servicios',
+            url: '/fleet/services',
           },
           {
-            title: "Tarjetas de Combustible",
-            url: "/fleet/fuel-cards",
+            title: 'Tipo de Combustible',
+            url: '/fleet/desielType',
           },
           {
-            title: "Reservorio",
-            url: "/fleet/reservorio",
+            title: 'Tarjetas de Combustible',
+            url: '/fleet/fuel-cards',
           },
           {
-            title: "Operaciones de Combustible",
-            url: "/fleet/fuel-operations",
+            title: 'Reservorio',
+            url: '/fleet/reservorio',
+          },
+          {
+            title: 'Operaciones de Combustible',
+            url: '/fleet/fuel-operations',
           },
         ],
       },
     ],
   },
   {
-    label: "OTROS",
+    label: 'OTROS',
     items: [
       {
-        title: "Autenticación",
+        title: 'Autenticación',
         icon: Icons.Authentication,
         items: [
           {
-            title: "Gestionar Usuarios",
-            url: "/gestionarusuarios",
+            title: 'Gestionar Usuarios',
+            url: '/gestionarusuarios',
           },
           {
-            title: "Editar Usuario",
-            url: "/editarusuario",
+            title: 'Editar Usuario',
+            url: '/editarusuario',
           },
           {
-            title: "Cerrar Sesión",
-            url: "/auth/signin",
+            title: 'Cerrar Sesión',
+            url: '/auth/signin',
           },
         ],
       },

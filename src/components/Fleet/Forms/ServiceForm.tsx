@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from 'react';
 import {
   Servicio,
   ServicioTipo,
   ServicioEstado,
   Vehicle,
   Driver,
-} from "@/types/fleet";
-import InputGroup from "@/components/FormElements/InputGroup";
-import { Select } from "@/components/FormElements/select";
-import { Alert } from "@/components/ui-elements/alert";
-import { useRouter } from "next/navigation";
+} from '@/types/fleet';
+import InputGroup from '@/components/FormElements/InputGroup';
+import { Select } from '@/components/FormElements/select';
+import { Alert } from '@/components/ui-elements/alert';
+import { useRouter } from 'next/navigation';
 
 interface ServiceFormProps {
   initialData?: Partial<Servicio>;
@@ -41,9 +41,9 @@ const ServiceForm = ({
       odometroInicial: 0,
       odometroFinal: 0,
       cantidadPedidos: 0,
-      origen: "",
-      destino: "",
-      descripcion: "",
+      origen: '',
+      destino: '',
+      descripcion: '',
       kilometrosRecorridos: 0,
       estado: ServicioEstado.Pendiente,
       vehicleId: undefined,
@@ -54,9 +54,9 @@ const ServiceForm = ({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,16 +64,16 @@ const ServiceForm = ({
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch("/api/vehicles");
+        const res = await fetch('/api/vehicles');
         const data = (await res.json()) as { data: Vehicle[] };
         const activeVehicles =
-          data.data.filter((car) => car.estado === "Activo") || [];
+          data.data.filter((car) => car.estado === 'Activo') || [];
         setVehicles(activeVehicles);
 
         // Si hay datos iniciales, carga el vehículo correspondiente
         if (initialData?.vehicleId) {
           const initialVehicle = activeVehicles.find(
-            (v) => v.id === initialData.vehicleId,
+            (v) => v.id === initialData.vehicleId
           );
           if (initialVehicle) {
             setFormData((prev) => ({
@@ -89,8 +89,8 @@ const ServiceForm = ({
         setDrivers(activeVehicles.map((car) => car.driver || []).flat());
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching vehicles:", err);
-        setFormStatus({ type: "error", message: "Error al cargar vehículos." });
+        console.error('Error fetching vehicles:', err);
+        setFormStatus({ type: 'error', message: 'Error al cargar vehículos.' });
         setLoading(false);
       }
     };
@@ -127,70 +127,70 @@ const ServiceForm = ({
 
   const validateField = useCallback(
     (name: string, value: any): string => {
-      let error = "";
+      let error = '';
       switch (name) {
-        case "tipoServicio":
-        case "fecha":
-        case "odometroInicial":
-        case "estado":
-        case "vehicleId":
-          if (!value) error = "Este campo es requerido.";
+        case 'tipoServicio':
+        case 'fecha':
+        case 'odometroInicial':
+        case 'estado':
+        case 'vehicleId':
+          if (!value) error = 'Este campo es requerido.';
           break;
-        case "odometroFinal":
+        case 'odometroFinal':
           if (
             formData.estado === ServicioEstado.Completado &&
             (!value || value <= 0)
           ) {
             error =
-              "Odómetro final es requerido y debe ser mayor que cero cuando el estado es Terminado.";
+              'Odómetro final es requerido y debe ser mayor que cero cuando el estado es Terminado.';
           } else if (
             value &&
             formData.odometroInicial &&
             value < formData.odometroInicial
           ) {
-            error = "Odómetro final no puede ser menor que el inicial.";
+            error = 'Odómetro final no puede ser menor que el inicial.';
           }
           break;
-        case "cantidadPedidos":
+        case 'cantidadPedidos':
           if (
             formData.tipoServicio === ServicioTipo.EntregaDePedidos &&
             (!value || value <= 0)
           ) {
             error =
-              "Cantidad de pedidos es requerida y debe ser mayor que cero para este tipo de servicio.";
+              'Cantidad de pedidos es requerida y debe ser mayor que cero para este tipo de servicio.';
           }
           break;
-        case "origen":
-        case "destino":
+        case 'origen':
+        case 'destino':
           if (formData.tipoServicio === ServicioTipo.Logistico && !value) {
-            error = "Este campo es requerido para servicios logísticos.";
+            error = 'Este campo es requerido para servicios logísticos.';
           }
           break;
-        case "descripcion":
+        case 'descripcion':
           if (formData.tipoServicio === ServicioTipo.Administrativo && !value) {
-            error = "Descripción es requerida para servicios administrativos.";
+            error = 'Descripción es requerida para servicios administrativos.';
           }
           break;
-        case "driver_id":
+        case 'driver_id':
           if (value === undefined || value === null) {
-            error = "Selecciona un conductor";
+            error = 'Selecciona un conductor';
           }
           break;
       }
       return error;
     },
-    [formData.estado, formData.odometroInicial, formData.tipoServicio],
+    [formData.estado, formData.odometroInicial, formData.tipoServicio]
   );
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
 
-    if (name === "vehicleId") {
+    if (name === 'vehicleId') {
       const selectedVehicle = vehicles.find((v) => v.id === Number(value));
       if (selectedVehicle) {
         setFormData((prev) => ({
@@ -202,9 +202,9 @@ const ServiceForm = ({
       }
       return;
     }
-    if (type === "number") {
-      newValue = value === "" ? null : parseFloat(value);
-    } else if (type === "date") {
+    if (type === 'number') {
+      newValue = value === '' ? null : parseFloat(value);
+    } else if (type === 'date') {
       newValue = new Date(value);
     }
 
@@ -216,17 +216,17 @@ const ServiceForm = ({
     const newErrors: Record<string, string> = {};
     let isValid = true;
     const fieldsToValidate: (keyof Servicio)[] = [
-      "tipoServicio",
-      "fecha",
-      "odometroInicial",
-      "estado",
-      "vehicleId",
-      "odometroFinal",
-      "cantidadPedidos",
-      "origen",
-      "destino",
-      "descripcion",
-      "driver_id",
+      'tipoServicio',
+      'fecha',
+      'odometroInicial',
+      'estado',
+      'vehicleId',
+      'odometroFinal',
+      'cantidadPedidos',
+      'origen',
+      'destino',
+      'descripcion',
+      'driver_id',
     ];
 
     fieldsToValidate.forEach((field) => {
@@ -244,26 +244,26 @@ const ServiceForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
 
     if (!validateForm()) {
       setFormStatus({
-        type: "error",
-        message: "Por favor, corrige los errores del formulario.",
+        type: 'error',
+        message: 'Por favor, corrige los errores del formulario.',
       });
       return;
     }
 
     setLoading(true);
     try {
-      const method = initialData ? "PUT" : "POST";
+      const method = initialData ? 'PUT' : 'POST';
       const url = initialData
         ? `/api/services/${initialData.id}`
-        : "/api/services";
+        : '/api/services';
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           tipoServicio: formData.tipoServicio,
@@ -288,19 +288,19 @@ const ServiceForm = ({
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Error al guardar el servicio.");
+        throw new Error(errorData.error || 'Error al guardar el servicio.');
       }
 
       setFormStatus({
-        type: "success",
-        message: `Servicio ${initialData ? "actualizado" : "creado"} exitosamente.`,
+        type: 'success',
+        message: `Servicio ${initialData ? 'actualizado' : 'creado'} exitosamente.`,
       });
       if (onSuccess) onSuccess();
-      router.push("/fleet/services");
+      router.push('/fleet/services');
     } catch (err: any) {
       setFormStatus({
-        type: "error",
-        message: err.message || "Ocurrió un error inesperado.",
+        type: 'error',
+        message: err.message || 'Ocurrió un error inesperado.',
       });
     } finally {
       setLoading(false);
@@ -313,8 +313,8 @@ const ServiceForm = ({
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -328,7 +328,7 @@ const ServiceForm = ({
                 value: type,
                 label: ServicioTipo[type as keyof typeof ServicioTipo],
               }))}
-              value={formData.tipoServicio ? formData.tipoServicio : ""}
+              value={formData.tipoServicio ? formData.tipoServicio : ''}
               placeholder="Selecciona un tipo de servicio"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -346,7 +346,7 @@ const ServiceForm = ({
               type="date"
               placeholder="Selecciona la fecha"
               value={
-                formData.fecha ? formData.fecha.toISOString().split("T")[0] : ""
+                formData.fecha ? formData.fecha.toISOString().split('T')[0] : ''
               }
               handleChange={handleChange}
             />
@@ -360,7 +360,7 @@ const ServiceForm = ({
               name="odometroInicial"
               type="number"
               placeholder="Introduce el odómetro inicial"
-              value={formData.vehicle?.odometro?.toString() || "0"}
+              value={formData.vehicle?.odometro?.toString() || '0'}
               handleChange={handleChange}
               disabled={true}
             />
@@ -376,7 +376,7 @@ const ServiceForm = ({
               name="odometroFinal"
               type="number"
               placeholder="Introduce el odómetro final"
-              value={formData.odometroFinal?.toString() || ""}
+              value={formData.odometroFinal?.toString() || ''}
               handleChange={handleChange}
               disabled={
                 true ? formData.estado === ServicioEstado.Pendiente : false
@@ -394,7 +394,7 @@ const ServiceForm = ({
               name="kilometrosRecorridos"
               type="number"
               placeholder="Calculado automáticamente"
-              value={formData.kilometrosRecorridos?.toString() || "0"}
+              value={formData.kilometrosRecorridos?.toString() || '0'}
               handleChange={() => {}} // Disabled, so no change handler
               disabled={true}
             />
@@ -406,7 +406,7 @@ const ServiceForm = ({
                 value: estado,
                 label: estado,
               }))}
-              value={formData.estado || ""}
+              value={formData.estado || ''}
               placeholder="Selecciona un estado"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -427,7 +427,7 @@ const ServiceForm = ({
             <select
               id="vehicleId"
               name="vehicleId"
-              value={formData.vehicleId || ""}
+              value={formData.vehicleId || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
             >
@@ -452,7 +452,7 @@ const ServiceForm = ({
                   value: driver.id.toString(),
                   label: driver.nombre,
                 }))}
-                value={formData.driver_id ? formData.driver_id.toString() : ""}
+                value={formData.driver_id ? formData.driver_id.toString() : ''}
                 placeholder="Selecciona un conductor"
                 onChange={(e) =>
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -472,7 +472,7 @@ const ServiceForm = ({
                 name="cantidadPedidos"
                 type="number"
                 placeholder="Introduce la cantidad de pedidos"
-                value={formData.cantidadPedidos?.toString() || ""}
+                value={formData.cantidadPedidos?.toString() || ''}
                 handleChange={handleChange}
               />
               {errors.cantidadPedidos && (
@@ -491,7 +491,7 @@ const ServiceForm = ({
                   name="origen"
                   type="text"
                   placeholder="Introduce el origen"
-                  value={formData.origen || ""}
+                  value={formData.origen || ''}
                   handleChange={handleChange}
                 />
                 {errors.origen && (
@@ -504,7 +504,7 @@ const ServiceForm = ({
                   name="destino"
                   type="text"
                   placeholder="Introduce el destino"
-                  value={formData.destino || ""}
+                  value={formData.destino || ''}
                   handleChange={handleChange}
                 />
                 {errors.destino && (
@@ -521,7 +521,7 @@ const ServiceForm = ({
                 name="descripcion"
                 type="textarea"
                 placeholder="Introduce la descripción"
-                value={formData.descripcion || ""}
+                value={formData.descripcion || ''}
                 handleChange={handleChange}
               />
               {errors.descripcion && (
@@ -547,10 +547,10 @@ const ServiceForm = ({
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
             {loading
-              ? "Guardando..."
+              ? 'Guardando...'
               : initialData
-                ? "Actualizar Servicio"
-                : "Crear Servicio"}
+                ? 'Actualizar Servicio'
+                : 'Crear Servicio'}
           </button>
         </div>
       </form>

@@ -1,68 +1,54 @@
 'use client';
 
 import { useState, useEffect, useCallback, use } from 'react';
-import { FuelCard, Reservorio, TipoCombustible } from '@/types/fleet';
+import {
+  FuelCard,
+  ServicioEstado,
+  TipoCombustible,
+  TipoCombustibleEnum2,
+} from '@/types/fleet';
 import InputGroup from '@/components/FormElements/InputGroup';
 import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
 
-interface ReservorioFormProps {
-  initialData?: Partial<Reservorio>;
+interface DieselTypeFormProps {
+  initialData?: Partial<TipoCombustible>;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
 
-const ReservorioForm = ({
+const DieselTypeForm = ({
   initialData,
   onSuccess,
   onCancel,
-}: ReservorioFormProps) => {
+}: DieselTypeFormProps) => {
   const router = useRouter();
   const [combustible, setCombustible] = useState<TipoCombustible[]>([]);
-  const [formData, setFormData] = useState<Partial<Reservorio>>(() => {
+  const [formData, setFormData] = useState<Partial<TipoCombustible>>(() => {
     if (initialData) {
       return {
         ...initialData,
-        capacidad_actual: initialData.capacidad_actual
-          ? Number(initialData.capacidad_actual)
-          : 0,
-        capacidad_total: initialData.capacidad_total
-          ? Number(initialData.capacidad_total)
-          : 0,
-        tipoCombustible: initialData.tipoCombustible || undefined,
-        tipoCombustibleId: initialData.tipoCombustibleId || undefined,
+        fechaUpdate: initialData.fechaUpdate
+          ? new Date(initialData.fechaUpdate)
+          : undefined,
       };
     }
     return {
       nombre: '',
-      capacidad_actual: 0,
-      capacidad_total: 0,
-      tipoCombustible: undefined, // Mejor usar undefined que null para Prisma
-      tipoCombustibleId: undefined,
+      precio: 0,
+      fechaUpdate: undefined,
+      tipoCombustibleEnum: undefined,
     };
   });
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
     type: 'success' | 'error' | '';
     message: string;
   }>({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const fetchCombustible = async () => {
-      try {
-        const response = await fetch('/api/dieselType');
-        if (!response.ok) {
-          throw new Error('Error al obtener los tipos de combustible');
-        }
-        const data = await response.json();
-        setCombustible(data.data);
-      } catch (error) {
-        console.error('Error fetching combustible types:', error);
-      }
-    };
-    fetchCombustible();
-  }, [initialData]);
+
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
@@ -79,14 +65,12 @@ const ReservorioForm = ({
         case 'nombre':
           if (!value) error = 'El nombre de la tarjeta es requerido.';
           break;
-        case 'capacidad_actual':
-          if (!value) error = 'La capacidad actual es requerida.';
-          if (value > (formData.capacidad_total || 0)) {
-            error = 'La capacidad actual no puede superar a la actual';
-          }
+        case 'precio':
+          if (!value) error = 'El precio es requerido.';
           break;
-        case 'capacidad_total':
-          if (!value) error = 'La capacidad total es requerida.';
+        case 'fechaUpdate':
+          if (!value || isNaN(new Date(value).getTime()))
+            error = 'Fecha inválida.';
           break;
       }
       return error;
@@ -117,10 +101,10 @@ const ReservorioForm = ({
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
-    const fieldsToValidate: (keyof Reservorio)[] = [
+    const fieldsToValidate: (keyof TipoCombustible)[] = [
       'nombre',
-      'capacidad_actual',
-      'capacidad_total',
+      'precio',
+      'fechaUpdate',
     ];
 
     fieldsToValidate.forEach((field) => {
@@ -152,8 +136,8 @@ const ReservorioForm = ({
     try {
       const method = initialData ? 'PUT' : 'POST';
       const url = initialData
-        ? `/api/reservorio/${initialData.id}`
-        : '/api/reservorio';
+        ? `/api/dieselType/${initialData.id}`
+        : '/api/dieselType';
       const response = await fetch(url, {
         method,
         headers: {
@@ -167,16 +151,16 @@ const ReservorioForm = ({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || 'Error al guardar la tarjeta de combustible.'
+          errorData.error || 'Error al guardar el tipo de combustible.'
         );
       }
 
       setFormStatus({
         type: 'success',
-        message: `Reservorio ${initialData ? 'actualizado' : 'creado'} exitosamente.`,
+        message: `TipoCombustible ${initialData ? 'actualizado' : 'creado'} exitosamente.`,
       });
       if (onSuccess) onSuccess();
-      router.push('/fleet/reservorio');
+      router.push('/fleet/desielType');
     } catch (err: any) {
       setFormStatus({
         type: 'error',
@@ -201,10 +185,10 @@ const ReservorioForm = ({
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div>
             <InputGroup
-              label="Nombre del Reservorio"
+              label="Nombre del tipo de combustible"
               name="nombre"
               type="text"
-              placeholder="Introduce el nombre del reservorio"
+              placeholder="Introduce el nombre del tipo de combustible"
               value={formData.nombre || ''}
               handleChange={handleChange}
             />
@@ -214,55 +198,58 @@ const ReservorioForm = ({
           </div>
           <div>
             <InputGroup
-              label="Capacidad Actual"
-              name="capacidad_actual"
+              label="Precio del combustible"
+              name="precio"
               type="number"
-              placeholder="Introduzca la capacidad actual"
-              value={formData.capacidad_actual?.toString() || ''}
+              placeholder="Introduzca el precio del combustible"
+              value={formData.precio?.toString() || ''}
               handleChange={handleChange}
             />
-            {errors.capacidad_actual && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.capacidad_actual}
-              </p>
+            {errors.precio && (
+              <p className="mt-1 text-sm text-red-500">{errors.precio}</p>
             )}
           </div>
           <InputGroup
-            label="Capacidad Total"
-            name="capacidad_total"
-            type="number"
-            placeholder="Introduzca la capacidad total"
-            value={formData.capacidad_total?.toString() || ''}
+            label="Última Actualización"
+            name="fechaUpdate"
+            type="date"
+            placeholder="Selecciona la fecha"
+            value={
+              formData.fechaUpdate
+                ? new Date(formData.fechaUpdate).toISOString().split('T')[0]
+                : ''
+            }
             handleChange={handleChange}
           />
-          {errors.capacidad_total && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.capacidad_total}
-            </p>
+          {errors.fechaUpdate && (
+            <p className="mt-1 text-sm text-red-500">{errors.fechaUpdate}</p>
           )}
           <div>
-            <Select
-              label="Tipo de Combustible"
-              items={combustible.map((item) => ({
-                value: String(item.id),
-                label: item.nombre,
-              }))}
-              value={formData.tipoCombustibleId?.toString() || ''}
-              placeholder="Selecciona el tipo de combustible"
-              onChange={(e) =>
-                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-              }
-              name="tipoCombustibleId"
-            />
-            {errors.tipoCombustibleId && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.tipoCombustibleId}
-              </p>
-            )}
+            <div>
+              <Select
+                label="Estado"
+                items={Object.entries(TipoCombustibleEnum2)
+                  .filter(([key]) => isNaN(Number(key))) // Solo llaves strings
+                  .map(([key, value]) => ({
+                    value: key, // Valor numérico: 1, 2, 3
+                    label: value, // Nombre: 'GASOLINA', 'DIESEL'
+                  }))}
+                value={formData.tipoCombustibleEnum || ''}
+                placeholder="Selecciona un tipo de combustible"
+                onChange={(e) =>
+                  handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+                }
+                name="tipoCombustibleEnum"
+              />
+              {errors.tipoCombustibleEnum && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.tipoCombustibleEnum}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-
-        <div className="mt-6 flex justify-end gap-4">
+        <div className="mx-auto mt-6 flex items-end justify-end gap-4 text-right">
           <button
             type="button"
             onClick={onCancel}
@@ -278,8 +265,8 @@ const ReservorioForm = ({
             {loading
               ? 'Guardando...'
               : initialData
-                ? 'Actualizar Reservorio'
-                : 'Crear Reservorio'}
+                ? 'Actualizar Tipo Combustible'
+                : 'Crear Tipo Combustible'}
           </button>
         </div>
       </form>
@@ -287,4 +274,4 @@ const ReservorioForm = ({
   );
 };
 
-export default ReservorioForm;
+export default DieselTypeForm;

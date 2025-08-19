@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Driver } from '@/types/fleet';
+import { FuelCard, Reservorio, TipoCombustible } from '@/types/fleet';
 import {
   Table,
   TableBody,
@@ -11,30 +11,29 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
-import { PreviewIcon } from '@/components/Tables/icons'; // Reusing existing icons
+import { PreviewIcon } from '@/components/Tables/icons';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
-import { cn, formatDate } from '@/lib/utils'; // Import cn for conditional styling
 import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
 import type { Dayjs } from 'dayjs';
+import { format } from 'date-fns';
+import { formatDate } from '@/lib/utils';
 
-interface DriverTableProps {}
-
-const DriverTable = ({}: DriverTableProps) => {
+const DieselTypeTable = () => {
   const router = useRouter();
-  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [tipoCombustible, setTipoCombustible] = useState<TipoCombustible[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalDriversCount, setTotalDriversCount] = useState(0);
-  const [sortBy, setSortBy] = useState('id');
+  const [totalreservorioCount, setTotalreservorioCount] = useState(0);
+  const [sortBy, setSortBy] = useState('nombre');
   const [sortOrder, setSortOrder] = useState('asc');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [formStatus, setFormStatus] = useState<{
@@ -42,31 +41,31 @@ const DriverTable = ({}: DriverTableProps) => {
     message: string;
   }>({ type: '', message: '' });
 
-  const driverColumns: ColumnFilter[] = [
+  const fuelCardColumns: ColumnFilter[] = [
     { key: 'nombre', title: 'Nombre', type: 'text' },
-    { key: 'licencia', title: 'Licencia', type: 'text' },
     {
-      key: 'fecha_vencimiento_licencia',
-      title: 'Vencimiento Licencia',
-      type: 'dateRange',
+      key: 'precio',
+      title: 'Precio',
+      type: 'text',
     },
-    { key: 'carnet_peritage', title: 'Carnet Peritaje', type: 'boolean' },
+    { key: 'fecha_update', title: 'Última Actualización', type: 'dateRange' },
     {
-      key: 'estado',
-      title: 'Estado',
+      key: 'tipoCombustibleEnum',
+      title: 'Tipo de Combustible',
       type: 'select',
       options: [
-        { value: 'Activo', label: 'Activo' },
-        { value: 'Inactivo', label: 'Inactivo' },
-        { value: 'Vacaciones', label: 'Vacaciones' },
+        { value: 'Gasolina_Regular', label: 'Gasolina' },
+        { value: 'Diesel', label: 'Diésel' },
+        { value: 'Gasolina_Especial', label: 'Gasolina Especial' },
+        { value: 'Eléctrico', label: 'Eléctrico' },
       ],
     },
   ];
 
-  const fetchDrivers = useCallback(async () => {
+  const fetchDieselType = useCallback(async () => {
     setLoading(true);
     setError(null);
-    setFormStatus({ type: '', message: '' });
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -79,50 +78,40 @@ const DriverTable = ({}: DriverTableProps) => {
         params.append('search', activeFilters.globalSearch);
       }
 
-      if (activeFilters.columnFilters) {
-        for (const key in activeFilters.columnFilters) {
-          const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== '') {
-            if (Array.isArray(value)) {
-              if (
-                key === 'fecha_vencimiento_licencia' &&
-                value[0] &&
-                value[1]
-              ) {
-                const [startDate, endDate] = value as [Dayjs, Dayjs];
-                params.append(
-                  'fechaVencimientoLicenciaDesde',
-                  startDate.toISOString()
-                );
-                params.append(
-                  'fechaVencimientoLicenciaHasta',
-                  endDate.toISOString()
-                );
-              } else if (value.length > 0) {
-                params.append(key, value.join(','));
-              }
-            } else if (typeof value === 'boolean') {
-              params.append(key, value.toString());
-            } else {
-              params.append(key, value.toString());
-            }
-          }
-        }
-      }
+      //   if (activeFilters.columnFilters) {
+      //     for (const key in activeFilters.columnFilters) {
+      //       const value = activeFilters.columnFilters[key];
+      //       if (value !== undefined && value !== null && value !== "") {
+      //         if (Array.isArray(value)) {
+      //           if (key === "fechaVencimiento" && value[0] && value[1]) {
+      //             const [startDate, endDate] = value as [Dayjs, Dayjs];
+      //             params.append("fechaVencimientoDesde", startDate.toISOString());
+      //             params.append("fechaVencimientoHasta", endDate.toISOString());
+      //           } else if (value.length > 0) {
+      //             params.append(key, value.join(","));
+      //           }
+      //         } else if (typeof value === "boolean") {
+      //           params.append(key, value.toString());
+      //         } else {
+      //           params.append(key, value.toString());
+      //         }
+      //       }
+      //     }
+      //   }
 
-      const res = await fetch(`/api/drivers?${params.toString()}`);
+      const res = await fetch(`/api/dieselType?${params.toString()}`);
       if (!res.ok) {
-        throw new Error('Failed to fetch drivers');
+        throw new Error('Failed to fetch fuel cards');
       }
       const data = await res.json();
-      setDrivers(data.data);
+      setTipoCombustible(data.data);
       setTotalPages(data.totalPages);
-      setTotalDriversCount(data.total);
+      setTotalreservorioCount(data.total);
     } catch (err: any) {
-      setError(err.message || 'Error al cargar conductores.');
+      setError(err.message || 'Error al cargar el tipo de combustible.');
       setFormStatus({
         type: 'error',
-        message: err.message || 'Error al cargar conductores.',
+        message: err.message || 'Error al cargar el tipo de combustible.',
       });
     } finally {
       setLoading(false);
@@ -130,8 +119,8 @@ const DriverTable = ({}: DriverTableProps) => {
   }, [page, limit, sortBy, sortOrder, activeFilters]);
 
   useEffect(() => {
-    fetchDrivers();
-  }, [fetchDrivers]);
+    fetchDieselType();
+  }, [fetchDieselType]);
 
   const handleFilterChange = useCallback((filters: ActiveFilters) => {
     setActiveFilters(filters);
@@ -139,8 +128,8 @@ const DriverTable = ({}: DriverTableProps) => {
   }, []);
 
   useEffect(() => {
-    fetchDrivers();
-  }, [fetchDrivers]);
+    fetchDieselType();
+  }, [fetchDieselType]);
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -151,29 +140,36 @@ const DriverTable = ({}: DriverTableProps) => {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este conductor?')) {
+  const handleDelete = async (id: string) => {
+    if (
+      !confirm(
+        '¿Estás seguro de que quieres eliminar este tipo de combustible?'
+      )
+    ) {
       return;
     }
     setLoading(true);
     setFormStatus({ type: '', message: '' });
     try {
-      const res = await fetch(`/api/drivers/${id}`, {
+      const res = await fetch(`/api/dieselType/${id}`, {
         method: 'DELETE',
       });
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.error || 'Error al eliminar el conductor.');
+        throw new Error(
+          errorData.error || 'Error al eliminar el tipo de combustible.'
+        );
       }
       setFormStatus({
         type: 'success',
-        message: 'Conductor eliminado exitosamente.',
+        message: 'Tipo de combustible eliminado exitosamente.',
       });
-      fetchDrivers(); // Re-fetch data after deletion
+      fetchDieselType(); // Re-fetch data after deletion
     } catch (err: any) {
       setFormStatus({
         type: 'error',
-        message: err.message || 'Ocurrió un error al eliminar el conductor.',
+        message:
+          err.message || 'Ocurrió un error al eliminar el Tipo de combustible.',
       });
     } finally {
       setLoading(false);
@@ -192,21 +188,21 @@ const DriverTable = ({}: DriverTableProps) => {
 
       <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <AdvancedTableFilter
-          columns={driverColumns}
+          columns={fuelCardColumns}
           onFilterChange={handleFilterChange}
           loading={loading}
           applyFiltersAutomatically={true}
         />
         <Link
-          href="/fleet/drivers/new"
+          href="/fleet/desielType/new"
           className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
         >
-          Crear Conductor
+          Crear Tipo de combustible
         </Link>
       </div>
 
       {loading ? (
-        <p>Cargando conductores...</p>
+        <p>Cargando Tipo de combustible...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -218,113 +214,85 @@ const DriverTable = ({}: DriverTableProps) => {
                   className="min-w-[155px] cursor-pointer xl:pl-7.5"
                   onClick={() => handleSort('nombre')}
                 >
-                  Nombre{' '}
+                  Nombre del Tipo de combustible{' '}
                   {sortBy === 'nombre' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort('licencia')}
+                  onClick={() => handleSort('precio')}
                 >
-                  Licencia{' '}
-                  {sortBy === 'licencia' && (sortOrder === 'asc' ? '▲' : '▼')}
+                  Precio{' '}
+                  {sortBy === 'precio' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort('fecha_vencimiento_licencia')}
+                  className="min-w-[155px] cursor-pointer xl:pl-7.5"
+                  onClick={() => handleSort('fecha_update')}
                 >
-                  Vencimiento Licencia{' '}
-                  {sortBy === 'fecha_vencimiento_licencia' &&
+                  Última Actualización{' '}
+                  {sortBy === 'fecha_update' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort('carnet_peritage')}
+                  onClick={() => handleSort('tipoCombustibleEnum')}
                 >
-                  Carnet Peritaje{' '}
-                  {sortBy === 'carnet_peritage' &&
+                  Tipo de Combustible{' '}
+                  {sortBy === 'tipoCombustibleEnum' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort('estado')}
-                >
-                  Estado{' '}
-                  {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {drivers.map((driver) => (
+              {tipoCombustible.map((tipo) => (
                 <TableRow
-                  key={driver.id}
+                  key={tipo.id}
                   className="border-[#eee] dark:border-dark-3"
                 >
                   <TableCell className="min-w-[155px] xl:pl-7.5">
-                    <h5 className="text-dark dark:text-white">
-                      {driver.nombre}
-                    </h5>
+                    <h5 className="text-dark dark:text-white">{tipo.nombre}</h5>
+                  </TableCell>
+                  <TableCell>
+                    <p className="text-dark dark:text-white">{tipo.precio}</p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {driver.licencia}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {driver.fecha_vencimiento_licencia
-                        ? formatDate(
-                            new Date(
-                              driver.fecha_vencimiento_licencia
-                            ).toLocaleDateString()
-                          )
+                      {tipo.fechaUpdate
+                        ? formatDate(new Date(tipo.fechaUpdate).toISOString())
                         : 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {driver.carnet_peritage ? 'Sí' : 'No'}
+                      {tipo.tipoCombustibleEnum}
                     </p>
-                  </TableCell>
-                  <TableCell>
-                    <div
-                      className={cn(
-                        'max-w-fit rounded-full px-3.5 py-1 text-sm font-medium',
-                        {
-                          'bg-[#219653]/[0.08] text-[#219653]':
-                            driver.estado === 'Activo',
-                          'bg-[#D34053]/[0.08] text-[#D34053]':
-                            driver.estado === 'Inactivo',
-                          'bg-[#FFA70B]/[0.08] text-[#FFA70B]':
-                            driver.estado === 'Vacaciones',
-                        }
-                      )}
-                    >
-                      {driver.estado}
-                    </div>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
                     <div className="flex items-center justify-end gap-x-3.5">
                       <Link
-                        href={`/fleet/drivers/${driver.id}`}
+                        href={`/fleet/desielType/${tipo.id}`}
                         className="hover:text-primary"
                       >
-                        <span className="sr-only">Ver Conductor</span>
+                        <span className="sr-only">Ver tipo de combustible</span>
                         <PreviewIcon />
                       </Link>
                       <Link
-                        href={`/fleet/drivers/${driver.id}/edit`}
+                        href={`/fleet/desielType/${tipo.id}/edit`}
                         className="hover:text-primary"
                       >
-                        <span className="sr-only">Editar Conductor</span>
+                        <span className="sr-only">
+                          Editar tipo de combustible
+                        </span>
                         <PencilSquareIcon />
                       </Link>
                       <button
-                        onClick={() => handleDelete(driver.id)}
+                        onClick={() => handleDelete(String(tipo.id))}
                         className="hover:text-primary"
                       >
-                        <span className="sr-only">Eliminar Conductor</span>
+                        <span className="sr-only">
+                          Eliminar tipo de combustible
+                        </span>
                         <TrashIcon />
                       </button>
                     </div>
@@ -336,7 +304,7 @@ const DriverTable = ({}: DriverTableProps) => {
 
           <Pagination
             current={page}
-            total={totalDriversCount}
+            total={totalreservorioCount}
             pageSize={limit}
             onChange={(p, ps) => {
               setPage(p);
@@ -353,4 +321,4 @@ const DriverTable = ({}: DriverTableProps) => {
   );
 };
 
-export default DriverTable;
+export default DieselTypeTable;

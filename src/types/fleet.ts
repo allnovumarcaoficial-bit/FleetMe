@@ -1,4 +1,4 @@
-import { OperationReservorio, TipoCombustible } from "@prisma/client";
+import { OperationReservorio } from '@prisma/client';
 
 export interface Driver {
   id: number;
@@ -17,8 +17,8 @@ export interface Driver {
   vehicleId?: number | null; // Foreign key to Vehicle
 }
 
-export type DriverStatus = "Activo" | "Inactivo" | "Vacaciones"; // New type for driver status
-export type VehicleStatus = "Activo" | "Inactivo" | "En Mantenimiento" | "Baja";
+export type DriverStatus = 'Activo' | 'Inactivo' | 'Vacaciones'; // New type for driver status
+export type VehicleStatus = 'Activo' | 'Inactivo' | 'En Mantenimiento' | 'Baja';
 
 export interface Vehicle {
   id: number;
@@ -56,11 +56,11 @@ export interface Vehicle {
   km_recorrido?: number | null;
 }
 
-export type DestinoVehiculo = "Administrativo" | "Logistico" | "Reparto";
+export type DestinoVehiculo = 'Administrativo' | 'Logistico' | 'Reparto';
 
 export enum MantenimientoTipo {
-  Correctivo = "Correctivo",
-  Preventivo = "Preventivo",
+  Correctivo = 'Correctivo',
+  Preventivo = 'Preventivo',
 }
 
 export interface Piece {
@@ -84,12 +84,12 @@ export interface Mantenimiento {
   vehicle?: Vehicle;
 }
 
-export type MantenimientoEstado = "Pendiente" | "Ejecutado" | "Cancelado";
+export type MantenimientoEstado = 'Pendiente' | 'Ejecutado' | 'Cancelado';
 
 export type TipoCombustibleEnum =
-  | "Gasolina_Regular"
-  | "Diesel"
-  | "Gasolina_Especial";
+  | 'Gasolina_Regular'
+  | 'Diesel'
+  | 'Gasolina_Especial';
 export interface Reservorio {
   id: string;
   nombre: string;
@@ -98,6 +98,29 @@ export interface Reservorio {
   operationReservorio: OperationReservorio[];
   tipoCombustibleId: number | null;
   tipoCombustible: TipoCombustible | null;
+}
+
+export interface OperationTipo {
+  id: number;
+  fuelOperationId: number;
+  tipoCombustible_id: number;
+}
+
+export enum TipoCombustibleEnum2 {
+  Gasolina_Regular = 'Gasolina Regular',
+  Diesel = 'Diesel',
+  Gasolina_Especial = 'Gasolina Especial',
+}
+export interface TipoCombustible {
+  id: number;
+  nombre: string;
+  precio: number;
+  tipoCombustibleEnum: TipoCombustibleEnum; // "litro", "galón", etc.
+  createdAt: Date;
+  updatedAt: Date;
+  fechaUpdate: Date;
+  reservorios?: Reservorio[];
+  operationTipos?: OperationTipo[]; // Optional relation to Reservorio
 }
 export interface FuelCard {
   id: number;
@@ -114,15 +137,15 @@ export interface FuelCard {
 }
 
 export enum ServicioTipo {
-  EntregaDePedidos = "Entrega de Pedidos",
-  Logistico = "Logistico",
-  Administrativo = "Administrativo",
+  EntregaDePedidos = 'Entrega de Pedidos',
+  Logistico = 'Logistico',
+  Administrativo = 'Administrativo',
 }
 
 export enum ServicioEstado {
-  Pendiente = "Pendiente",
-  Completado = "Completado",
-  Cancelado = "Cancelado",
+  Pendiente = 'Pendiente',
+  Completado = 'Completado',
+  Cancelado = 'Cancelado',
 }
 
 export interface Servicio {
