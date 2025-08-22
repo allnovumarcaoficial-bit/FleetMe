@@ -16,7 +16,6 @@ export async function GET(
       where: { id },
       include: {
         reservorios: true,
-        operationTipos: true,
       },
     });
 

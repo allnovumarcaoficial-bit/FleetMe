@@ -68,6 +68,9 @@ export async function GET(request: Request) {
       skip,
       take: limit,
       where,
+      include: {
+        fuelOperations: true,
+      },
       orderBy,
     });
 
@@ -82,7 +85,10 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching fuel cards:', error);
-    return NextResponse.json({ error: 'Failed to fetch fuel cards' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch fuel cards' },
+      { status: 500 }
+    );
   }
 }
 
@@ -90,15 +96,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const {
-      numeroDeTarjeta,
-      tipoDeTarjeta,
-      tipoDeCombustible,
-      precioCombustible,
-      moneda,
-      fechaVencimiento,
-      esReservorio,
-    } = body;
+    const { numeroDeTarjeta, tipoDeTarjeta, saldo, moneda, fechaVencimiento } =
+      body;
 
     const parsedFechaVencimiento = new Date(fechaVencimiento);
 
@@ -106,11 +105,9 @@ export async function POST(request: Request) {
       data: {
         numeroDeTarjeta,
         tipoDeTarjeta,
-        tipoDeCombustible,
-        precioCombustible: parseFloat(precioCombustible),
+        saldo: parseFloat(saldo),
         moneda,
         fechaVencimiento: parsedFechaVencimiento,
-        esReservorio: Boolean(esReservorio),
       },
     });
 
@@ -118,8 +115,14 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('Error creating fuel card:', error);
     if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Número de Tarjeta ya existe.' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'Número de Tarjeta ya existe.' },
+        { status: 409 }
+      );
     }
-    return NextResponse.json({ error: 'Failed to create fuel card', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create fuel card', details: error.message },
+      { status: 500 }
+    );
   }
 }

@@ -1,4 +1,12 @@
-import { OperationReservorio } from '@prisma/client';
+// Prisma model OperationReservorio
+export interface OperationReservorio {
+  id: string;
+  fuelOperationId: number;
+  id_operation: FuelOperation;
+  reservorio_id: string;
+  reservorio: Reservorio;
+  operationType?: string;
+}
 
 export interface Driver {
   id: number;
@@ -101,8 +109,7 @@ export interface Reservorio {
 }
 
 export interface OperationTipo {
-  id: number;
-  fuelOperationId: number;
+  fuelOperationId?: number | undefined;
   tipoCombustible_id: number;
 }
 
@@ -120,17 +127,16 @@ export interface TipoCombustible {
   updatedAt: Date;
   fechaUpdate: Date;
   reservorios?: Reservorio[];
-  operationTipos?: OperationTipo[]; // Optional relation to Reservorio
+  tipoCombustible_id?: number | null;
+  tipoCombustible: TipoCombustible | null; // Optional relation to Reservorio
 }
 export interface FuelCard {
   id: number;
   numeroDeTarjeta: string;
   tipoDeTarjeta: string;
-  tipoDeCombustible: string;
-  precioCombustible: number;
+  saldo: number;
   moneda: string;
   fechaVencimiento: Date | null;
-  esReservorio: boolean;
   createdAt: Date;
   updatedAt: Date;
   fuelOperations?: FuelOperation[];
@@ -165,10 +171,13 @@ export interface Servicio {
   driver_id: number;
   driver?: Driver;
 }
-
+export enum FuelOperationType {
+  Carga = 'Carga',
+  Consumo = 'Consumo',
+}
 export interface FuelOperation {
   id: number;
-  tipoOperacion: string; // "Carga" or "Consumo"
+  tipoOperacion: FuelOperationType;
   fecha: Date;
   saldoInicio: number;
   valorOperacionDinero: number;
@@ -176,10 +185,36 @@ export interface FuelOperation {
   saldoFinal: number;
   saldoFinalLitros: number;
   fuelCardId: number;
-  fuelCard?: FuelCard;
+  descripcion?: string;
+  ubicacion_cupet?: string;
+  fuelCard: FuelCard;
   createdAt: Date;
   updatedAt: Date;
-  fuelDistributions?: FuelDistribution[];
+  operationReservorio: OperationReservorio[];
+  fuelDistributions: FuelDistribution[];
+  operationTipos: OperationTipo[];
+}
+
+export interface FuelOperationForm2 {
+  id: number;
+  tipoOperacion: FuelOperationType;
+  fecha: Date;
+  saldoInicio: number;
+  valorOperacionDinero: number;
+  valorOperacionLitros: number;
+  saldoFinal: number;
+  saldoFinalLitros: number;
+  fuelCardId: number;
+  descripcion?: string;
+  ubicacion_cupet?: string;
+  fuelCard: FuelCard;
+  createdAt: Date;
+  updatedAt: Date;
+  reservorioId: string | null;
+  operationReservorio: OperationReservorio[];
+  fuelDistributions: FuelDistribution[];
+  tipoCombustible_id?: number | null;
+  tipoCombustible: TipoCombustible | null;
 }
 
 export interface FuelDistribution {

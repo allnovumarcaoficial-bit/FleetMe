@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -21,24 +21,24 @@ export async function GET(
 
     if (!fuelOperation) {
       return NextResponse.json(
-        { message: "Fuel operation not found" },
-        { status: 404 },
+        { message: 'Fuel operation not found' },
+        { status: 404 }
       );
     }
 
     return NextResponse.json(fuelOperation);
   } catch (error) {
-    console.error("Error fetching fuel operation:", error);
+    console.error('Error fetching fuel operation:', error);
     return NextResponse.json(
-      { message: "Error fetching fuel operation", error },
-      { status: 500 },
+      { message: 'Error fetching fuel operation', error },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -57,33 +57,32 @@ export async function PUT(
 
     if (!fuelCard) {
       return NextResponse.json(
-        { message: "Fuel card not found" },
-        { status: 404 },
+        { message: 'Fuel card not found' },
+        { status: 404 }
       );
     }
 
-    const valorOperacionLitros =
-      valorOperacionDinero / fuelCard.precioCombustible;
+    const valorOperacionLitros = valorOperacionDinero / (fuelCard.saldo || 1);
 
     const lastOperation = await prisma.fuelOperation.findFirst({
       where: { fuelCardId, id: { not: parseInt(id) } },
-      orderBy: { fecha: "desc" },
+      orderBy: { fecha: 'desc' },
     });
     const saldoInicio = lastOperation ? lastOperation.saldoFinal : 0;
 
     let saldoFinal;
-    if (tipoOperacion === "Carga") {
+    if (tipoOperacion === 'Carga') {
       saldoFinal = saldoInicio + valorOperacionDinero;
-    } else if (tipoOperacion === "Consumo") {
+    } else if (tipoOperacion === 'Consumo') {
       saldoFinal = saldoInicio - valorOperacionDinero;
     } else {
       return NextResponse.json(
-        { message: "Invalid tipoOperacion" },
-        { status: 400 },
+        { message: 'Invalid tipoOperacion' },
+        { status: 400 }
       );
     }
 
-    const saldoFinalLitros = saldoFinal / fuelCard.precioCombustible;
+    const saldoFinalLitros = saldoFinal / (fuelCard.saldo || 1);
 
     const updatedFuelOperation = await prisma.fuelOperation.update({
       where: { id: parseInt(id) },
@@ -100,7 +99,7 @@ export async function PUT(
           deleteMany: {}, // Delete existing distributions
           createMany: {
             data:
-              tipoOperacion === "Consumo" &&
+              tipoOperacion === 'Consumo' &&
               fuelDistributions &&
               fuelDistributions.length > 0
                 ? fuelDistributions.map((dist: any) => ({
@@ -115,17 +114,17 @@ export async function PUT(
 
     return NextResponse.json(updatedFuelOperation);
   } catch (error) {
-    console.error("Error updating fuel operation:", error);
+    console.error('Error updating fuel operation:', error);
     return NextResponse.json(
-      { message: "Error updating fuel operation", error },
-      { status: 500 },
+      { message: 'Error updating fuel operation', error },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -133,13 +132,13 @@ export async function DELETE(
       where: { id: parseInt(id) },
     });
     return NextResponse.json({
-      message: "Fuel operation deleted successfully",
+      message: 'Fuel operation deleted successfully',
     });
   } catch (error) {
-    console.error("Error deleting fuel operation:", error);
+    console.error('Error deleting fuel operation:', error);
     return NextResponse.json(
-      { message: "Error deleting fuel operation", error },
-      { status: 500 },
+      { message: 'Error deleting fuel operation', error },
+      { status: 500 }
     );
   }
 }

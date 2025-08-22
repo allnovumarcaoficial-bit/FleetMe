@@ -52,24 +52,13 @@ const FuelCardTable = () => {
         { value: 'Prepago', label: 'Prepago' },
       ],
     },
-    {
-      key: 'tipoDeCombustible',
-      title: 'Tipo de Combustible',
-      type: 'select',
-      options: [
-        { value: 'Gasolina', label: 'Gasolina' },
-        { value: 'Diésel', label: 'Diésel' },
-        { value: 'Eléctrico', label: 'Eléctrico' },
-      ],
-    },
-    { key: 'precioCombustible', title: 'Precio del Combustible', type: 'text' },
+    { key: 'saldo', title: 'Saldo', type: 'text' },
     { key: 'moneda', title: 'Moneda', type: 'text' },
     {
       key: 'fechaVencimiento',
       title: 'Fecha de Vencimiento',
       type: 'dateRange',
     },
-    { key: 'esReservorio', title: 'Es Reservorio', type: 'boolean' },
   ];
 
   const fetchFuelCards = useCallback(async () => {
@@ -239,19 +228,10 @@ const FuelCardTable = () => {
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort('tipoDeCombustible')}
+                  onClick={() => handleSort('saldo')}
                 >
-                  Tipo de Combustible{' '}
-                  {sortBy === 'tipoDeCombustible' &&
-                    (sortOrder === 'asc' ? '▲' : '▼')}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort('precioCombustible')}
-                >
-                  Precio del Combustible{' '}
-                  {sortBy === 'precioCombustible' &&
-                    (sortOrder === 'asc' ? '▲' : '▼')}
+                  Saldo{' '}
+                  {sortBy === 'saldo' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
@@ -261,19 +241,11 @@ const FuelCardTable = () => {
                   {sortBy === 'moneda' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer"
+                  className="h-6 w-6"
                   onClick={() => handleSort('fechaVencimiento')}
                 >
                   Fecha de Vencimiento{' '}
                   {sortBy === 'fechaVencimiento' &&
-                    (sortOrder === 'asc' ? '▲' : '▼')}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort('esReservorio')}
-                >
-                  Es Reservorio{' '}
-                  {sortBy === 'esReservorio' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
@@ -298,12 +270,7 @@ const FuelCardTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {fuelCard.tipoDeCombustible}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {fuelCard.precioCombustible}
+                      {fuelCard.saldo}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -320,11 +287,6 @@ const FuelCardTable = () => {
                             ).toLocaleDateString()
                           )
                         : 'N/A'}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {fuelCard.esReservorio ? 'Sí' : 'No'}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">

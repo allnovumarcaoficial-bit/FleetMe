@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ShowcaseSection } from '@/components/Layouts/showcase-section';
 import DetailsButtons from '@/components/Fleet/PageElements/DetailsButtons';
 import { TipoCombustible, TipoCombustibleEnum2 } from '@/types/fleet';
+import { formatDate } from '@/lib/utils';
 
 // Enums y tipos basados en el modelo Prisma
 interface FuelTypeDetailsPageProps {
@@ -71,30 +72,6 @@ const FuelTypeDetailsPage = ({ params }: FuelTypeDetailsPageProps) => {
       }
     }
   };
-
-  // Función para formatear fechas en formato latinoamericano
-  const formatDate = (dateString: string): string => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
-  // Función para formatear fecha con hora
-  const formatDateTime = (dateString: string): string => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}-${month}-${year} ${hours}:${minutes}`;
-  };
-
-  // Función para formatear precio
 
   // Función para obtener el color del tipo de combustible
   const getFuelTypeColor = (type: TipoCombustibleEnum2): string => {

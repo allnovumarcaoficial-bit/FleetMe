@@ -13,10 +13,11 @@ export async function GET(request: Request) {
     const fuelCardId = searchParams.get('fuelCardId'); // Get fuelCardId from search params
 
     // Column filters from frontend
-    const tipoOperacion = searchParams.get('tipoOperacion') || '';
+    const tipoCombustible = searchParams.get('tipoCombustible') || '';
     const fechaDesde = searchParams.get('fechaDesde');
     const fechaHasta = searchParams.get('fechaHasta');
-    const fuelCardNumeroDeTarjeta = searchParams.get('fuelCard.numeroDeTarjeta') || '';
+    const fuelCardNumeroDeTarjeta =
+      searchParams.get('fuelCard.numeroDeTarjeta') || '';
     const saldoInicio = searchParams.get('saldoInicio') || '';
     const valorOperacionDinero = searchParams.get('valorOperacionDinero') || '';
     const valorOperacionLitros = searchParams.get('valorOperacionLitros') || '';
@@ -30,9 +31,13 @@ export async function GET(request: Request) {
       ...(search
         ? {
             OR: [
-              { tipoOperacion: { contains: search } },
+              { tipoCombustible: { contains: search } },
               { fuelCard: { numeroDeTarjeta: { contains: search } } },
-              { fuelDistributions: { some: { vehicle: { matricula: { contains: search } } } } },
+              {
+                fuelDistributions: {
+                  some: { vehicle: { matricula: { contains: search } } },
+                },
+              },
             ],
           }
         : {}),
@@ -40,8 +45,8 @@ export async function GET(request: Request) {
     };
 
     // Apply column filters
-    if (tipoOperacion) {
-      where.tipoOperacion = { contains: tipoOperacion };
+    if (tipoCombustible) {
+      where.tipoCombustible = { contains: tipoCombustible };
     }
     if (fechaDesde && fechaHasta) {
       where.fecha = {
@@ -106,24 +111,37 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching fuel operations:', error);
-    return NextResponse.json({ message: 'Error fetching fuel operations', error }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Error fetching fuel operations', error },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { tipoOperacion, fecha, valorOperacionDinero, fuelCardId, fuelDistributions } = body;
+    const {
+      tipoOperacion,
+      fecha,
+      valorOperacionDinero,
+      fuelCardId,
+      fuelDistributions,
+    } = body;
 
     const fuelCard = await prisma.fuelCard.findUnique({
       where: { id: fuelCardId },
     });
 
     if (!fuelCard) {
-      return NextResponse.json({ message: 'Fuel card not found' }, { status: 404 });
+      return NextResponse.json(
+        { message: 'Fuel card not found' },
+        { status: 404 }
+      );
     }
 
-    const valorOperacionLitros = valorOperacionDinero / fuelCard.precioCombustible;
+    const valorOperacionLitros =
+      valorOperacionDinero / fuelCard.precioCombustible;
 
     const lastOperation = await prisma.fuelOperation.findFirst({
       where: { fuelCardId },
@@ -137,7 +155,10 @@ export async function POST(request: Request) {
     } else if (tipoOperacion === 'Consumo') {
       saldoFinal = saldoInicio - valorOperacionDinero;
     } else {
-      return NextResponse.json({ message: 'Invalid tipoOperacion' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Invalid tipoOperacion' },
+        { status: 400 }
+      );
     }
 
     const saldoFinalLitros = saldoFinal / fuelCard.precioCombustible;
@@ -152,22 +173,27 @@ export async function POST(request: Request) {
         saldoFinal,
         saldoFinalLitros,
         fuelCardId,
-        ...(tipoOperacion === 'Consumo' && fuelDistributions && fuelDistributions.length > 0 && {
-          fuelDistributions: {
-            createMany: {
-              data: fuelDistributions.map((dist: any) => ({
-                vehicleId: dist.vehicleId,
-                liters: dist.liters,
-              })),
+        ...(tipoOperacion === 'Consumo' &&
+          fuelDistributions &&
+          fuelDistributions.length > 0 && {
+            fuelDistributions: {
+              createMany: {
+                data: fuelDistributions.map((dist: any) => ({
+                  vehicleId: dist.vehicleId,
+                  liters: dist.liters,
+                })),
+              },
             },
-          },
-        }),
+          }),
       },
     });
 
     return NextResponse.json(newFuelOperation, { status: 201 });
   } catch (error) {
     console.error('Error creating fuel operation:', error);
-    return NextResponse.json({ message: 'Error creating fuel operation', error }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Error creating fuel operation', error },
+      { status: 500 }
+    );
   }
 }

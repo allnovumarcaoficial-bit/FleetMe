@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { FuelCard } from "@/types/fleet";
-import InputGroup from "@/components/FormElements/InputGroup";
-import { Select } from "@/components/FormElements/select";
-import { Alert } from "@/components/ui-elements/alert";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from 'react';
+import { FuelCard } from '@/types/fleet';
+import InputGroup from '@/components/FormElements/InputGroup';
+import { Select } from '@/components/FormElements/select';
+import { Alert } from '@/components/ui-elements/alert';
+import { useRouter } from 'next/navigation';
 
 interface FuelCardFormProps {
   initialData?: Partial<FuelCard>;
@@ -29,20 +29,18 @@ const FuelCardForm = ({
       };
     }
     return {
-      numeroDeTarjeta: "",
-      tipoDeTarjeta: "",
-      tipoDeCombustible: "",
-      precioCombustible: 0,
-      moneda: "",
+      numeroDeTarjeta: '',
+      tipoDeTarjeta: '',
+      saldo: 0,
+      moneda: '',
       fechaVencimiento: null,
-      esReservorio: false,
     };
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -58,27 +56,23 @@ const FuelCardForm = ({
   }, [initialData]);
 
   const validateField = useCallback((name: string, value: any): string => {
-    let error = "";
+    let error = '';
     switch (name) {
-      case "numeroDeTarjeta":
-        if (!value) error = "El número de tarjeta es requerido.";
+      case 'numeroDeTarjeta':
+        if (!value) error = 'El número de tarjeta es requerido.';
         break;
-      case "tipoDeTarjeta":
-        if (!value) error = "El tipo de tarjeta es requerido.";
+      case 'tipoDeTarjeta':
+        if (!value) error = 'El tipo de tarjeta es requerido.';
         break;
-      case "tipoDeCombustible":
-        if (!value) error = "El tipo de combustible es requerido.";
-        break;
-      case "precioCombustible":
+      case 'saldo':
         if (value === null || value === undefined || value <= 0)
-          error =
-            "El precio del combustible es requerido y debe ser mayor que cero.";
+          error = 'El saldo es requerido y debe ser mayor que cero.';
         break;
-      case "moneda":
-        if (!value) error = "La moneda es requerida.";
+      case 'moneda':
+        if (!value) error = 'La moneda es requerida.';
         break;
-      case "fechaVencimiento":
-        if (!value) error = "La fecha de vencimiento es requerida.";
+      case 'fechaVencimiento':
+        if (!value) error = 'La fecha de vencimiento es requerida.';
         break;
     }
     return error;
@@ -87,16 +81,16 @@ const FuelCardForm = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     let newValue: any = value;
 
-    if (type === "number") {
-      newValue = value === "" ? null : parseFloat(value);
-    } else if (type === "date") {
+    if (type === 'number') {
+      newValue = value === '' ? null : parseFloat(value);
+    } else if (type === 'date') {
       newValue = value ? new Date(value) : null;
-    } else if (type === "checkbox") {
+    } else if (type === 'checkbox') {
       newValue = checked;
     }
 
@@ -108,12 +102,11 @@ const FuelCardForm = ({
     const newErrors: Record<string, string> = {};
     let isValid = true;
     const fieldsToValidate: (keyof FuelCard)[] = [
-      "numeroDeTarjeta",
-      "tipoDeTarjeta",
-      "tipoDeCombustible",
-      "precioCombustible",
-      "moneda",
-      "fechaVencimiento",
+      'numeroDeTarjeta',
+      'tipoDeTarjeta',
+      'saldo',
+      'moneda',
+      'fechaVencimiento',
     ];
 
     fieldsToValidate.forEach((field) => {
@@ -131,26 +124,26 @@ const FuelCardForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
 
     if (!validateForm()) {
       setFormStatus({
-        type: "error",
-        message: "Por favor, corrige los errores del formulario.",
+        type: 'error',
+        message: 'Por favor, corrige los errores del formulario.',
       });
       return;
     }
 
     setLoading(true);
     try {
-      const method = initialData ? "PUT" : "POST";
+      const method = initialData ? 'PUT' : 'POST';
       const url = initialData
         ? `/api/fuel-cards/${initialData.id}`
-        : "/api/fuel-cards";
+        : '/api/fuel-cards';
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
@@ -161,20 +154,20 @@ const FuelCardForm = ({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || "Error al guardar la tarjeta de combustible.",
+          errorData.error || 'Error al guardar la tarjeta de combustible.'
         );
       }
 
       setFormStatus({
-        type: "success",
-        message: `Tarjeta de combustible ${initialData ? "actualizada" : "creada"} exitosamente.`,
+        type: 'success',
+        message: `Tarjeta de combustible ${initialData ? 'actualizada' : 'creada'} exitosamente.`,
       });
       if (onSuccess) onSuccess();
-      router.push("/fleet/fuel-cards");
+      router.push('/fleet/fuel-cards');
     } catch (err: any) {
       setFormStatus({
-        type: "error",
-        message: err.message || "Ocurrió un error inesperado.",
+        type: 'error',
+        message: err.message || 'Ocurrió un error inesperado.',
       });
     } finally {
       setLoading(false);
@@ -182,31 +175,24 @@ const FuelCardForm = ({
   };
 
   const fuelCardTypes = [
-    { value: "Fincimex", label: "Fincimex" },
-    { value: "Clasica", label: "Clasica" },
-    { value: "Metropolitano", label: "Metropolitano" },
-  ];
-
-  const fuelTypes = [
-    { value: "Gasolina Regular", label: "Gasolina Regular" },
-    { value: "Gasolina Especial", label: "Gasolina Especial" },
-    { value: "Diésel", label: "Diésel" },
-    { value: "Eléctrico", label: "Eléctrico" },
+    { value: 'Fincimex', label: 'Fincimex' },
+    { value: 'Clasica', label: 'Clasica' },
+    { value: 'Metropolitano', label: 'Metropolitano' },
   ];
 
   const currencies = [
-    { value: "CUP", label: "CUP" },
-    { value: "MLC", label: "MLC" },
-    { value: "USD", label: "USD" },
-    { value: "EUR", label: "EUR" },
+    { value: 'CUP', label: 'CUP' },
+    { value: 'MLC', label: 'MLC' },
+    { value: 'USD', label: 'USD' },
+    { value: 'EUR', label: 'EUR' },
   ];
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -219,7 +205,7 @@ const FuelCardForm = ({
               name="numeroDeTarjeta"
               type="text"
               placeholder="Introduce el número de tarjeta"
-              value={formData.numeroDeTarjeta || ""}
+              value={formData.numeroDeTarjeta || ''}
               handleChange={handleChange}
             />
             {errors.numeroDeTarjeta && (
@@ -232,7 +218,7 @@ const FuelCardForm = ({
             <Select
               label="Tipo de Tarjeta"
               items={fuelCardTypes}
-              value={formData.tipoDeTarjeta || ""}
+              value={formData.tipoDeTarjeta || ''}
               placeholder="Selecciona el tipo de tarjeta"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -246,42 +232,23 @@ const FuelCardForm = ({
             )}
           </div>
           <div>
-            <Select
-              label="Tipo de Combustible"
-              items={fuelTypes}
-              value={formData.tipoDeCombustible || ""}
-              placeholder="Selecciona el tipo de combustible"
-              onChange={(e) =>
-                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-              }
-              name="tipoDeCombustible"
-            />
-            {errors.tipoDeCombustible && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.tipoDeCombustible}
-              </p>
-            )}
-          </div>
-          <div>
             <InputGroup
-              label="Precio del Combustible"
-              name="precioCombustible"
+              label="Saldo"
+              name="saldo"
               type="number"
-              placeholder="Introduce el precio del combustible"
-              value={formData.precioCombustible?.toString() || ""}
+              placeholder="Introduce el saldo de la tarjeta"
+              value={formData.saldo?.toString() || ''}
               handleChange={handleChange}
             />
-            {errors.precioCombustible && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.precioCombustible}
-              </p>
+            {errors.saldo && (
+              <p className="mt-1 text-sm text-red-500">{errors.saldo}</p>
             )}
           </div>
           <div>
             <Select
               label="Moneda"
               items={currencies}
-              value={formData.moneda || ""}
+              value={formData.moneda || ''}
               placeholder="Selecciona la moneda"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
@@ -300,8 +267,8 @@ const FuelCardForm = ({
               placeholder="Selecciona la fecha de vencimiento"
               value={
                 formData.fechaVencimiento
-                  ? formData.fechaVencimiento.toISOString().split("T")[0]
-                  : ""
+                  ? formData.fechaVencimiento.toISOString().split('T')[0]
+                  : ''
               }
               handleChange={handleChange}
             />
@@ -310,22 +277,6 @@ const FuelCardForm = ({
                 {errors.fechaVencimiento}
               </p>
             )}
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="esReservorio"
-              name="esReservorio"
-              checked={formData.esReservorio || false}
-              onChange={handleChange}
-              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-            <label
-              htmlFor="esReservorio"
-              className="text-body-sm font-medium text-dark dark:text-white"
-            >
-              Es Reservorio
-            </label>
           </div>
         </div>
 
@@ -343,10 +294,10 @@ const FuelCardForm = ({
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
             {loading
-              ? "Guardando..."
+              ? 'Guardando...'
               : initialData
-                ? "Actualizar Tarjeta"
-                : "Crear Tarjeta"}
+                ? 'Actualizar Tarjeta'
+                : 'Crear Tarjeta'}
           </button>
         </div>
       </form>
