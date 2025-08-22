@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo de Usuario modificado
 model User {
   id             String    @id @default(cuid())
   name           String?
@@ -38,18 +37,6 @@ model Notification {
   @@index([userId])
 }
 
-enum NotificationType {
-  info
-  success
-  warning
-  error
-  critical
-}
-
-enum Role {
-  USER
-  ADMIN
-}
 
 // Modelos requeridos por NextAuth
 model Account {
@@ -124,11 +111,6 @@ model Vehicle {
   destino                              DestinoVehiculo    @default(Administrativo)
 }
 
-enum DestinoVehiculo {
-  Administrativo
-  Logistico
-  Reparto
-}
 
 model Driver {
   id                         Int        @id @default(autoincrement())
@@ -219,10 +201,10 @@ model FuelOperation {
   tipoOperacion        FuelOperationType
   fecha                DateTime
   saldoInicio          Float
-  valorOperacionDinero Float
-  valorOperacionLitros Float
-  saldoFinal           Float
-  saldoFinalLitros     Float
+  valorOperacionDinero Float?
+  valorOperacionLitros Float?
+  saldoFinal           Float?
+  saldoFinalLitros     Float?
   fuelCardId           Int
   descripcion          String?
   ubicacion_cupet      String?
@@ -291,4 +273,23 @@ enum ServicioEstado {
 enum FuelOperationType {
   Carga
   Consumo
+}
+
+enum NotificationType {
+  info
+  success
+  warning
+  error
+  critical
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum DestinoVehiculo {
+  Administrativo
+  Logistico
+  Reparto
 }
