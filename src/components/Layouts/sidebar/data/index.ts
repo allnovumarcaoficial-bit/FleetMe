@@ -12,6 +12,18 @@ export const NAV_DATA = [
             title: 'Reportes',
             url: '/',
           },
+          {
+            title: 'Chips de combustible',
+            url: '/chips',
+          },
+          {
+            title: 'Historial de Mantenimientos',
+            url: '/historial-mantenimientos',
+          },
+          {
+            title: 'Control de kilometraje',
+            url: '/historial-kilometraje',
+          },
         ],
       },
       {

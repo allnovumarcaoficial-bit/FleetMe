@@ -1,47 +1,44 @@
-import { compactFormat } from "@/lib/format-number";
-import { getOverviewData } from "../../fetch";
-import { OverviewCard } from "./card";
-import * as icons from "./icons";
+import { compactFormat } from '@/lib/format-number';
+import { getOverviewData } from '../../fetch';
+import { OverviewCard } from './card';
+import * as icons from './icons';
+import {
+  getTotalExpenses,
+  getTotalExpensesMoney,
+  getVehicles,
+} from '@/lib/actions/actions';
 
 export async function OverviewCardsGroup() {
-  const { views, profit, products, users } = await getOverviewData();
+  const vehicles = await getVehicles();
+  const expenses = await getTotalExpenses();
+  const expensesMoney = await getTotalExpensesMoney();
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+    <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 2xl:gap-7.5">
       <OverviewCard
-        label="Total Views"
+        label="Total de vehículos"
         data={{
-          ...views,
-          value: compactFormat(views.value),
+          value: compactFormat(vehicles),
         }}
         Icon={icons.Views}
       />
 
       <OverviewCard
-        label="Total Profit"
+        label="Total de saldo gastado en el mes"
         data={{
-          ...profit,
-          value: "$" + compactFormat(profit.value),
+          ...expenses,
+          value: '$' + compactFormat(expenses.value || 0),
         }}
         Icon={icons.Profit}
       />
 
       <OverviewCard
-        label="Total Products"
+        label="Total de combustible gastado en el mes"
         data={{
-          ...products,
-          value: compactFormat(products.value),
+          ...expensesMoney,
+          value: compactFormat(expensesMoney.value || 0),
         }}
         Icon={icons.Product}
-      />
-
-      <OverviewCard
-        label="Total Users"
-        data={{
-          ...users,
-          value: compactFormat(users.value),
-        }}
-        Icon={icons.Users}
       />
     </div>
   );
