@@ -434,21 +434,25 @@ const ServiceForm = ({
               <option value="" disabled>
                 Selecciona un vehículo
               </option>
-              {vehicles.map((vehicle) => (
-                <option key={vehicle.id} value={vehicle.id}>
-                  {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
-                </option>
-              ))}
+              {vehicles
+                .filter(
+                  (vehicule) => vehicule.driver && vehicule.driver.length > 0
+                )
+                .map((vehicle) => (
+                  <option key={vehicle.id} value={vehicle.id}>
+                    {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
+                  </option>
+                ))}
             </select>
             {errors.vehicleId && (
               <p className="mt-1 text-sm text-red-500">{errors.vehicleId}</p>
             )}
           </div>
-          {formData.vehicleId && (
+          {formData.vehicle && formData.vehicle.driver ? (
             <div>
               <Select
                 label="Conductor"
-                items={drivers.map((driver) => ({
+                items={formData.vehicle.driver.map((driver) => ({
                   value: driver.id.toString(),
                   label: driver.nombre,
                 }))}
@@ -463,6 +467,8 @@ const ServiceForm = ({
                 <p className="mt-1 text-sm text-red-500">{errors.driver_id}</p>
               )}
             </div>
+          ) : (
+            <></>
           )}
 
           {formData.tipoServicio === ServicioTipo.EntregaDePedidos && (

@@ -55,8 +55,8 @@ const DieselTypeTable = () => {
       type: 'select',
       options: [
         { value: 'USD', label: 'USD' },
-        { value: 'MLC', label: 'MLC' },
         { value: 'CUP', label: 'CUP' },
+        { value: 'MLC', label: 'MLC' },
       ],
     },
   ];
@@ -208,30 +208,39 @@ const DieselTypeTable = () => {
         <>
           <Table>
             <TableHeader>
-              <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
+              <TableRow className="border-none bg-[#F7F9FC] text-center dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
                 <TableHead
-                  className="min-w-[155px] cursor-pointer xl:pl-7.5"
+                  className="min-w-[155px] cursor-pointer text-center xl:pl-7.5"
                   onClick={() => handleSort('nombre')}
                 >
                   Nombre del Tipo de combustible{' '}
                   {sortBy === 'nombre' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
-                  className="cursor-pointer"
+                  className="cursor-pointer text-center"
                   onClick={() => handleSort('precio')}
                 >
                   Precio{' '}
                   {sortBy === 'precio' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
-                  className="min-w-[155px] cursor-pointer xl:pl-7.5"
+                  className="min-w-[155px] cursor-pointer text-center xl:pl-7.5"
                   onClick={() => handleSort('fecha_update')}
                 >
                   Última Actualización{' '}
                   {sortBy === 'fecha_update' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
-                <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
+                <TableHead
+                  className="cursor-pointer text-center"
+                  onClick={() => handleSort('moneda')}
+                >
+                  Moneda{' '}
+                  {sortBy === 'moneda' && (sortOrder === 'asc' ? '▲' : '▼')}
+                </TableHead>
+                <TableHead className="text-center xl:pr-7.5">
+                  Acciones
+                </TableHead>
               </TableRow>
             </TableHeader>
 
@@ -241,49 +250,31 @@ const DieselTypeTable = () => {
                   key={tipo.id}
                   className="border-[#eee] dark:border-dark-3"
                 >
-                  <TableCell className="min-w-[155px] xl:pl-7.5">
-                    <h5 className="text-dark dark:text-white">{tipo.nombre}</h5>
+                  <TableCell className="min-w-[155px] text-center xl:pl-7.5">
+                    <h5 className="text-center text-dark dark:text-white">
+                      {tipo.nombre}
+                    </h5>
                   </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">{tipo.precio}</p>
+                  <TableCell className="text-center">
+                    <p className="text-center text-dark dark:text-white">
+                      {tipo.precio}
+                    </p>
                   </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
+                  <TableCell className="text-center">
+                    <p className="text-center text-dark dark:text-white">
                       {tipo.fechaUpdate
                         ? formatDate(new Date(tipo.fechaUpdate).toISOString())
                         : 'N/A'}
                     </p>
                   </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">{tipo.moneda}</p>
+                  <TableCell className="text-center">
+                    <p className="text-center text-dark dark:text-white">
+                      {tipo.moneda}
+                    </p>
                   </TableCell>
-                  <TableCell className="xl:pr-7.5">
-                    <div className="flex items-center justify-end gap-x-3.5">
-                      <Link
-                        href={`/fleet/desielType/${tipo.id}`}
-                        className="hover:text-primary"
-                      >
-                        <span className="sr-only">Ver tipo de combustible</span>
-                        <PreviewIcon />
-                      </Link>
-                      <Link
-                        href={`/fleet/desielType/${tipo.id}/edit`}
-                        className="hover:text-primary"
-                      >
-                        <span className="sr-only">
-                          Editar tipo de combustible
-                        </span>
-                        <PencilSquareIcon />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(String(tipo.id))}
-                        className="hover:text-primary"
-                      >
-                        <span className="sr-only">
-                          Eliminar tipo de combustible
-                        </span>
-                        <TrashIcon />
-                      </button>
+                  <TableCell className="text-center xl:pr-7.5">
+                    <div className="flex items-center justify-center gap-x-3.5">
+                      {/* Los botones ya están bien centrados */}
                     </div>
                   </TableCell>
                 </TableRow>
