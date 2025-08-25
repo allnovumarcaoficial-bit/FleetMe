@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modelo de Usuario modificado
 model User {
   id             String    @id @default(cuid())
   name           String?
@@ -38,18 +37,6 @@ model Notification {
   @@index([userId])
 }
 
-enum NotificationType {
-  info
-  success
-  warning
-  error
-  critical
-}
-
-enum Role {
-  USER
-  ADMIN
-}
 
 // Modelos requeridos por NextAuth
 model Account {
@@ -126,11 +113,6 @@ model Vehicle {
   destino                              DestinoVehiculo    @default(Administrativo)
 }
 
-enum DestinoVehiculo {
-  Administrativo
-  Logistico
-  Reparto
-}
 
 model Driver {
   id                         Int        @id @default(autoincrement())
@@ -169,7 +151,7 @@ model FuelCard {
   id               Int             @id @default(autoincrement())
   numeroDeTarjeta  String          @unique
   tipoDeTarjeta    String
-  moneda           String
+  moneda           Moneda
   saldo            Float?
   fechaVencimiento DateTime
   createdAt        DateTime        @default(now())
@@ -221,10 +203,10 @@ model FuelOperation {
   tipoOperacion        FuelOperationType
   fecha                DateTime
   saldoInicio          Float
-  valorOperacionDinero Float
-  valorOperacionLitros Float
-  saldoFinal           Float
-  saldoFinalLitros     Float
+  valorOperacionDinero Float?
+  valorOperacionLitros Float?
+  saldoFinal           Float?
+  saldoFinalLitros     Float?
   fuelCardId           Int
   descripcion          String?
   ubicacion_cupet      String?
@@ -254,17 +236,17 @@ model TipoCombustible {
   fechaUpdate         DateTime            @default(now())
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
-  tipoCombustibleEnum TipoCombustibleEnum
+  moneda              Moneda
 
   reservorios         Reservorio[] // Opposite relation field for Reservorio
 
   FuelOperation FuelOperation[]
 }
 
-enum TipoCombustibleEnum {
-  Gasolina_Regular
-  Diesel
-  Gasolina_Especial
+enum Moneda {
+  USD
+  CUP
+  MLC
 }
 
 enum MantenimientoTipo {
@@ -293,4 +275,23 @@ enum ServicioEstado {
 enum FuelOperationType {
   Carga
   Consumo
+}
+
+enum NotificationType {
+  info
+  success
+  warning
+  error
+  critical
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum DestinoVehiculo {
+  Administrativo
+  Logistico
+  Reparto
 }

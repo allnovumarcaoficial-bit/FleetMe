@@ -79,12 +79,6 @@ const ReservorioForm = ({
         case 'nombre':
           if (!value) error = 'El nombre de la tarjeta es requerido.';
           break;
-        case 'capacidad_actual':
-          if (!value) error = 'La capacidad actual es requerida.';
-          if (value > (formData.capacidad_total || 0)) {
-            error = 'La capacidad actual no puede superar a la actual';
-          }
-          break;
         case 'capacidad_total':
           if (!value) error = 'La capacidad total es requerida.';
           break;
@@ -119,7 +113,6 @@ const ReservorioForm = ({
     let isValid = true;
     const fieldsToValidate: (keyof Reservorio)[] = [
       'nombre',
-      'capacidad_actual',
       'capacidad_total',
     ];
 
@@ -210,21 +203,6 @@ const ReservorioForm = ({
             />
             {errors.nombre && (
               <p className="mt-1 text-sm text-red-500">{errors.nombre}</p>
-            )}
-          </div>
-          <div>
-            <InputGroup
-              label="Capacidad Actual"
-              name="capacidad_actual"
-              type="number"
-              placeholder="Introduzca la capacidad actual"
-              value={formData.capacidad_actual?.toString() || ''}
-              handleChange={handleChange}
-            />
-            {errors.capacidad_actual && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.capacidad_actual}
-              </p>
             )}
           </div>
           <InputGroup
