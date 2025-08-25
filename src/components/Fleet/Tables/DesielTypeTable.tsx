@@ -210,7 +210,7 @@ const DieselTypeTable = () => {
             <TableHeader>
               <TableRow className="border-none bg-[#F7F9FC] text-center dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
                 <TableHead
-                  className="min-w-[155px] cursor-pointer text-center xl:pl-7.5"
+                  className="cursor-pointer text-center xl:pl-7.5"
                   onClick={() => handleSort('nombre')}
                 >
                   Nombre del Tipo de combustible{' '}

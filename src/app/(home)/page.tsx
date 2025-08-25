@@ -11,6 +11,7 @@ import { OverviewCardsSkeleton } from './_components/overview-cards/skeleton';
 import { Metadata } from 'next';
 import { CarDistribution } from '@/components/Charts/VehiculeDistribution';
 import { ChipsCombustible } from '@/components/Tables/chips-combustible';
+import { KilometrosRecorridosTable } from '@/components/Tables/kilometros-recorridos';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -59,10 +60,16 @@ export default async function Home({ searchParams }: PropsType) {
             />
           </Suspense>
         </div>
-
-        {/* <Suspense fallback={null}>
-          <ChatsCard />
-        </Suspense> */}
+        <div className="col-span-16 w-full xl:col-span-12">
+          <Suspense fallback={<TopChannelsSkeleton />}>
+            <KilometrosRecorridosTable
+              timeframe={
+                extractTimeFrame('kilometros_recorridos')?.split(':')[1]
+              }
+              key={extractTimeFrame('kilometros_recorridos')?.split(':')[1]}
+            />
+          </Suspense>
+        </div>
       </div>
     </>
   );

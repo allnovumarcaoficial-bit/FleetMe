@@ -78,8 +78,8 @@ export async function getTotalExpenses() {
     const avgBeforeMonth = saldoBeforeMonth._avg.valorOperacionLitros || 0;
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
-      value: avgThisMonth,
-      growthRate: growthRate,
+      value: avgThisMonth.toFixed(2),
+      growthRate: growthRate.toFixed(2),
     };
   } catch (error) {
     console.error('Error fetching total expenses:', error);
@@ -119,8 +119,8 @@ export async function getTotalExpensesMoney() {
     const avgBeforeMonth = saldoBeforeMonth._avg.valorOperacionDinero || 0;
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
-      value: avgThisMonth,
-      growthRate: growthRate,
+      value: avgThisMonth.toFixed(2),
+      growthRate: growthRate.toFixed(2),
     };
   } catch (error) {
     console.error('Error fetching total expenses:', error);
@@ -204,7 +204,7 @@ export async function getVehiculesByType({ type }: { type: TypeEnum }) {
 
 export async function getChipFuel(fecha: Date) {
   const startMonth = startOfMonth(fecha);
-  const endMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
   try {
     const getchips = await prisma.fuelOperation.findMany({
       where: {
@@ -229,6 +229,39 @@ export async function getChipFuel(fecha: Date) {
     console.error('Error fetching chip fuel:', error);
     return NextResponse.json(
       { error: 'Error fetching chip fuel' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function getKilometrosRecorridos(fecha: Date) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  console.log(startMonth, endMonth);
+  try {
+    const getKilometros = await prisma.vehicle.findMany({
+      where: {
+        createdAt: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+      },
+      select: {
+        id: true,
+        matricula: true,
+        createdAt: true,
+        km_recorrido: true,
+        odometro: true,
+      },
+      orderBy: {
+        km_recorrido: 'asc',
+      },
+    });
+    return getKilometros;
+  } catch (error) {
+    console.error('Error fetching kilometros recorridos:', error);
+    return NextResponse.json(
+      { error: 'Error fetching kilometros recorridos' },
       { status: 500 }
     );
   }
