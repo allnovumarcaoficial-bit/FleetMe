@@ -53,12 +53,12 @@ export default async function Home({ searchParams }: PropsType) {
         />
 
         <div className="col-span-16 grid w-full xl:col-span-12">
-          <Suspense fallback={<TopChannelsSkeleton />}>
+          {/* <Suspense fallback={<TopChannelsSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
             />
-          </Suspense>
+          </Suspense> */}
         </div>
         <div className="col-span-16 w-full xl:col-span-12">
           <Suspense fallback={<TopChannelsSkeleton />}>

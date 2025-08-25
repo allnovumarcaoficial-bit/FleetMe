@@ -27,7 +27,7 @@ export async function OverviewCardsGroup() {
         label="Total de saldo gastado en el mes"
         data={{
           ...expenses,
-          value: '$' + compactFormat(expenses.value || 0),
+          value: '$' + compactFormat(Number(expenses.value) || 0),
         }}
         Icon={icons.Profit}
       />
@@ -36,7 +36,7 @@ export async function OverviewCardsGroup() {
         label="Total de combustible gastado en el mes"
         data={{
           ...expensesMoney,
-          value: compactFormat(expensesMoney.value || 0),
+          value: compactFormat(Number(expensesMoney.value) || 0),
         }}
         Icon={icons.Product}
       />

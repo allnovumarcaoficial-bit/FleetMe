@@ -45,12 +45,12 @@ const FuelOperationForm = ({
     return {
       tipoOperacion: undefined,
       fecha: new Date(),
-      valorOperacionDinero: 0,
+      valorOperacionDinero: undefined,
       fuelCardId: undefined,
-      saldoInicio: 0,
-      valorOperacionLitros: 0,
-      saldoFinal: 0,
-      saldoFinalLitros: 0,
+      saldoInicio: undefined,
+      valorOperacionLitros: undefined,
+      saldoFinal: undefined,
+      saldoFinalLitros: undefined,
       descripcion: '',
       ubicacion_cupet: '',
       operationReservorio: [],
@@ -206,45 +206,51 @@ const FuelOperationForm = ({
       }
       // Si es operación con tarjeta
       else if (!esReservorio && formData.fuelCardId && formData.fuelCard) {
-        // Fetch last operation balance
-        let valorOperacionLitros = 0;
-        if (formData.tipoOperacion === 'Carga') {
-          valorOperacionLitros = 0; // No mostrar ni calcular
-        } else if (formData.tipoOperacion === 'Consumo') {
-          // Debe seleccionar tipo de combustible
-          const saldo = formData.fuelCard.saldo || 1;
-          valorOperacionLitros = formData.valorOperacionDinero
-            ? formData.valorOperacionDinero / saldo
-            : 0;
+        const currentSaldoInicio = formData.fuelCard.saldo || 0; // Siempre tomar el saldo de la tarjeta como inicio
+
+        let valorOperacionLitros = undefined;
+        let calculatedSaldoFinal = undefined;
+        let calculatedSaldoFinalLitros = undefined;
+
+        if (formData.tipoOperacion === 'Consumo') {
+          const selectedFuelType = fuelTypes.find(
+            (ft) => ft.id === formData.tipoCombustible_id
+          );
+          const precioCombustible = selectedFuelType?.precio || 1; // Usar el precio del tipo de combustible
+
+          valorOperacionLitros =
+            formData.valorOperacionDinero && precioCombustible > 0
+              ? formData.valorOperacionDinero / precioCombustible
+              : undefined;
+
+          calculatedSaldoFinal =
+            (currentSaldoInicio || 0) - (formData.valorOperacionDinero || 0);
+          calculatedSaldoFinalLitros =
+            calculatedSaldoFinal && precioCombustible > 0
+              ? calculatedSaldoFinal / precioCombustible
+              : undefined;
+        } else if (formData.tipoOperacion === 'Carga') {
+          calculatedSaldoFinal =
+            (currentSaldoInicio || 0) + (formData.valorOperacionDinero || 0);
+          valorOperacionLitros = 0; // Establecer a 0 para operaciones de carga con tarjeta
+          calculatedSaldoFinalLitros = 0; // Establecer a 0 para operaciones de carga con tarjeta
         }
 
-        let calculatedSaldoFinal = 0;
-        if (formData.tipoOperacion === 'Carga') {
-          calculatedSaldoFinal =
-            (formData.saldoInicio || 0) + (formData.valorOperacionDinero || 0);
-        } else if (formData.tipoOperacion === 'Consumo') {
-          calculatedSaldoFinal =
-            (formData.saldoInicio || 0) - (formData.valorOperacionDinero || 0);
-        }
-
-        const calculatedSaldoFinalLitros =
-          formData.tipoOperacion === 'Consumo'
-            ? calculatedSaldoFinal / (formData.fuelCard.saldo || 1)
-            : 0;
-        console.log(calculatedSaldoFinal);
         setFormData((prev) => ({
           ...prev,
+          saldoInicio: currentSaldoInicio,
           valorOperacionLitros: valorOperacionLitros,
           saldoFinal: calculatedSaldoFinal,
           saldoFinalLitros: calculatedSaldoFinalLitros,
         }));
       } else {
+        // Resetear si no hay tarjeta o reservorio seleccionado
         setFormData((prev) => ({
           ...prev,
-          saldoInicio: 0,
-          valorOperacionLitros: 0,
-          saldoFinal: 0,
-          saldoFinalLitros: 0,
+          saldoInicio: undefined,
+          valorOperacionLitros: undefined,
+          saldoFinal: undefined,
+          saldoFinalLitros: undefined,
         }));
         setLastOperationBalance(0);
       }
@@ -257,7 +263,7 @@ const FuelOperationForm = ({
     formData.fuelCardId,
     formData.valorOperacionDinero,
     formData.tipoOperacion,
-    selectedFuelCard,
+    formData.fuelCard, // Añadir fuelCard a las dependencias
   ]);
 
   const validateField = useCallback(
@@ -469,7 +475,17 @@ const FuelOperationForm = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(''),
+        body: JSON.stringify({
+          ...formData,
+          fuelDistributions: destinationVehicles.map((dv) => ({
+            vehicleId: dv.vehicleId,
+            liters: dv.litros,
+          })),
+          operationReservorio: reservorioDestination.map((dr) => ({
+            reservorio_id: dr.reservorio_id,
+            litros: dr.litros,
+          })),
+        }),
       });
 
       if (!response.ok) {
@@ -530,7 +546,17 @@ const FuelOperationForm = ({
       newValue = checked;
     }
 
-    setFormData((prev) => ({ ...prev, [name]: newValue }));
+    // Si el tipo de operación es 'Carga' y no es un reservorio, establecer litros a 0
+    if (name === 'tipoOperacion' && newValue === 'Carga' && !esReservorio) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: newValue,
+        valorOperacionLitros: 0,
+        saldoFinalLitros: 0,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: newValue }));
+    }
     setErrors((prev) => ({ ...prev, [name]: validateField(name, newValue) }));
   };
   const handleOperationsTipoChange = (
@@ -540,9 +566,14 @@ const FuelOperationForm = ({
 
     // Si viene "", lo interpretamos como "sin selección"
     const isSelected = !isNaN(selectedId);
+    const selectedFuelType = isSelected
+      ? fuelTypes.find((ft) => ft.id === selectedId)
+      : null;
+
     setFormData((prev) => ({
       ...prev,
       tipoCombustible_id: isSelected ? selectedId : null,
+      tipoCombustible: selectedFuelType, // Actualizar el objeto completo
     }));
     const fieldError = validateField(
       'tipoCombustible_id',
@@ -652,8 +683,8 @@ const FuelOperationForm = ({
                   name="saldoInicio"
                   type="number"
                   placeholder="Saldo inicial"
-                  value={formData.fuelCard?.saldo.toFixed(2) || '0.00'}
-                  handleChange={handleChange} // Disabled, so no change handler
+                  value={formData.saldoInicio?.toFixed(2) || ''}
+                  handleChange={() => {}} // Disabled, so no change handler
                   disabled={true}
                 />
               </div>
@@ -679,24 +710,62 @@ const FuelOperationForm = ({
                   name="saldoFinal"
                   type="number"
                   placeholder="Saldo final"
-                  value={formData.saldoFinal?.toFixed(2) || '0.00'}
-                  handleChange={handleChange} // Disabled
+                  value={formData.saldoFinal?.toFixed(2) || ''}
+                  handleChange={() => {}} // Disabled
                   disabled={true}
                 />
               </div>
             </>
           )}
 
-          {/* Destino: Si es consumo y reservorio, solo vehículos. Si es consumo y tarjeta, vehículos o reservorios */}
-          {!esReservorio && formData.tipoOperacion === 'Consumo' && (
+          {formData.tipoOperacion === 'Consumo' && !esReservorio && (
             <>
+              <div>
+                <InputGroup
+                  label="Saldo Inicio"
+                  name="saldoInicio"
+                  type="number"
+                  placeholder="Saldo inicial"
+                  value={formData.saldoInicio?.toFixed(2) || ''}
+                  handleChange={() => {}} // No editable
+                  disabled={true}
+                />
+              </div>
+              <div>
+                <InputGroup
+                  label="Valor de la Operación (Dinero)"
+                  name="valorOperacionDinero"
+                  type="number"
+                  placeholder="Introduce el valor en dinero"
+                  value={formData.valorOperacionDinero?.toString() || ''}
+                  handleChange={handleChange}
+                />
+                {errors.valorOperacionDinero && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.valorOperacionDinero}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <InputGroup
+                  label="Saldo Final"
+                  name="saldoFinal"
+                  type="number"
+                  placeholder="Saldo final"
+                  value={formData.saldoFinal?.toFixed(2) || ''}
+                  handleChange={() => {}} // No editable
+                  disabled={true}
+                />
+              </div>
+
               <div>
                 <InputGroup
                   label="Valor de la Operación (Litros)"
                   name="valorOperacionLitros"
                   type="number"
                   placeholder="Valor en litros"
-                  value={formData.valorOperacionLitros?.toFixed(2) || '0.00'}
+                  value={formData.valorOperacionLitros?.toFixed(2) || ''}
                   handleChange={() => {}} // Disabled
                   disabled={true}
                 />
@@ -708,7 +777,7 @@ const FuelOperationForm = ({
                   name="saldoFinalLitros"
                   type="number"
                   placeholder="Saldo final en litros"
-                  value={formData.saldoFinalLitros?.toFixed(2) || '0.00'}
+                  value={formData.saldoFinalLitros?.toFixed(2) || ''}
                   handleChange={() => {}} // Disabled
                   disabled={true}
                 />
@@ -716,10 +785,17 @@ const FuelOperationForm = ({
               <div>
                 <Select
                   label="Tipo de Combustible"
-                  items={fuelTypes.map((fuelType) => ({
-                    value: fuelType.id.toString(),
-                    label: fuelType.nombre,
-                  }))}
+                  items={fuelTypes
+                    .filter(
+                      (fuelType) =>
+                        !formData.fuelCardId ||
+                        !formData.fuelCard ||
+                        fuelType.moneda === formData.fuelCard.moneda
+                    )
+                    .map((fuelType) => ({
+                      value: fuelType.id.toString(),
+                      label: fuelType.nombre,
+                    }))}
                   value={formData.tipoCombustible_id?.toString() || ''}
                   placeholder="Selecciona un tipo de combustible"
                   onChange={handleOperationsTipoChange}

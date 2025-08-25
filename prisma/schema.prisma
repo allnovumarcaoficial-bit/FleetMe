@@ -213,8 +213,8 @@ model FuelOperation {
   fuelCard             FuelCard              @relation(fields: [fuelCardId], references: [id])
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
-  tipoCombustible_id   Int
-  tipoCombustible      TipoCombustible       @relation(fields: [tipoCombustible_id], references: [id])
+  tipoCombustible_id   Int?
+  tipoCombustible      TipoCombustible?       @relation(fields: [tipoCombustible_id], references: [id])
   operationReservorio  OperationReservorio[]
   fuelDistributions    FuelDistribution[]
 }

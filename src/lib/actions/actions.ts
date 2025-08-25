@@ -79,7 +79,7 @@ export async function getTotalExpenses() {
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
       value: avgThisMonth.toFixed(2),
-      growthRate: growthRate.toFixed(2),
+      growthRate: Number(growthRate.toFixed(2)),
     };
   } catch (error) {
     console.error('Error fetching total expenses:', error);
@@ -120,7 +120,7 @@ export async function getTotalExpensesMoney() {
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
       value: avgThisMonth.toFixed(2),
-      growthRate: growthRate.toFixed(2),
+      growthRate: Number(growthRate.toFixed(2)),
     };
   } catch (error) {
     console.error('Error fetching total expenses:', error);

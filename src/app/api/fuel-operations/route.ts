@@ -126,6 +126,7 @@ export async function POST(request: Request) {
       valorOperacionDinero,
       fuelCardId,
       fuelDistributions,
+      tipoCombustible_id,
     } = body;
 
     const fuelCard = await prisma.fuelCard.findUnique({
@@ -170,7 +171,19 @@ export async function POST(request: Request) {
         valorOperacionLitros,
         saldoFinal,
         saldoFinalLitros,
-        fuelCardId,
+        fuelCard: {
+          connect: {
+            id: fuelCardId,
+          },
+        },
+        ...(tipoCombustible_id && {
+          // Conexión condicional
+          tipoCombustible: {
+            connect: {
+              id: tipoCombustible_id,
+            },
+          },
+        }),
         ...(tipoOperacion === 'Consumo' &&
           fuelDistributions &&
           fuelDistributions.length > 0 && {
