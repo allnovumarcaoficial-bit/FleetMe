@@ -10,7 +10,6 @@ import { OverviewCardsGroup } from './_components/overview-cards';
 import { OverviewCardsSkeleton } from './_components/overview-cards/skeleton';
 import { Metadata } from 'next';
 import { CarDistribution } from '@/components/Charts/VehiculeDistribution';
-import { ChipsCombustible } from '@/components/Tables/chips-combustible';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -52,12 +51,12 @@ export default async function Home({ searchParams }: PropsType) {
         />
 
         <div className="col-span-16 grid w-full xl:col-span-12">
-          <Suspense fallback={<TopChannelsSkeleton />}>
+          {/* <Suspense fallback={<TopChannelsSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
             />
-          </Suspense>
+          </Suspense> */}
         </div>
 
         {/* <Suspense fallback={null}>
