@@ -132,7 +132,6 @@ const FuelOperationForm = ({
   const [selectedFuelCard, setSelectedFuelCard] = useState<FuelCard | null>(
     null
   );
-
   const [lastOperationBalance, setLastOperationBalance] = useState<number>(0);
 
   const fetchDependencies = useCallback(async () => {

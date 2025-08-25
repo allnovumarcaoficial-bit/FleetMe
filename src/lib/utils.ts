@@ -33,7 +33,28 @@ export function getMonthName(date: string) {
   const currentMonthIndex = new Date(date).getMonth();
   return months[currentMonthIndex];
 }
-
+export function getDateByMonth(month: string) {
+  const months = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
+  const normalizedMonthName = month.trim().toLowerCase();
+  const monthIndex = months.findIndex(
+    (month) => month.toLowerCase() === normalizedMonthName
+  );
+  const date = new Date(new Date().getFullYear(), monthIndex, 1);
+  return date;
+}
 export const getDaysInMonth = (year: number, month: number): Date[] => {
   const days: Date[] = [];
   const firstDay = new Date(year, month, 1);
