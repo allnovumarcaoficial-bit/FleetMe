@@ -118,24 +118,24 @@ export enum TipoCombustibleEnum2 {
   Diesel = 'Diesel',
   Gasolina_Especial = 'Gasolina Especial',
 }
+export type MonedaEnum = 'USD' | 'CUP' | 'MLC';
+
 export interface TipoCombustible {
   id: number;
   nombre: string;
   precio: number;
-  tipoCombustibleEnum: TipoCombustibleEnum; // "litro", "galón", etc.
   createdAt: Date;
   updatedAt: Date;
   fechaUpdate: Date;
   reservorios?: Reservorio[];
-  tipoCombustible_id?: number | null;
-  tipoCombustible: TipoCombustible | null; // Optional relation to Reservorio
+  moneda: MonedaEnum; // Optional relation to Reservorio
 }
 export interface FuelCard {
   id: number;
   numeroDeTarjeta: string;
   tipoDeTarjeta: string;
   saldo: number;
-  moneda: string;
+  moneda: MonedaEnum;
   fechaVencimiento: Date | null;
   createdAt: Date;
   updatedAt: Date;

@@ -48,7 +48,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { nombre, precio, fechaUpdate, tipoCombustibleEnum } = body;
+    const { nombre, precio, fechaUpdate, moneda } = body;
     // Validate required date fields
     if (!nombre) {
       return NextResponse.json(
@@ -68,7 +68,7 @@ export async function PUT(
         { status: 400 }
       );
     }
-    if (!tipoCombustibleEnum) {
+    if (!moneda) {
       return NextResponse.json(
         { error: 'El tipo de combustible es requerido' },
         { status: 400 }
@@ -80,7 +80,7 @@ export async function PUT(
         nombre,
         precio,
         fechaUpdate,
-        tipoCombustibleEnum,
+        moneda: moneda,
       },
       include: {
         reservorios: true,

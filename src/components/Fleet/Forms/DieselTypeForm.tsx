@@ -12,6 +12,13 @@ import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
 
+// Define MonedaEnum if not already defined elsewhere
+export enum MonedaEnum {
+  USD = 'USD',
+  MLC = 'MLC',
+  CUP = 'CUP',
+}
+
 interface DieselTypeFormProps {
   initialData?: Partial<TipoCombustible>;
   onSuccess?: () => void;
@@ -38,7 +45,7 @@ const DieselTypeForm = ({
       nombre: '',
       precio: 0,
       fechaUpdate: undefined,
-      tipoCombustibleEnum: undefined,
+      moneda: MonedaEnum.USD,
     };
   });
 
@@ -72,12 +79,15 @@ const DieselTypeForm = ({
           if (!value || isNaN(new Date(value).getTime()))
             error = 'Fecha inválida.';
           break;
+        case 'moneda':
+          if (!value) error = 'La moneda es requerida.';
+          break;
       }
       return error;
     },
     [formData]
   );
-
+  console.log(formData.moneda);
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -131,6 +141,7 @@ const DieselTypeForm = ({
       });
       return;
     }
+    console.log(formData);
 
     setLoading(true);
     try {
@@ -227,24 +238,21 @@ const DieselTypeForm = ({
           <div>
             <div>
               <Select
-                label="Estado"
-                items={Object.entries(TipoCombustibleEnum2)
-                  .filter(([key]) => isNaN(Number(key))) // Solo llaves strings
-                  .map(([key, value]) => ({
-                    value: key, // Valor numérico: 1, 2, 3
-                    label: value, // Nombre: 'GASOLINA', 'DIESEL'
+                label="Moneda"
+                items={Object.values(MonedaEnum) // Solo llaves strings
+                  .map((moneda) => ({
+                    value: moneda,
+                    label: moneda,
                   }))}
-                value={formData.tipoCombustibleEnum || ''}
-                placeholder="Selecciona un tipo de combustible"
+                value={formData.moneda || ''}
+                placeholder="Selecciona la moneda"
                 onChange={(e) =>
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
                 }
-                name="tipoCombustibleEnum"
+                name="moneda"
               />
-              {errors.tipoCombustibleEnum && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.tipoCombustibleEnum}
-                </p>
+              {errors.moneda && (
+                <p className="mt-1 text-sm text-red-500">{errors.moneda}</p>
               )}
             </div>
           </div>

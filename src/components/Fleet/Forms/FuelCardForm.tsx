@@ -6,6 +6,7 @@ import InputGroup from '@/components/FormElements/InputGroup';
 import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
+import { MonedaEnum } from './DieselTypeForm';
 
 interface FuelCardFormProps {
   initialData?: Partial<FuelCard>;
@@ -32,7 +33,7 @@ const FuelCardForm = ({
       numeroDeTarjeta: '',
       tipoDeTarjeta: '',
       saldo: 0,
-      moneda: '',
+      moneda: MonedaEnum.USD,
       fechaVencimiento: null,
     };
   });
@@ -63,10 +64,6 @@ const FuelCardForm = ({
         break;
       case 'tipoDeTarjeta':
         if (!value) error = 'El tipo de tarjeta es requerido.';
-        break;
-      case 'saldo':
-        if (value === null || value === undefined || value <= 0)
-          error = 'El saldo es requerido y debe ser mayor que cero.';
         break;
       case 'moneda':
         if (!value) error = 'La moneda es requerida.';
@@ -180,13 +177,6 @@ const FuelCardForm = ({
     { value: 'Metropolitano', label: 'Metropolitano' },
   ];
 
-  const currencies = [
-    { value: 'CUP', label: 'CUP' },
-    { value: 'MLC', label: 'MLC' },
-    { value: 'USD', label: 'USD' },
-    { value: 'EUR', label: 'EUR' },
-  ];
-
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
@@ -239,25 +229,32 @@ const FuelCardForm = ({
               placeholder="Introduce el saldo de la tarjeta"
               value={formData.saldo?.toString() || ''}
               handleChange={handleChange}
+              disabled={true}
             />
             {errors.saldo && (
               <p className="mt-1 text-sm text-red-500">{errors.saldo}</p>
             )}
           </div>
           <div>
-            <Select
-              label="Moneda"
-              items={currencies}
-              value={formData.moneda || ''}
-              placeholder="Selecciona la moneda"
-              onChange={(e) =>
-                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
-              }
-              name="moneda"
-            />
-            {errors.moneda && (
-              <p className="mt-1 text-sm text-red-500">{errors.moneda}</p>
-            )}
+            <div>
+              <Select
+                label="Moneda"
+                items={Object.values(MonedaEnum) // Solo llaves strings
+                  .map((moneda) => ({
+                    value: moneda, // Valor numérico: 1, 2, 3
+                    label: moneda, // Nombre: 'GASOLINA', 'DIESEL'
+                  }))}
+                value={formData.moneda || ''}
+                placeholder="Selecciona la moneda"
+                onChange={(e) =>
+                  handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+                }
+                name="moneda"
+              />
+              {errors.moneda && (
+                <p className="mt-1 text-sm text-red-500">{errors.moneda}</p>
+              )}
+            </div>
           </div>
           <div>
             <InputGroup

@@ -89,7 +89,7 @@ const VehicleForm = ({
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const showMunicipios = formData.destino === 'Reparto';
-
+  console.log('Los municipios a mostrar son: ', formData.cantidad_conductores);
   useEffect(() => {
     const fetchDependencies = async () => {
       try {
@@ -833,42 +833,51 @@ const VehicleForm = ({
           </div>
 
           <div>
-            <MultiSelect
-              label="Conductores Asignados"
-              options={[
-                ...drivers
-                  .filter(
-                    (driver) =>
-                      driver.estado !== 'Inactivo' &&
-                      (driver.vehicleId === null ||
-                        driver.vehicleId === initialData?.id)
-                  )
-                  .map((driver) => ({
-                    value: driver.id.toString(),
-                    label: driver.nombre,
-                  })),
-                ...(initialData?.driver || [])
-                  .filter((driver) => !drivers.some((d) => d.id === driver.id))
-                  .map((driver) => ({
-                    value: driver.id.toString(),
-                    label: driver.nombre,
-                  })),
-              ]}
-              selectedValues={
-                (formData.driver || [])
-                  .filter((driver) => driver && driver.id) // Filtra elementos inválidos
-                  .map((driver) => String(driver.id)) || []
-              }
-              onChange={(e) =>
-                handleDriversChange(
-                  e as unknown as string[],
-                  formData.cantidad_conductores || 0
-                )
-              }
-            />
-            {errors.driverId && (
-              <p className="mt-1 text-sm text-red-500">{errors.driverId}</p>
-            )}
+            {formData.cantidad_conductores &&
+              formData.cantidad_conductores > 0 && (
+                <>
+                  <MultiSelect
+                    label="Conductores Asignados"
+                    options={[
+                      ...drivers
+                        .filter(
+                          (driver) =>
+                            driver.estado !== 'Inactivo' &&
+                            (driver.vehicleId === null ||
+                              driver.vehicleId === initialData?.id)
+                        )
+                        .map((driver) => ({
+                          value: driver.id.toString(),
+                          label: driver.nombre,
+                        })),
+                      ...(initialData?.driver || [])
+                        .filter(
+                          (driver) => !drivers.some((d) => d.id === driver.id)
+                        )
+                        .map((driver) => ({
+                          value: driver.id.toString(),
+                          label: driver.nombre,
+                        })),
+                    ]}
+                    selectedValues={
+                      (formData.driver || [])
+                        .filter((driver) => driver && driver.id) // Filtra elementos inválidos
+                        .map((driver) => String(driver.id)) || []
+                    }
+                    onChange={(e) =>
+                      handleDriversChange(
+                        e as unknown as string[],
+                        formData.cantidad_conductores || 0
+                      )
+                    }
+                  />
+                  {errors.driverId && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.driverId}
+                    </p>
+                  )}
+                </>
+              )}
           </div>
           <div className="flex items-center gap-2">
             <input

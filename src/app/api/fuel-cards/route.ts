@@ -28,7 +28,6 @@ export async function GET(request: Request) {
         { numeroDeTarjeta: { contains: search } },
         { tipoDeTarjeta: { contains: search } },
         { tipoDeCombustible: { contains: search } },
-        { moneda: { contains: search } },
         // Add other fields for global search if needed
       ];
     }
@@ -40,24 +39,14 @@ export async function GET(request: Request) {
     if (tipoDeTarjeta) {
       where.tipoDeTarjeta = tipoDeTarjeta;
     }
-    if (tipoDeCombustible) {
-      where.tipoDeCombustible = tipoDeCombustible;
-    }
-    if (precioCombustible) {
-      // Assuming exact match for price, or you might need range/numeric comparison
-      where.precioCombustible = parseFloat(precioCombustible);
-    }
     if (moneda) {
-      where.moneda = { contains: moneda };
+      where.moneda = { equals: moneda };
     }
     if (fechaVencimientoDesde && fechaVencimientoHasta) {
       where.fechaVencimiento = {
         gte: new Date(fechaVencimientoDesde),
         lte: new Date(fechaVencimientoHasta),
       };
-    }
-    if (esReservorio !== null) {
-      where.esReservorio = esReservorio === 'true';
     }
 
     const orderBy: any = {
@@ -105,7 +94,7 @@ export async function POST(request: Request) {
       data: {
         numeroDeTarjeta,
         tipoDeTarjeta,
-        saldo: parseFloat(saldo),
+        saldo: parseFloat(saldo) || 0,
         moneda,
         fechaVencimiento: parsedFechaVencimiento,
       },

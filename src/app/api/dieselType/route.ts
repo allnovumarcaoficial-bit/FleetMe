@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || '';
     const nombre = searchParams.get('nombre') || '';
     const precio = searchParams.get('precio') || '';
-    const tipoCombustibleEnum = searchParams.get('tipoCombustibleEnum') || '';
+    const monedaEnum = searchParams.get('moneda') || '';
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -32,8 +32,8 @@ export async function GET(request: Request) {
     if (precio) {
       where.precio = parseFloat(precio);
     }
-    if (tipoCombustibleEnum) {
-      where.tipoCombustibleEnum = tipoCombustibleEnum;
+    if (monedaEnum) {
+      where.moneda = { equals: monedaEnum };
     }
 
     const orderBy: any = {
@@ -69,14 +69,14 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    const { nombre, precio, fechaUpdate, tipoCombustibleEnum } = body;
+    const { nombre, precio, fechaUpdate, moneda } = body;
 
     const newTipoCombustible = await prisma.tipoCombustible.create({
       data: {
         nombre,
         precio: parseFloat(precio),
         fechaUpdate,
-        tipoCombustibleEnum: tipoCombustibleEnum || undefined,
+        moneda: moneda || null,
       },
     });
 

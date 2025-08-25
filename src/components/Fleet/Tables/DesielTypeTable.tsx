@@ -50,14 +50,13 @@ const DieselTypeTable = () => {
     },
     { key: 'fecha_update', title: 'Última Actualización', type: 'dateRange' },
     {
-      key: 'tipoCombustibleEnum',
-      title: 'Tipo de Combustible',
+      key: 'moneda',
+      title: 'Moneda',
       type: 'select',
       options: [
-        { value: 'Gasolina_Regular', label: 'Gasolina' },
-        { value: 'Diesel', label: 'Diésel' },
-        { value: 'Gasolina_Especial', label: 'Gasolina Especial' },
-        { value: 'Eléctrico', label: 'Eléctrico' },
+        { value: 'USD', label: 'USD' },
+        { value: 'MLC', label: 'MLC' },
+        { value: 'CUP', label: 'CUP' },
       ],
     },
   ];
@@ -232,14 +231,6 @@ const DieselTypeTable = () => {
                   {sortBy === 'fecha_update' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
-                <TableHead
-                  className="cursor-pointer"
-                  onClick={() => handleSort('tipoCombustibleEnum')}
-                >
-                  Tipo de Combustible{' '}
-                  {sortBy === 'tipoCombustibleEnum' &&
-                    (sortOrder === 'asc' ? '▲' : '▼')}
-                </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -264,9 +255,7 @@ const DieselTypeTable = () => {
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {tipo.tipoCombustibleEnum}
-                    </p>
+                    <p className="text-dark dark:text-white">{tipo.moneda}</p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
                     <div className="flex items-center justify-end gap-x-3.5">

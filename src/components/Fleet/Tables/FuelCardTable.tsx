@@ -53,7 +53,16 @@ const FuelCardTable = () => {
       ],
     },
     { key: 'saldo', title: 'Saldo', type: 'text' },
-    { key: 'moneda', title: 'Moneda', type: 'text' },
+    {
+      key: 'moneda',
+      title: 'Moneda',
+      type: 'select',
+      options: [
+        { value: 'USD', label: 'USD' },
+        { value: 'EUR', label: 'EUR' },
+        { value: 'CUP', label: 'CUP' },
+      ],
+    },
     {
       key: 'fechaVencimiento',
       title: 'Fecha de Vencimiento',

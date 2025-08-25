@@ -31,7 +31,6 @@ export async function GET(request: Request) {
       ...(search
         ? {
             OR: [
-              { tipoCombustible: { contains: search } },
               { fuelCard: { numeroDeTarjeta: { contains: search } } },
               {
                 fuelDistributions: {
@@ -45,9 +44,9 @@ export async function GET(request: Request) {
     };
 
     // Apply column filters
-    if (tipoCombustible) {
-      where.tipoCombustible = { contains: tipoCombustible };
-    }
+    // if (tipoCombustible) {
+    //   where.tipoCombustible = { contains: tipoCombustible };
+    // }
     if (fechaDesde && fechaHasta) {
       where.fecha = {
         gte: new Date(fechaDesde),
@@ -140,8 +139,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const valorOperacionLitros =
-      valorOperacionDinero / fuelCard.precioCombustible;
+    const valorOperacionLitros = valorOperacionDinero / (fuelCard.saldo || 1);
 
     const lastOperation = await prisma.fuelOperation.findFirst({
       where: { fuelCardId },
@@ -153,7 +151,7 @@ export async function POST(request: Request) {
     if (tipoOperacion === 'Carga') {
       saldoFinal = saldoInicio + valorOperacionDinero;
     } else if (tipoOperacion === 'Consumo') {
-      saldoFinal = saldoInicio - valorOperacionDinero;
+      saldoFinal = (saldoInicio || 0) - valorOperacionDinero;
     } else {
       return NextResponse.json(
         { message: 'Invalid tipoOperacion' },
@@ -161,7 +159,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const saldoFinalLitros = saldoFinal / fuelCard.precioCombustible;
+    const saldoFinalLitros = saldoFinal / (fuelCard.saldo || 1);
 
     const newFuelOperation = await prisma.fuelOperation.create({
       data: {

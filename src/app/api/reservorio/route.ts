@@ -24,7 +24,6 @@ export async function GET(request: Request) {
         { numeroDeTarjeta: { contains: search } },
         { tipoDeTarjeta: { contains: search } },
         { tipoDeCombustible: { contains: search } },
-        { moneda: { contains: search } },
         // Add other fields for global search if needed
       ];
     }

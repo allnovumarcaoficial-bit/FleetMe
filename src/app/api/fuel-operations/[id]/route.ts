@@ -74,7 +74,7 @@ export async function PUT(
     if (tipoOperacion === 'Carga') {
       saldoFinal = saldoInicio + valorOperacionDinero;
     } else if (tipoOperacion === 'Consumo') {
-      saldoFinal = saldoInicio - valorOperacionDinero;
+      saldoFinal = (saldoInicio || 0) - valorOperacionDinero;
     } else {
       return NextResponse.json(
         { message: 'Invalid tipoOperacion' },
@@ -89,7 +89,7 @@ export async function PUT(
       data: {
         tipoOperacion,
         fecha: new Date(fecha),
-        saldoInicio,
+        saldoInicio: saldoInicio || 0,
         valorOperacionDinero,
         valorOperacionLitros,
         saldoFinal,

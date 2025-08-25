@@ -48,17 +48,6 @@ const ReservorioTable = () => {
     },
     { key: 'capacidad_total', title: 'Capacidad Total', type: 'text' },
     {
-      key: 'tipoDeCombustible.tipoCombustibleEnum',
-      title: 'Tipo de Combustible',
-      type: 'select',
-      options: [
-        { value: 'Gasolina_Regular', label: 'Gasolina' },
-        { value: 'Diesel', label: 'Diésel' },
-        { value: 'Gasolina_Especial', label: 'Gasolina Especial' },
-        { value: 'Eléctrico', label: 'Eléctrico' },
-      ],
-    },
-    {
       key: 'tipoCombustible.precio',
       title: 'Precio del Combustible',
       type: 'text',
@@ -270,11 +259,6 @@ const ReservorioTable = () => {
                   <TableCell>
                     <p className="text-dark dark:text-white">
                       {reservorio.capacidad_total}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-dark dark:text-white">
-                      {reservorio.tipoCombustible?.tipoCombustibleEnum}
                     </p>
                   </TableCell>
                   <TableCell>
