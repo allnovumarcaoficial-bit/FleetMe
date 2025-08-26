@@ -151,16 +151,6 @@ const FuelTypeDetailsPage = ({ params }: FuelTypeDetailsPageProps) => {
                 {fuelType.precio.toFixed(2)}
               </span>
             </p>
-            <div>
-              <strong>Tipo:</strong>{' '}
-              <span
-                className={`ml-2 inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getFuelTypeColor(
-                  fuelType.tipoCombustibleEnum as TipoCombustibleEnum2
-                )}`}
-              >
-                {fuelType.tipoCombustibleEnum}
-              </span>
-            </div>
             <p>
               <strong>Última Actualización de Precio:</strong>{' '}
               <span className="text-blue-600">
