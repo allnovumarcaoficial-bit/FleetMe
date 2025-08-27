@@ -377,6 +377,7 @@ export async function getMantenimientosTable(fecha: Date) {
         },
       },
       select: {
+        id: true,
         vehicle: {
           select: {
             matricula: true,
