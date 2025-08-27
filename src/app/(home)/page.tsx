@@ -12,6 +12,7 @@ import { Metadata } from 'next';
 import { CarDistribution } from '@/components/Charts/VehiculeDistribution';
 import { ChipsCombustible } from '@/components/Tables/chips-combustible';
 import { KilometrosRecorridosTable } from '@/components/Tables/kilometros-recorridos';
+import { KilometrosRecorridos } from '@/components/Charts/km_recorridos';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -32,27 +33,28 @@ export default async function Home({ searchParams }: PropsType) {
       </Suspense>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
-        <PaymentsOverview
+        {/* <PaymentsOverview
           className="col-span-12 xl:col-span-7"
           key={extractTimeFrame('payments_overview')}
           timeFrame={extractTimeFrame('payments_overview')?.split(':')[1]}
-        />
-
-        <WeeksProfit
-          key={extractTimeFrame('weeks_profit')}
-          timeFrame={extractTimeFrame('weeks_profit')?.split(':')[1]}
-          className="col-span-12 xl:col-span-5"
+        />*/}
+        <KilometrosRecorridos
+          key={extractTimeFrame('kilometros_recorridosChart')}
+          timeFrame={
+            extractTimeFrame('kilometros_recorridosChart')?.split(':')[1]
+          }
+          className="col-span-12 w-full xl:col-span-5"
         />
 
         <CarDistribution
-          className="col-span-12 xl:col-span-5"
+          className="col-span-12 w-full xl:col-span-5"
           key={extractTimeFrame('vehicule_distribution')}
           timeFrame={
             extractTimeFrame('vehicule_distribution')?.split(':')[1] || 'Marca'
           }
         />
 
-        <div className="col-span-16 grid w-full xl:col-span-12">
+        <div className="col-span-12 grid w-full xl:col-span-7">
           {/* <Suspense fallback={<TopChannelsSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
@@ -60,7 +62,9 @@ export default async function Home({ searchParams }: PropsType) {
             />
           </Suspense> */}
         </div>
-        <div className="col-span-16 w-full xl:col-span-12">
+
+        {/* Contenedor corregido para la tabla Kilómetros Recorridos */}
+        <div className="col-span-12 w-full xl:col-span-12">
           <Suspense fallback={<TopChannelsSkeleton />}>
             <KilometrosRecorridosTable
               timeframe={

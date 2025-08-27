@@ -74,18 +74,18 @@ const FuelTypeDetailsPage = ({ params }: FuelTypeDetailsPageProps) => {
   };
 
   // Función para obtener el color del tipo de combustible
-  const getFuelTypeColor = (type: TipoCombustibleEnum2): string => {
-    switch (type) {
-      case TipoCombustibleEnum2.Gasolina_Especial:
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case TipoCombustibleEnum2.Diesel:
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case TipoCombustibleEnum2.Gasolina_Regular:
-        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-    }
-  };
+  // const getFuelTypeColor = (type: TipoCombustibleEnum2): string => {
+  //   switch (type) {
+  //     case TipoCombustibleEnum2.Gasolina_Especial:
+  //       return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+  //     case TipoCombustibleEnum2.Diesel:
+  //       return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+  //     case TipoCombustibleEnum2.Gasolina_Regular:
+  //       return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+  //     default:
+  //       return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+  //   }
+  // };
 
   if (loading) {
     return (

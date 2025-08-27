@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { tr } from 'date-fns/locale';
 import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
+import { formatDate } from '../utils';
 export async function createDriver(id: number) {
   try {
     if (isNaN(id)) {
@@ -252,17 +253,70 @@ export async function getKilometrosRecorridos(fecha: Date) {
         createdAt: true,
         km_recorrido: true,
         odometro: true,
+        mantenimientos: true,
+        fuelDistributions: true,
       },
       orderBy: {
         km_recorrido: 'asc',
       },
     });
-    return getKilometros;
+    const kilometros = getKilometros.map((item) => ({
+      id: item.id,
+      matricula: item.matricula,
+      createdAt: item.createdAt,
+      km_recorrido: item.km_recorrido,
+      odometro: item.odometro,
+      gasto_mantenimientos: item.mantenimientos.reduce(
+        (acc, curr) => acc + (curr.costo || 0),
+        0
+      ),
+      liters: item.fuelDistributions.reduce(
+        (acc, curr) => acc + (curr.liters || 0),
+        0
+      ),
+    }));
+    return kilometros;
   } catch (error) {
     console.error('Error fetching kilometros recorridos:', error);
     return NextResponse.json(
       { error: 'Error fetching kilometros recorridos' },
       { status: 500 }
     );
+  }
+}
+
+export async function getKilometrosRecorridosChart(params: { fecha: Date }) {
+  const { fecha } = params;
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const getKilometros = await prisma.vehicle.findMany({
+      where: {
+        createdAt: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+      },
+      select: {
+        id: true,
+        matricula: true,
+        createdAt: true,
+        km_recorrido: true,
+        odometro: true,
+      },
+      orderBy: {
+        km_recorrido: 'asc',
+      },
+    });
+    const result = getKilometros.map((item) => ({
+      x: formatDate(item.createdAt.toISOString()),
+      y: item.km_recorrido,
+    }));
+    return {
+      kilometros: result,
+    };
+  } catch (error) {
+    console.error('Error fetching kilometros recorridos:', error);
+    throw new Error('Error fetching kilometros recorridos');
   }
 }
