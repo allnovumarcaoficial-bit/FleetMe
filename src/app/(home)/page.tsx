@@ -13,6 +13,7 @@ import { CarDistribution } from '@/components/Charts/VehiculeDistribution';
 import { ChipsCombustible } from '@/components/Tables/chips-combustible';
 import { KilometrosRecorridosTable } from '@/components/Tables/kilometros-recorridos';
 import { KilometrosRecorridos } from '@/components/Charts/km_recorridos';
+import { HistorialMantenimientoTable } from '@/components/Tables/mantenimientoTable';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -73,6 +74,14 @@ export default async function Home({ searchParams }: PropsType) {
               key={extractTimeFrame('kilometros_recorridos')?.split(':')[1]}
             />
           </Suspense>
+        </div>
+        <div className="col-span-12 w-full xl:col-span-12">
+          <HistorialMantenimientoTable
+            timeframe={
+              extractTimeFrame('historial_mantenimientos')?.split(':')[1]
+            }
+            key={extractTimeFrame('historial_mantenimientos')?.split(':')[1]}
+          />
         </div>
       </div>
     </>

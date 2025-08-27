@@ -2,7 +2,10 @@ import { PeriodPicker } from '@/components/period-picker';
 import { cn, getDateByMonth } from '@/lib/utils';
 import { getWeeksProfitData } from '@/services/charts.services';
 import { KilometrosRecorridosChart } from './chart';
-import { getKilometrosRecorridosChart } from '@/lib/actions/actions';
+import {
+  getGastosMantenimiento_Combustible,
+  getKilometrosRecorridosChart,
+} from '@/lib/actions/actions';
 import { SadFaceError } from '@/components/Tables/icons';
 
 type PropsType = {
@@ -30,9 +33,9 @@ export async function KilometrosRecorridos({
   ];
 
   const date = getDateByMonth(timeFrame || months[new Date().getMonth()]);
-  const data = await getKilometrosRecorridosChart({ fecha: date });
+  const data = await getGastosMantenimiento_Combustible({ fecha: date });
 
-  if (!Array.isArray(data.kilometros)) {
+  if (!Array.isArray(data)) {
     console.log('Error al cargar los kilómetros recorridos');
     return (
       <div
@@ -43,19 +46,26 @@ export async function KilometrosRecorridos({
       >
         <div className="flex h-80 flex-col items-center justify-center space-y-4">
           <SadFaceError className="mx-auto" />
-          {data.kilometros === 0 ? (
+          {data === 0 ? (
             <p className="text-center text-xl text-gray-500">
               No hay datos disponibles
             </p>
           ) : (
             <p className="text-center text-xl text-red-500">
-              Error al cargar los kilómetros recorridos
+              Error al cargar el gráfico de Gastos de mantenimiento y
+              combustible
             </p>
           )}
         </div>
       </div>
     );
   }
+  const mantenimientoData = data.map((item) => item.mantenimientos);
+  const gastosCombustibleData = data.map((item) => item.gastosCombustible);
+  const dataFormatted = {
+    mantenimientos: mantenimientoData,
+    gastosCombustible: gastosCombustibleData,
+  };
   return (
     <div
       className={cn(
@@ -75,7 +85,7 @@ export async function KilometrosRecorridos({
         />
       </div>
 
-      <KilometrosRecorridosChart data={data} />
+      <KilometrosRecorridosChart data={dataFormatted} />
     </div>
   );
 }

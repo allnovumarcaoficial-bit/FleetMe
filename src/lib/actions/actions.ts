@@ -320,3 +320,84 @@ export async function getKilometrosRecorridosChart(params: { fecha: Date }) {
     throw new Error('Error fetching kilometros recorridos');
   }
 }
+
+export async function getGastosMantenimiento_Combustible(params: {
+  fecha: Date;
+}) {
+  const startMonth = startOfMonth(params.fecha);
+  const endMonth = endOfMonth(params.fecha);
+  try {
+    const operations = await prisma.fuelDistribution.findMany({
+      select: {
+        vehicle: {
+          include: {
+            mantenimientos: true,
+          },
+        },
+        fuelOperation: true,
+        vehicleId: true,
+        fuelOperationId: true,
+      },
+    });
+    const gastos = operations.map((oper) => {
+      return {
+        mantenimientos: {
+          x: oper.vehicle?.matricula || '',
+          y:
+            oper.vehicle?.mantenimientos.reduce(
+              (acc, curr) => acc + (curr.costo || 0),
+              0
+            ) || 0,
+        },
+        gastosCombustible: {
+          x: oper.vehicle?.matricula || '',
+          y: oper.fuelOperation?.valorOperacionLitros || 0,
+        },
+      };
+    });
+    return gastos;
+  } catch (error) {
+    console.error(
+      'Error fetching Gastos de mantenimiento y combustible:',
+      error
+    );
+    throw new Error('Error fetching Gastos de mantenimiento y combustible');
+  }
+}
+
+export async function getMantenimientosTable(fecha: Date) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const mantenimientos = await prisma.mantenimiento.findMany({
+      where: {
+        fecha: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+      },
+      select: {
+        vehicle: {
+          select: {
+            matricula: true,
+            odometro: true,
+            km_recorrido: true,
+          },
+        },
+        fecha: true,
+        costo: true,
+        descripcion: true,
+        cambio_de_pieza: true,
+        tipo: true,
+        estado: true,
+        lista_de_piezas: true,
+        numero_serie_anterior: true,
+        numero_serie_nueva: true,
+      },
+    });
+    return mantenimientos;
+  } catch (error) {
+    console.error('Error fetching reporte de mantenimientos:', error);
+    throw new Error('Error fetching reporte de mantenimientos');
+  }
+}

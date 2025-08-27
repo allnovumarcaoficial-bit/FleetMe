@@ -3,11 +3,16 @@
 import type { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 export interface KilometrosData {
-  kilometros: {
+  mantenimientos: {
+    x: string;
+    y: number;
+  }[];
+  gastosCombustible: {
     x: string;
     y: number;
   }[];
 }
+
 type PropsType = {
   data: KilometrosData;
 };
@@ -18,7 +23,7 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 export function KilometrosRecorridosChart({ data }: PropsType) {
   const options: ApexOptions = {
-    colors: ['#5750F1'],
+    colors: ['#5750F1', '#0ABEF9'],
     chart: {
       type: 'bar',
       stacked: true,
@@ -99,8 +104,12 @@ export function KilometrosRecorridosChart({ data }: PropsType) {
         options={options}
         series={[
           {
-            name: 'Sales',
-            data: data.kilometros,
+            name: 'Mantenimientos',
+            data: data.mantenimientos,
+          },
+          {
+            name: 'Gastos de Combustible',
+            data: data.gastosCombustible,
           },
         ]}
         type="bar"
