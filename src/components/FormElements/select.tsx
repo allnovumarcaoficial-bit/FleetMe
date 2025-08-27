@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ChevronUpIcon } from "@/assets/icons";
-import { cn } from "@/lib/utils";
-import { useId, useState } from "react";
+import { ChevronUpIcon } from '@/assets/icons';
+import { cn } from '@/lib/utils';
+import { useId, useState } from 'react';
 
 type PropsType = {
   label: string;
@@ -12,6 +12,7 @@ type PropsType = {
   value: string; // Add value prop
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; // Add onChange prop
   name: string; // Add name prop
+  disabled?: boolean; // Add disabled prop
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -27,13 +28,14 @@ export function Select({
   value, // Destructure value
   onChange, // Destructure onChange
   name, // Destructure name
+  disabled, // Destructure disabled
 }: PropsType) {
   const id = useId();
 
   const [isOptionSelected, setIsOptionSelected] = useState(false);
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn('space-y-3', className)}>
       <label
         htmlFor={id}
         className="block text-body-sm font-medium text-dark dark:text-white"
@@ -56,10 +58,11 @@ export function Select({
             setIsOptionSelected(true);
             onChange(e); // Pass event to external onChange handler
           }}
+          disabled={disabled} // Pass disabled prop
           className={cn(
-            "w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6",
-            isOptionSelected || value ? "text-dark dark:text-white" : "", // Adjust text color based on value or selection
-            prefixIcon && "pl-11.5",
+            'w-full appearance-none rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6',
+            isOptionSelected || value ? 'text-dark dark:text-white' : '', // Adjust text color based on value or selection
+            prefixIcon && 'pl-11.5'
           )}
         >
           {placeholder && (

@@ -193,6 +193,7 @@ CREATE TABLE "OperationReservorio" (
     "id" TEXT NOT NULL,
     "fuelOperationId" INTEGER NOT NULL,
     "reservorio_id" TEXT NOT NULL,
+    "litros" DOUBLE PRECISION NOT NULL,
     "operationType" TEXT,
 
     CONSTRAINT "OperationReservorio_pkey" PRIMARY KEY ("id")
@@ -232,7 +233,7 @@ CREATE TABLE "FuelOperation" (
     "ubicacion_cupet" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "tipoCombustible_id" INTEGER NOT NULL,
+    "tipoCombustible_id" INTEGER,
 
     CONSTRAINT "FuelOperation_pkey" PRIMARY KEY ("id")
 );
@@ -331,7 +332,7 @@ ALTER TABLE "Servicio" ADD CONSTRAINT "Servicio_driver_id_fkey" FOREIGN KEY ("dr
 ALTER TABLE "FuelOperation" ADD CONSTRAINT "FuelOperation_fuelCardId_fkey" FOREIGN KEY ("fuelCardId") REFERENCES "FuelCard"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "FuelOperation" ADD CONSTRAINT "FuelOperation_tipoCombustible_id_fkey" FOREIGN KEY ("tipoCombustible_id") REFERENCES "TipoCombustible"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "FuelOperation" ADD CONSTRAINT "FuelOperation_tipoCombustible_id_fkey" FOREIGN KEY ("tipoCombustible_id") REFERENCES "TipoCombustible"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "FuelDistribution" ADD CONSTRAINT "FuelDistribution_vehicleId_fkey" FOREIGN KEY ("vehicleId") REFERENCES "Vehicle"("id") ON DELETE SET NULL ON UPDATE CASCADE;

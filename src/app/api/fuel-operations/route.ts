@@ -126,41 +126,50 @@ export async function POST(request: Request) {
       valorOperacionDinero,
       fuelCardId,
       fuelDistributions,
+      operationReservorio, // Añadir operationReservorio
       tipoCombustible_id,
+      valorOperacionLitros, // Recibir del frontend
+      saldoFinalLitros, // Recibir del frontend
+      reservorioId, // Recibir del frontend para operaciones con reservorio
     } = body;
 
-    const fuelCard = await prisma.fuelCard.findUnique({
-      where: { id: fuelCardId },
-    });
-
-    if (!fuelCard) {
-      return NextResponse.json(
-        { message: 'Fuel card not found' },
-        { status: 404 }
-      );
-    }
-
-    const valorOperacionLitros = valorOperacionDinero / (fuelCard.saldo || 1);
-
-    const lastOperation = await prisma.fuelOperation.findFirst({
-      where: { fuelCardId },
-      orderBy: { fecha: 'desc' },
-    });
-    const saldoInicio = lastOperation ? lastOperation.saldoFinal : 0;
-
+    let fuelCard;
+    let saldoInicio;
     let saldoFinal;
-    if (tipoOperacion === 'Carga') {
-      saldoFinal = saldoInicio + valorOperacionDinero;
-    } else if (tipoOperacion === 'Consumo') {
-      saldoFinal = (saldoInicio || 0) - valorOperacionDinero;
-    } else {
-      return NextResponse.json(
-        { message: 'Invalid tipoOperacion' },
-        { status: 400 }
-      );
-    }
 
-    const saldoFinalLitros = saldoFinal / (fuelCard.saldo || 1);
+    if (fuelCardId) {
+      fuelCard = await prisma.fuelCard.findUnique({
+        where: { id: fuelCardId },
+      });
+
+      if (!fuelCard) {
+        return NextResponse.json(
+          { message: 'Fuel card not found' },
+          { status: 404 }
+        );
+      }
+
+      const lastOperation = await prisma.fuelOperation.findFirst({
+        where: { fuelCardId },
+        orderBy: { fecha: 'desc' },
+      });
+      saldoInicio = lastOperation ? lastOperation.saldoFinal : fuelCard.saldo;
+
+      if (tipoOperacion === 'Carga') {
+        saldoFinal = (saldoInicio || 0) + valorOperacionDinero;
+      } else if (tipoOperacion === 'Consumo') {
+        saldoFinal = (saldoInicio || 0) - valorOperacionDinero;
+      } else {
+        return NextResponse.json(
+          { message: 'Invalid tipoOperacion' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // Si no hay fuelCardId, la operación es con reservorio, y los saldos de tarjeta no aplican.
+      saldoInicio = undefined;
+      saldoFinal = undefined;
+    }
 
     const newFuelOperation = await prisma.fuelOperation.create({
       data: {
@@ -168,16 +177,17 @@ export async function POST(request: Request) {
         fecha: new Date(fecha),
         saldoInicio,
         valorOperacionDinero,
-        valorOperacionLitros,
+        valorOperacionLitros, // Usar el valor del frontend
         saldoFinal,
-        saldoFinalLitros,
-        fuelCard: {
-          connect: {
-            id: fuelCardId,
+        saldoFinalLitros, // Usar el valor del frontend
+        ...(fuelCardId && {
+          fuelCard: {
+            connect: {
+              id: fuelCardId,
+            },
           },
-        },
+        }),
         ...(tipoCombustible_id && {
-          // Conexión condicional
           tipoCombustible: {
             connect: {
               id: tipoCombustible_id,
@@ -196,8 +206,59 @@ export async function POST(request: Request) {
               },
             },
           }),
+        // Añadir operationReservorio si aplica
+        ...(operationReservorio &&
+          operationReservorio.length > 0 && {
+            operationReservorio: {
+              createMany: {
+                data: operationReservorio.map((opRes: any) => ({
+                  reservorio_id: opRes.reservorio_id,
+                  litros: opRes.litros, // Añadir el campo litros
+                })),
+              },
+            },
+          }),
       },
     });
+
+    // Actualizar el saldo de la FuelCard si hay fuelCardId
+    if (fuelCardId && saldoFinal !== undefined) {
+      await prisma.fuelCard.update({
+        where: { id: fuelCardId },
+        data: { saldo: saldoFinal },
+      });
+    }
+
+    // Lógica para actualizar la capacidad del reservorio
+    if (reservorioId && saldoFinalLitros !== undefined) {
+      // Si la operación es con un reservorio principal (ya sea consumo o carga)
+      await prisma.reservorio.update({
+        where: { id: reservorioId },
+        data: {
+          capacidad_actual: saldoFinalLitros,
+        },
+      });
+    } else if (
+      tipoOperacion === 'Consumo' &&
+      operationReservorio &&
+      operationReservorio.length > 0
+    ) {
+      // Si es una operación de consumo que distribuye a otros reservorios (no el principal)
+      for (const opRes of operationReservorio) {
+        const reservorio = await prisma.reservorio.findUnique({
+          where: { id: opRes.reservorio_id },
+        });
+
+        if (reservorio) {
+          await prisma.reservorio.update({
+            where: { id: opRes.reservorio_id },
+            data: {
+              capacidad_actual: reservorio.capacidad_actual + opRes.litros, // Sumar litros si se distribuye a otro reservorio
+            },
+          });
+        }
+      }
+    }
 
     return NextResponse.json(newFuelOperation, { status: 201 });
   } catch (error) {

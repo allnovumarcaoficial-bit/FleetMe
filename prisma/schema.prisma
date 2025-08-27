@@ -175,6 +175,7 @@ model OperationReservorio {
   id_operation    FuelOperation @relation(fields: [fuelOperationId], references: [id])
   reservorio_id   String
   reservorio      Reservorio    @relation(fields: [reservorio_id], references: [id])
+  litros          Float // Añadido el campo litros
   operationType   String?
 
   @@unique([fuelOperationId, reservorio_id])
@@ -202,15 +203,15 @@ model FuelOperation {
   id                   Int                   @id @default(autoincrement())
   tipoOperacion        FuelOperationType
   fecha                DateTime
-  saldoInicio          Float
+  saldoInicio          Float?
   valorOperacionDinero Float?
   valorOperacionLitros Float?
   saldoFinal           Float?
   saldoFinalLitros     Float?
-  fuelCardId           Int
+  fuelCardId           Int?
   descripcion          String?
   ubicacion_cupet      String?
-  fuelCard             FuelCard              @relation(fields: [fuelCardId], references: [id])
+  fuelCard             FuelCard?              @relation(fields: [fuelCardId], references: [id])
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   tipoCombustible_id   Int?
