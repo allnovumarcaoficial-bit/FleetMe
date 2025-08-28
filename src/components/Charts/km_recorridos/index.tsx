@@ -60,8 +60,18 @@ export async function KilometrosRecorridos({
       </div>
     );
   }
-  const mantenimientoData = data.map((item) => item.mantenimientos);
-  const gastosCombustibleData = data.map((item) => item.gastosCombustible);
+  const mantenimientoData = data.map((item) => {
+    return {
+      x: item.matricula,
+      y: item.totalMantenimientos,
+    };
+  });
+  const gastosCombustibleData = data.map((item) => {
+    return {
+      x: item.matricula,
+      y: item.totalCombustible,
+    };
+  });
   const dataFormatted = {
     mantenimientos: mantenimientoData,
     gastosCombustible: gastosCombustibleData,
@@ -75,12 +85,13 @@ export async function KilometrosRecorridos({
     >
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
-          Kilómetros Recorridos en {timeFrame || months[new Date().getMonth()]}
+          Gastos de combustible y mantenimiento en{' '}
+          {timeFrame || months[new Date().getMonth()]}
         </h2>
 
         <PeriodPicker
           items={months}
-          defaultValue={timeFrame || 'Enero'}
+          defaultValue={timeFrame || months[new Date().getMonth()]}
           sectionKey="kilometros_recorridosChart"
         />
       </div>

@@ -242,7 +242,7 @@ export async function getKilometrosRecorridos(fecha: Date) {
   try {
     const getKilometros = await prisma.vehicle.findMany({
       where: {
-        createdAt: {
+        updatedAt: {
           gte: startMonth,
           lte: endMonth,
         },
@@ -327,35 +327,64 @@ export async function getGastosMantenimiento_Combustible(params: {
   const startMonth = startOfMonth(params.fecha);
   const endMonth = endOfMonth(params.fecha);
   try {
-    const operations = await prisma.fuelDistribution.findMany({
+    const operations = await prisma.vehicle.findMany({
       select: {
-        vehicle: {
-          include: {
-            mantenimientos: true,
+        id: true,
+        matricula: true,
+        mantenimientos: {
+          select: {
+            costo: true,
+          },
+          where: {
+            // Filtros opcionales para mantenimientos
+            fecha: {
+              gte: startMonth,
+              lte: endMonth,
+            },
           },
         },
-        fuelOperation: true,
-        vehicleId: true,
-        fuelOperationId: true,
+        fuelDistributions: {
+          select: {
+            fuelOperation: {
+              select: {
+                valorOperacionDinero: true,
+              },
+            },
+          },
+          where: {
+            // Filtros opcionales para operaciones de combustible
+            fuelOperation: {
+              fecha: {
+                gte: startMonth,
+                lte: endMonth,
+              },
+            },
+          },
+        },
       },
     });
-    const gastos = operations.map((oper) => {
+
+    // Procesar los datos
+    const resultado = operations.map((vehicle) => {
+      const totalMantenimientos = vehicle.mantenimientos.reduce(
+        (sum, mantenimiento) => sum + mantenimiento.costo,
+        0
+      );
+
+      const totalCombustible = vehicle.fuelDistributions.reduce(
+        (sum, distribution) =>
+          sum + (distribution.fuelOperation?.valorOperacionDinero || 0),
+        0
+      );
+
       return {
-        mantenimientos: {
-          x: oper.vehicle?.matricula || '',
-          y:
-            oper.vehicle?.mantenimientos.reduce(
-              (acc, curr) => acc + (curr.costo || 0),
-              0
-            ) || 0,
-        },
-        gastosCombustible: {
-          x: oper.vehicle?.matricula || '',
-          y: oper.fuelOperation?.valorOperacionLitros || 0,
-        },
+        vehicleId: vehicle.id,
+        matricula: vehicle.matricula,
+        totalMantenimientos,
+        totalCombustible,
       };
     });
-    return gastos;
+    return resultado;
   } catch (error) {
     console.error(
       'Error fetching Gastos de mantenimiento y combustible:',
@@ -400,5 +429,72 @@ export async function getMantenimientosTable(fecha: Date) {
   } catch (error) {
     console.error('Error fetching reporte de mantenimientos:', error);
     throw new Error('Error fetching reporte de mantenimientos');
+  }
+}
+
+export async function getMantenimientoTotal(fecha: Date) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const mantenimientos = await prisma.mantenimiento.aggregate({
+      where: {
+        fecha: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+      },
+      _sum: {
+        costo: true,
+      },
+    });
+    return mantenimientos._sum.costo || 0;
+  } catch (error) {
+    console.error('Error fetching reporte de mantenimientos:', error);
+    throw new Error('Error fetching reporte de mantenimientos');
+  }
+}
+
+export async function getGastoCombustible_Total(fecha: Date) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const combustible = await prisma.fuelOperation.aggregate({
+      where: {
+        fecha: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+      },
+      _sum: {
+        valorOperacionDinero: true,
+      },
+    });
+    return combustible._sum.valorOperacionDinero || 0;
+  } catch (error) {
+    console.error('Error fetching reporte de combustible:', error);
+    throw new Error('Error fetching reporte de combustible');
+  }
+}
+
+export async function getReporteGastos() {
+  try {
+    const mantenimientosGastos = [];
+    const combustibleGastos = [];
+    for (let i = 0; i < 12; i++) {
+      const fecha = new Date();
+      fecha.setMonth(i);
+      const combustible = await getGastoCombustible_Total(fecha);
+      const mantenimiento = await getMantenimientoTotal(fecha);
+      mantenimientosGastos.push(mantenimiento);
+      combustibleGastos.push(combustible);
+    }
+
+    return {
+      mantenimientosGastos,
+      combustibleGastos,
+    };
+  } catch (error) {
+    console.error('Error fetching reporte de gastos:', error);
+    throw new Error('Error fetching reporte de gastos');
   }
 }

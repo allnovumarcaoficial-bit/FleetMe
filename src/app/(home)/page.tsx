@@ -14,6 +14,7 @@ import { ChipsCombustible } from '@/components/Tables/chips-combustible';
 import { KilometrosRecorridosTable } from '@/components/Tables/kilometros-recorridos';
 import { KilometrosRecorridos } from '@/components/Charts/km_recorridos';
 import { HistorialMantenimientoTable } from '@/components/Tables/mantenimientoTable';
+import { GastoTotal } from '@/components/Charts/GastoTotal';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -34,11 +35,11 @@ export default async function Home({ searchParams }: PropsType) {
       </Suspense>
 
       <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
-        {/* <PaymentsOverview
+        <GastoTotal
           className="col-span-12 xl:col-span-7"
-          key={extractTimeFrame('payments_overview')}
-          timeFrame={extractTimeFrame('payments_overview')?.split(':')[1]}
-        />*/}
+          key={extractTimeFrame('gasto_total')}
+          timeFrame={extractTimeFrame('gasto_total')?.split(':')[1]}
+        />
         <KilometrosRecorridos
           key={extractTimeFrame('kilometros_recorridosChart')}
           timeFrame={
