@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { FuelCard } from "@/types/fleet";
-import { format } from "date-fns";
-import { ShowcaseSection } from "@/components/Layouts/showcase-section";
-import DetailsButtons from "@/components/Fleet/PageElements/DetailsButtons";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FuelCard } from '@/types/fleet';
+import { format } from 'date-fns';
+import { ShowcaseSection } from '@/components/Layouts/showcase-section';
+import DetailsButtons from '@/components/Fleet/PageElements/DetailsButtons';
 
 export interface FuelCardDetailsPageProps {
   params: Promise<{
@@ -51,18 +51,18 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
 
     if (
       window.confirm(
-        "¿Estás seguro de que quieres eliminar esta tarjeta de combustible?",
+        '¿Estás seguro de que quieres eliminar esta tarjeta de combustible?'
       )
     ) {
       try {
         const response = await fetch(`/api/fuel-cards/${fuelCard.id}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        alert("Tarjeta de combustible eliminada exitosamente.");
-        router.push("/fleet/fuel-cards");
+        alert('Tarjeta de combustible eliminada exitosamente.');
+        router.push('/fleet/fuel-cards');
       } catch (e: any) {
         alert(`Error al eliminar tarjeta de combustible: ${e.message}`);
       }
@@ -75,8 +75,8 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles de la Tarjeta de Combustible"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/fuel-cards', label: 'Tarjetas de Combustible' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -92,8 +92,8 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles de la Tarjeta de Combustible"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/fuel-cards', label: 'Tarjetas de Combustible' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -109,8 +109,8 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles de la Tarjeta de Combustible"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/fuel-cards', label: 'Tarjetas de Combustible' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -125,8 +125,8 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
       <Breadcrumb
         pageName="Detalles de la Tarjeta de Combustible"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/fuel-cards', label: 'Tarjetas de Combustible' },
         ]}
       />
 
@@ -140,43 +140,32 @@ const FuelCardDetailsPage = ({ params }: FuelCardDetailsPageProps) => {
               <strong>Tipo de Tarjeta:</strong> {fuelCard.tipoDeTarjeta}
             </p>
             <p>
-              <strong>Tipo de Combustible:</strong> {fuelCard.tipoDeCombustible}
-            </p>
-            <p>
-              <strong>Precio del Combustible:</strong>{" "}
-              {fuelCard.precioCombustible}
-            </p>
-            <p>
               <strong>Moneda:</strong> {fuelCard.moneda}
             </p>
             <p>
-              <strong>Fecha de Vencimiento:</strong>{" "}
+              <strong>Fecha de Vencimiento:</strong>{' '}
               {fuelCard.fechaVencimiento
-                ? format(new Date(fuelCard.fechaVencimiento), "dd/MM/yyyy")
-                : "N/A"}
+                ? format(new Date(fuelCard.fechaVencimiento), 'dd/MM/yyyy')
+                : 'N/A'}
             </p>
             <p>
-              <strong>Es Reservorio:</strong>{" "}
-              {fuelCard.esReservorio ? "Sí" : "No"}
-            </p>
-            <p>
-              <strong>Fecha de Creación:</strong>{" "}
+              <strong>Fecha de Creación:</strong>{' '}
               {fuelCard.createdAt
-                ? format(new Date(fuelCard.createdAt), "dd/MM/yyyy HH:mm")
-                : "N/A"}
+                ? format(new Date(fuelCard.createdAt), 'dd/MM/yyyy HH:mm')
+                : 'N/A'}
             </p>
             <p>
-              <strong>Última Actualización:</strong>{" "}
+              <strong>Última Actualización:</strong>{' '}
               {fuelCard.updatedAt
-                ? format(new Date(fuelCard.updatedAt), "dd/MM/yyyy HH:mm")
-                : "N/A"}
+                ? format(new Date(fuelCard.updatedAt), 'dd/MM/yyyy HH:mm')
+                : 'N/A'}
             </p>
           </div>
 
           <DetailsButtons
             handleDelete={handleDelete}
             handleEdit={handleEdit}
-            handleBack={() => router.push("/fleet/fuel-cards")}
+            handleBack={() => router.push('/fleet/fuel-cards')}
           />
         </div>
       </ShowcaseSection>
