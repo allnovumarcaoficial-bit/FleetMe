@@ -15,6 +15,7 @@ import { KilometrosRecorridosTable } from '@/components/Tables/kilometros-recorr
 import { KilometrosRecorridos } from '@/components/Charts/km_recorridos';
 import { HistorialMantenimientoTable } from '@/components/Tables/mantenimientoTable';
 import { GastoTotal } from '@/components/Charts/GastoTotal';
+import { IndiceConsumo } from '@/components/Charts/indiceConsumo';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -54,6 +55,12 @@ export default async function Home({ searchParams }: PropsType) {
           timeFrame={
             extractTimeFrame('vehicule_distribution')?.split(':')[1] || 'Marca'
           }
+        />
+        <IndiceConsumo
+          className="col-span-12 w-full xl:col-span-5"
+          key={extractTimeFrame('indice_consumo')}
+          timeFrame={extractTimeFrame('indice_consumo')?.split(':')[1]}
+          vehicule_id={extractTimeFrame('vehicule_id')?.split(':')[0]}
         />
 
         <div className="col-span-12 grid w-full xl:col-span-12">

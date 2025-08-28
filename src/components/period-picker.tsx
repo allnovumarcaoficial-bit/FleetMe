@@ -11,6 +11,7 @@ type PropsType<TItem> = {
   items?: TItem[];
   sectionKey: string;
   minimal?: boolean;
+  posibleTitle?: string;
 };
 
 const PARAM_KEY = 'selected_time_frame';
@@ -20,6 +21,7 @@ export function PeriodPicker<TItem extends string>({
   sectionKey,
   items,
   minimal,
+  posibleTitle,
 }: PropsType<TItem>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -57,7 +59,11 @@ export function PeriodPicker<TItem extends string>({
             'border-none bg-transparent p-0 text-dark dark:bg-transparent dark:text-white'
         )}
       >
-        <span className="capitalize">{selectedValue || 'Time Period'}</span>
+        {posibleTitle ? (
+          <span className="capitalize">{selectedValue || posibleTitle}</span>
+        ) : (
+          <span className="capitalize">{selectedValue || 'Time Period'}</span>
+        )}
 
         <ChevronUpIcon className="size-4 rotate-180 transition-transform" />
       </DropdownTrigger>

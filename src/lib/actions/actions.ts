@@ -608,3 +608,57 @@ export async function getEventsCalendar() {
     throw new Error('Error fetching events calendar');
   }
 }
+
+export async function getIndiceConsumo(vehicleId: number, fecha: Date) {
+  try {
+    const result = [];
+    const startMonth = startOfMonth(fecha);
+    const endMonth = endOfMonth(fecha);
+    const operaciones = await prisma.fuelDistribution.findMany({
+      where: {
+        vehicleId: vehicleId,
+        fuelOperation: {
+          fecha: {
+            gte: startMonth,
+            lte: endMonth,
+          },
+          tipoOperacion: 'Consumo',
+        },
+      },
+      include: {
+        fuelOperation: true,
+        vehicle: true, // Para tener acceso a la fecha
+      },
+    });
+
+    for (let i = 1; i < operaciones.length; i++) {
+      const kilometrajeActual = operaciones[i].vehicle?.km_recorrido || 0;
+      const kilometrajeAnterior = operaciones[i - 1].odometro_Vehicle || 0;
+
+      const kilometrosRecorridos = kilometrajeActual - kilometrajeAnterior;
+
+      const liters = operaciones[i - 1].liters || 0;
+      if (kilometrosRecorridos > 0) {
+        const indiceConsumo = liters > 0 ? kilometrosRecorridos / liters : 0;
+
+        result.push({
+          fecha: operaciones[i].fuelOperation?.fecha,
+          indiceConsumo,
+          auto: operaciones[i].vehicle?.matricula || '',
+        });
+      }
+    }
+
+    const avgConsumo =
+      result.reduce((acc, curr) => acc + curr.indiceConsumo, 0) /
+        result.length || 0;
+
+    return {
+      promedioConsumo: avgConsumo,
+      data: result,
+    };
+  } catch (error) {
+    console.error('Error fetching indice de consumo:', error);
+    throw new Error('Error fetching indice de consumo');
+  }
+}
