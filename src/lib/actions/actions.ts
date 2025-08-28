@@ -2,9 +2,10 @@
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { tr } from 'date-fns/locale';
+import { de, id, tr } from 'date-fns/locale';
 import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
 import { formatDate } from '../utils';
+import { CalendarEvent } from '@/types/calendar';
 export async function createDriver(id: number) {
   try {
     if (isNaN(id)) {
@@ -496,5 +497,114 @@ export async function getReporteGastos() {
   } catch (error) {
     console.error('Error fetching reporte de gastos:', error);
     throw new Error('Error fetching reporte de gastos');
+  }
+}
+
+export async function getEventsCalendar() {
+  try {
+    const mantenimiento = await prisma.mantenimiento.findMany({
+      select: {
+        fecha: true,
+        descripcion: true,
+        id: true,
+        vehicle: {
+          select: {
+            matricula: true,
+          },
+        },
+      },
+    });
+    const vehiculos = await prisma.vehicle.findMany({
+      select: {
+        id: true,
+        matricula: true,
+        fecha_vencimiento_circulacion: true,
+        fecha_vencimiento_licencia_operativa: true,
+        fecha_vencimiento_somaton: true,
+      },
+    });
+    const drivers = await prisma.driver.findMany({
+      select: {
+        id: true,
+        nombre: true,
+        licencia: true,
+        fecha_vencimiento_licencia: true,
+      },
+    });
+    const fuelCard = await prisma.fuelCard.findMany({
+      select: {
+        id: true,
+        numeroDeTarjeta: true,
+        fechaVencimiento: true,
+      },
+    });
+    const events: CalendarEvent[] = mantenimiento.map((item) => ({
+      id: item.id.toString(),
+      title: `Mantenimiento a ${item.vehicle?.matricula}`,
+      startDate: item.fecha,
+      endDate: item.fecha,
+      color: '#619885',
+      description: item.descripcion || '',
+    }));
+    events.push(
+      ...vehiculos.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento de la circulación del vehículo ${item.matricula}`,
+        startDate: item.fecha_vencimiento_circulacion,
+        endDate: item.fecha_vencimiento_circulacion,
+        color: '#e32f21',
+      }))
+    );
+    events.push(
+      ...vehiculos.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento de la licencia operativa del vehículo ${item.matricula}`,
+        startDate: item.fecha_vencimiento_licencia_operativa,
+        endDate: item.fecha_vencimiento_licencia_operativa,
+        color: '#e32f21',
+      }))
+    );
+    events.push(
+      ...vehiculos.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento del somatón del vehículo ${item.matricula}`,
+        startDate: item.fecha_vencimiento_somaton,
+        endDate: item.fecha_vencimiento_somaton,
+        color: '#e32f21',
+      }))
+    );
+    events.push(
+      ...fuelCard.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento de la tarjeta ${item.numeroDeTarjeta}`,
+        startDate: item.fechaVencimiento,
+        endDate: item.fechaVencimiento,
+        color: '#e32f21',
+      }))
+    );
+    events.push(
+      ...drivers.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento de la licencia del conductor ${item.licencia}`,
+        startDate: item.fecha_vencimiento_licencia,
+        endDate: item.fecha_vencimiento_licencia,
+        color: '#e32f21',
+        description: item.nombre || '',
+      }))
+    );
+    events.push(
+      ...fuelCard.map((item) => ({
+        id: item.id.toString(),
+        title: `Vencimiento de la tarjeta ${item.numeroDeTarjeta}`,
+        startDate: item.fechaVencimiento,
+        endDate: item.fechaVencimiento,
+        color: '#e32f21',
+      }))
+    );
+
+    return events;
+  } catch (error) {
+    console.error('Error fetching events calendar:', error);
+    throw new Error('Error fetching events calendar');
   }
 }

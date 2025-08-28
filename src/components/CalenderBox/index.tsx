@@ -7,13 +7,13 @@ import CalendarHeader from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { DayDetailModal } from './DayDatail';
 
-const CalendarBox = () => {
+const CalendarBox = ({ eventsData }: { eventsData: CalendarEvent[] }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | undefined>();
   const [isDayDetailOpen, setIsDayDetailOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<CalendarEvent[]>(eventsData || []);
 
   const handlePrevMonth = () => {
     setCurrentDate(addMonths(currentDate, -1));

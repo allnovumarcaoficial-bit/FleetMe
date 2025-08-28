@@ -56,13 +56,13 @@ export default async function Home({ searchParams }: PropsType) {
           }
         />
 
-        <div className="col-span-12 grid w-full xl:col-span-7">
-          {/* <Suspense fallback={<TopChannelsSkeleton />}>
+        <div className="col-span-12 grid w-full xl:col-span-12">
+          <Suspense fallback={<TopChannelsSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
             />
-          </Suspense> */}
+          </Suspense>
         </div>
 
         {/* Contenedor corregido para la tabla Kilómetros Recorridos */}
