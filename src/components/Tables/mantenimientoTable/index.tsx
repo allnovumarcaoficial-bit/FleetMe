@@ -6,11 +6,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn, getDateByMonth } from '@/lib/utils';
+import { cn, formatDate, getDateByMonth } from '@/lib/utils';
 import { PeriodPicker } from '@/components/period-picker';
-import { getKilometrosRecorridos } from '@/lib/actions/actions';
+import {
+  getKilometrosRecorridos,
+  getMantenimientosTable,
+} from '@/lib/actions/actions';
 
-export async function KilometrosRecorridosTable({
+export async function HistorialMantenimientoTable({
   className,
   timeframe,
   searchParams,
@@ -35,10 +38,10 @@ export async function KilometrosRecorridosTable({
   ];
 
   const date = getDateByMonth(timeframe || months[new Date().getMonth()]);
-  const data = await getKilometrosRecorridos(date);
+  const data = await getMantenimientosTable(date);
 
   if (!Array.isArray(data)) {
-    return <div>Error al cargar los vehículos</div>;
+    return <div>Error al cargar los mantenimientos</div>;
   }
 
   const selectedMonthParam = timeframe || 'agosto';
@@ -63,13 +66,13 @@ export async function KilometrosRecorridosTable({
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-bold text-dark dark:text-white sm:text-xl">
-          Kilómetros Recorridos
+          Historial de Mantenimientos
         </h2>
 
         <PeriodPicker
           items={months}
           defaultValue={selectedMonth}
-          sectionKey="kilometros_recorridos"
+          sectionKey="historial_mantenimientos"
         />
       </div>
 
@@ -79,43 +82,83 @@ export async function KilometrosRecorridosTable({
           <TableHeader className="bg-gray-50 dark:bg-gray-800">
             <TableRow className="border-b border-gray-200 dark:border-gray-700">
               <TableHead className="px-4 py-3 text-left font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Matrícula
+                Fecha
               </TableHead>
               <TableHead className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Odómetro
+                Matricula
               </TableHead>
               <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Kilómetros Recorridos
+                Descripción del servicio
               </TableHead>
               <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Costo del mantenimiento
+                Kilometraje
               </TableHead>
               <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Litros Echados
+                Costo
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Estado
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Cambio de Piezas
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Lista de Piezas
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Número de serie anterior
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Número de serie nuevo
+              </TableHead>
+              <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Tipo de mantenimiento
               </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {data.map((vh) => (
+            {data.map((mantenimiento) => (
               <TableRow
-                key={vh.id}
+                key={mantenimiento.id}
                 className="border-b border-gray-100 last:border-0 dark:border-gray-800"
               >
                 <TableCell className="px-4 py-3 text-left font-medium text-gray-900 dark:text-white sm:px-6">
-                  {vh.matricula}
+                  {formatDate(mantenimiento.fecha.toISOString())}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 sm:px-6">
-                  {vh.odometro}
+                  {mantenimiento.vehicle?.matricula}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.km_recorrido.toFixed(2)}
+                  {mantenimiento.vehicle?.km_recorrido.toFixed(2)}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.gasto_mantenimientos.toFixed(2)}
+                  {mantenimiento.descripcion}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.liters.toFixed(2)}
+                  {mantenimiento.costo.toFixed(2)}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.estado}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.cambio_de_pieza ? 'Sí' : 'No'}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.lista_de_piezas
+                    .split(',')
+                    .map((pieza, index) => (
+                      <div key={index}>{pieza.trim()}</div>
+                    ))}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.numero_serie_anterior}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.numero_serie_nueva}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
+                  {mantenimiento.tipo}
                 </TableCell>
               </TableRow>
             ))}

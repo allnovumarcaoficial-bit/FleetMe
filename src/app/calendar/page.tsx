@@ -1,26 +1,27 @@
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CalendarBox from "@/components/CalenderBox";
-import { Metadata } from "next";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import CalendarBox from '@/components/CalenderBox';
+import { getEventsCalendar } from '@/lib/actions/actions';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Calender Page",
+  title: 'Calender Page',
   // other metadata
 };
 
-const CalendarPage = () => {
+export default async function CalendarPage() {
+  const eventsData = await getEventsCalendar();
+
   return (
     <>
       <Breadcrumb
         pageName="Calendar"
         links={[
-          { href: "/", label: "Home" },
-          { href: "/calendar", label: "Calendar" }
+          { href: '/', label: 'Home' },
+          { href: '/calendar', label: 'Calendar' },
         ]}
       />
 
-      <CalendarBox />
+      <CalendarBox eventsData={eventsData} />
     </>
   );
-};
-
-export default CalendarPage;
+}

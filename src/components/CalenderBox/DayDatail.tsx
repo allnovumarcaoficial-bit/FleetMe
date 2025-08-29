@@ -23,13 +23,13 @@ export function DayDetailModal({
 }: DayDetailModalProps) {
   if (!isOpen) return null;
 
-  const dayEvents = events.filter((event) => {
-    const eventStart = new Date(event.startDate);
-    const eventEnd = new Date(event.endDate);
-    const selected = new Date(selectedDate);
-
-    return selected >= eventStart && selected <= eventEnd;
-  });
+  const dayEvents = events.filter(
+    (event) =>
+      formatDate(event.startDate.toISOString()) ===
+        formatDate(selectedDate.toISOString()) ||
+      formatDate(event.endDate.toISOString()) ===
+        formatDate(selectedDate.toISOString())
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">

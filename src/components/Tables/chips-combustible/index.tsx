@@ -101,7 +101,7 @@ export async function ChipsCombustible({
                 {chip.tipoOperacion}
               </TableCell>
 
-              <TableCell>{chip.tipoCombustible.nombre}</TableCell>
+              <TableCell>{chip.tipoCombustible?.nombre || ''}</TableCell>
 
               <TableCell>{chip.valorOperacionLitros}%</TableCell>
               <TableCell>{chip.saldoInicio}%</TableCell>
