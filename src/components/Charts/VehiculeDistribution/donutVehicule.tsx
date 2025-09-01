@@ -1,8 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 import { compactFormat } from '@/lib/format-number';
+import { MenuDropDownd } from '../chartDownload';
+import saveAs from 'file-saver';
+import { toPng, toJpeg } from 'html-to-image';
 
 const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -158,11 +161,67 @@ export function VehiculeDistribution({ data }: PropsType) {
     ],
   };
 
+  const chartRef = useRef<HTMLDivElement>(null);
+  const exportToPng = async () => {
+    if (chartRef.current === null) {
+      return;
+    }
+
+    try {
+      const dataUrl = await toPng(chartRef.current, {
+        quality: 1.0,
+        pixelRatio: 2, // Para mejor resolución
+      });
+      saveAs(dataUrl, 'Gastos.png');
+    } catch (error) {
+      console.error('Error al exportar PNG:', error);
+    }
+  };
+
+  // Función para exportar a JPG
+  const exportToJpg = async () => {
+    if (chartRef.current === null) {
+      return;
+    }
+
+    try {
+      const dataUrl = await toJpeg(chartRef.current, {
+        quality: 0.95,
+        pixelRatio: 2, // Para mejor resolución
+      });
+      saveAs(dataUrl, 'Gastos-chart.jpg');
+    } catch (error) {
+      console.error('Error al exportar JPG:', error);
+    }
+  };
+
+  // Función para exportar a CSV
+  const exportToCsv = () => {
+    const csvContent = [
+      ['Vehículo', 'Cantidad'], // Headers
+      ...data.map((item) => [item.name, item.data]),
+    ]
+      .map((row) => row.join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'indice-consumo-data.csv');
+  };
+
   return (
-    <Chart
-      options={chartOptions}
-      series={data.map((item) => item.data)}
-      type="donut"
-    />
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <MenuDropDownd
+          exportToPng={exportToPng}
+          exportToJpg={exportToJpg}
+          exportToCsv={exportToCsv}
+        />
+      </div>
+      <Chart
+        options={chartOptions}
+        series={data.map((item) => item.data)}
+        type="donut"
+      />
+    </div>
   );
 }
