@@ -42,7 +42,6 @@ const DieselType = ({ params }: DieselTypeProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Reservoir updated successfully!');
     // Redirection is handled within ReservoirForm
   };
 

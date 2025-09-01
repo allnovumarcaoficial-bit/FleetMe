@@ -89,7 +89,6 @@ const VehicleForm = ({
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
   const showMunicipios = formData.destino === 'Reparto';
-  console.log('Los municipios a mostrar son: ', formData.cantidad_conductores);
   useEffect(() => {
     const fetchDependencies = async () => {
       try {
@@ -148,7 +147,6 @@ const VehicleForm = ({
       }));
     }
   }, [initialData]);
-  console.log('VehicleForm: initialData', initialData);
   const validateField = (name: string, value: any): string => {
     let error = '';
     switch (name) {
@@ -244,9 +242,6 @@ const VehicleForm = ({
     }));
     const fieldError = validateField('listado_municipios', selectedMunicipios);
     setErrors((prev) => ({ ...prev, listado_municipios: fieldError }));
-    console.log(
-      `handleMunicipiosChange: listado_municipios = ${selectedMunicipios}, error = ${fieldError}`
-    );
   };
 
   const handleDriversChange = (
@@ -295,7 +290,6 @@ const VehicleForm = ({
     e.preventDefault();
     setFormStatus({ type: '', message: '' });
 
-    console.log('handleSubmit: formData before validation', formData);
     if (!validateForm()) {
       console.log('handleSubmit: Validation failed, errors:', errors);
       setFormStatus({
@@ -304,7 +298,6 @@ const VehicleForm = ({
       });
       return;
     }
-    console.log('handleSubmit: Validation passed');
 
     setLoading(true);
     try {

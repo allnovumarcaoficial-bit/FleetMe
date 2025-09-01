@@ -47,12 +47,10 @@ export async function ChipsCombustible({
   ];
   const date = getDateByMonth(timeframe || '');
   const data = await getChipFuel(date);
-  console.log(date);
   if (!Array.isArray(data)) {
     // Manejar el error en UI
     return <div>Error al cargar los vehículos</div>;
   }
-  console.log(data);
 
   return (
     <div

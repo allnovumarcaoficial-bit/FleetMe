@@ -109,7 +109,6 @@ const ServiceForm = ({
       }));
     }
   }, [initialData]);
-  console.log(formData.driver_id);
   // Calculate kilometrosRecorridos whenever odometroInicial or odometroFinal changes
   useEffect(() => {
     const initial = formData.odometroInicial || 0;

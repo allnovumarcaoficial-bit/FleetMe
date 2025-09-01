@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import FuelCardForm from "@/components/Fleet/Forms/FuelCardForm";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { FuelCard } from "@/types/fleet";
-import { FuelCardDetailsPageProps } from "../page";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import FuelCardForm from '@/components/Fleet/Forms/FuelCardForm';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { FuelCard } from '@/types/fleet';
+import { FuelCardDetailsPageProps } from '../page';
 
 const EditFuelCardPage = ({ params }: FuelCardDetailsPageProps) => {
   const router = useRouter();
@@ -34,12 +34,12 @@ const EditFuelCardPage = ({ params }: FuelCardDetailsPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log("Fuel card updated successfully!");
+    console.log('Tarjeta de combustible actualizada correctamente!');
     // Redirection is handled within FuelCardForm
   };
 
   const handleCancel = () => {
-    router.push("/fleet/fuel-cards");
+    router.push('/fleet/fuel-cards');
   };
 
   if (loading) return <p>Cargando tarjeta de combustible para editar...</p>;
@@ -56,8 +56,8 @@ const EditFuelCardPage = ({ params }: FuelCardDetailsPageProps) => {
       <Breadcrumb
         pageName="Editar Tarjeta de Combustible"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/fuel-cards", label: "Tarjetas de Combustible" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/fuel-cards', label: 'Tarjetas de Combustible' },
         ]}
       />
       <FuelCardForm

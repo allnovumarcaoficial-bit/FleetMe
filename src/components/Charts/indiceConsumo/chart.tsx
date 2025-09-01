@@ -19,7 +19,15 @@ export function IndiceConsumoChart({ data }: PropsType) {
 
   const options: ApexOptions = {
     legend: {
-      show: false,
+      position: 'top',
+      horizontalAlign: 'left',
+      fontFamily: 'inherit',
+      fontWeight: 500,
+      fontSize: '14px',
+      markers: {
+        size: 9,
+        shape: 'circle',
+      },
     },
     colors: ['#5750F1', '#0ABEF9'],
     chart: {
@@ -30,6 +38,7 @@ export function IndiceConsumoChart({ data }: PropsType) {
       },
       fontFamily: 'inherit',
     },
+
     fill: {
       gradient: {
         opacityFrom: 0.55,
