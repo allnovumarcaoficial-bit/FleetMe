@@ -87,7 +87,6 @@ const DieselTypeForm = ({
     },
     [formData]
   );
-  console.log(formData.moneda);
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -141,7 +140,6 @@ const DieselTypeForm = ({
       });
       return;
     }
-    console.log(formData);
 
     setLoading(true);
     try {

@@ -239,7 +239,6 @@ export async function getChipFuel(fecha: Date) {
 export async function getKilometrosRecorridos(fecha: Date) {
   const startMonth = startOfMonth(fecha);
   const endMonth = endOfMonth(fecha);
-  console.log(startMonth, endMonth);
   try {
     const getKilometros = await prisma.vehicle.findMany({
       where: {
@@ -632,10 +631,7 @@ export async function getIndiceConsumo(vehicleId: number, fecha: Date) {
     });
 
     for (let i = 1; i < operaciones.length; i++) {
-      const kilometrajeActual = operaciones[i].vehicle?.km_recorrido || 0;
-      const kilometrajeAnterior = operaciones[i - 1].odometro_Vehicle || 0;
-
-      const kilometrosRecorridos = kilometrajeActual - kilometrajeAnterior;
+      const kilometrosRecorridos = operaciones[i].odometro_Vehicle || 0;
 
       const liters = operaciones[i - 1].liters || 0;
       if (kilometrosRecorridos > 0) {

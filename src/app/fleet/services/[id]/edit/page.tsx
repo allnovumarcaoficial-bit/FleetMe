@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import ServiceForm from "@/components/Fleet/Forms/ServiceForm";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { Servicio } from "@/types/fleet";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import ServiceForm from '@/components/Fleet/Forms/ServiceForm';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { Servicio } from '@/types/fleet';
 
 interface EditServicePageProps {
   params: Promise<{
@@ -39,12 +39,12 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log("Service updated successfully!");
-    router.push("/fleet/services");
+    console.log('Servicio actualizado correctamente!');
+    router.push('/fleet/services');
   };
 
   const handleCancel = () => {
-    router.push("/fleet/services");
+    router.push('/fleet/services');
   };
 
   if (loading) return <p>Cargando servicio para editar...</p>;
@@ -57,8 +57,8 @@ const EditServicePage = ({ params }: EditServicePageProps) => {
       <Breadcrumb
         pageName="Editar Servicio"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/services", label: "Servicios" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/services', label: 'Servicios' },
         ]}
       />
       <ServiceForm

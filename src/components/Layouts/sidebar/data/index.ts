@@ -12,18 +12,6 @@ export const NAV_DATA = [
             title: 'Reportes',
             url: '/',
           },
-          {
-            title: 'Chips de combustible',
-            url: '/chips',
-          },
-          {
-            title: 'Historial de Mantenimientos',
-            url: '/historial-mantenimientos',
-          },
-          {
-            title: 'Control de kilometraje',
-            url: '/historial-kilometraje',
-          },
         ],
       },
       {
@@ -68,29 +56,6 @@ export const NAV_DATA = [
           {
             title: 'Operaciones de Combustible',
             url: '/fleet/fuel-operations',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'OTROS',
-    items: [
-      {
-        title: 'Autenticación',
-        icon: Icons.Authentication,
-        items: [
-          {
-            title: 'Gestionar Usuarios',
-            url: '/gestionarusuarios',
-          },
-          {
-            title: 'Editar Usuario',
-            url: '/editarusuario',
-          },
-          {
-            title: 'Cerrar Sesión',
-            url: '/auth/signin',
           },
         ],
       },

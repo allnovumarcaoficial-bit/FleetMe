@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import MantenimientoForm from "@/components/Fleet/Forms/MantenimientoForm";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { Mantenimiento } from "@/types/fleet";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import MantenimientoForm from '@/components/Fleet/Forms/MantenimientoForm';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { Mantenimiento } from '@/types/fleet';
 
 interface EditMantenimientoPageProps {
   params: Promise<{
@@ -15,7 +15,7 @@ interface EditMantenimientoPageProps {
 const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
   const router = useRouter();
   const [mantenimiento, setMantenimiento] = useState<Mantenimiento | null>(
-    null,
+    null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,12 +41,12 @@ const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log("Mantenimiento updated successfully!");
+    console.log('Mantenimiento actualizado correctamente!');
     // Redirection is handled within MantenimientoForm
   };
 
   const handleCancel = () => {
-    router.push("/fleet/mantenimientos");
+    router.push('/fleet/mantenimientos');
   };
 
   if (loading) return <p>Cargando mantenimiento para editar...</p>;
@@ -61,8 +61,8 @@ const EditMantenimientoPage = ({ params }: EditMantenimientoPageProps) => {
       <Breadcrumb
         pageName="Editar Mantenimiento"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/mantenimientos", label: "Mantenimientos" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/mantenimientos', label: 'Mantenimientos' },
         ]}
       />
       <MantenimientoForm

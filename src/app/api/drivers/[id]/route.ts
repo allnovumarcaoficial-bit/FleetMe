@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { canUpdateDriverStatus } from "@/services/driver.service";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { canUpdateDriverStatus } from '@/services/driver.service';
 export async function GET(request: Request, context: any) {
   try {
     const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
-      return NextResponse.json({ error: "Invalid driver ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
     }
 
     const driver = await prisma.driver.findUnique({
@@ -17,15 +17,15 @@ export async function GET(request: Request, context: any) {
     });
 
     if (!driver) {
-      return NextResponse.json({ error: "Driver not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Driver not found' }, { status: 404 });
     }
 
     return NextResponse.json(driver);
   } catch (error) {
-    console.error("Error fetching driver:", error);
+    console.error('Error fetching driver:', error);
     return NextResponse.json(
-      { error: "Failed to fetch driver" },
-      { status: 500 },
+      { error: 'Failed to fetch driver' },
+      { status: 500 }
     );
   }
 }
@@ -35,7 +35,7 @@ export async function PUT(request: Request, context: any) {
     const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
-      return NextResponse.json({ error: "Invalid driver ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
     }
     const body = await request.json();
     const {
@@ -46,13 +46,12 @@ export async function PUT(request: Request, context: any) {
       estado, // Add estado field
       vehicleId, // Optional: for connecting/disconnecting a vehicle
     } = body;
-    console.log("Received data:", body);
     if (estado) {
       const validation = await canUpdateDriverStatus(id, estado);
       if (!validation.canUpdate) {
         return NextResponse.json(
           { error: validation.message },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -85,16 +84,16 @@ export async function PUT(request: Request, context: any) {
 
     return NextResponse.json(updatedDriver);
   } catch (error: any) {
-    console.error("Error updating driver:", error);
-    if (error.code === "P2002") {
+    console.error('Error updating driver:', error);
+    if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: "Licencia ya existe." },
-        { status: 409 },
+        { error: 'Licencia ya existe.' },
+        { status: 409 }
       );
     }
     return NextResponse.json(
-      { error: "Failed to update driver", details: error.message },
-      { status: 500 },
+      { error: 'Failed to update driver', details: error.message },
+      { status: 500 }
     );
   }
 }
@@ -104,7 +103,7 @@ export async function DELETE(request: Request, context: any) {
     const { id: paramId } = await context.params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
-      return NextResponse.json({ error: "Invalid driver ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid driver ID' }, { status: 400 });
     }
 
     await prisma.driver.delete({
@@ -112,18 +111,18 @@ export async function DELETE(request: Request, context: any) {
     });
 
     return NextResponse.json(
-      { message: "Driver deleted successfully" },
-      { status: 200 },
+      { message: 'Driver deleted successfully' },
+      { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error deleting driver:", error);
-    if (error.code === "P2025") {
+    console.error('Error deleting driver:', error);
+    if (error.code === 'P2025') {
       // Record to delete does not exist
-      return NextResponse.json({ error: "Driver not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Driver not found' }, { status: 404 });
     }
     return NextResponse.json(
-      { error: "Failed to delete driver", details: error.message },
-      { status: 500 },
+      { error: 'Failed to delete driver', details: error.message },
+      { status: 500 }
     );
   }
 }

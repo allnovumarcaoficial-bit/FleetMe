@@ -25,13 +25,13 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     <div className="flex flex-row items-center justify-between">
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <button
+          {/* <button
             onClick={onAddEvent}
             className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-700"
           >
             <PlusIcon />
             <span>Add Event</span>
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -44,7 +44,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
             <ArrowDownIcon className="size-4 text-gray-400 hover:text-white" />
           </button>
 
-          <h2 className="min-w-[200px] text-center text-xl font-semibold text-white">
+          <h2 className="min-w-[200px] text-center text-xl font-semibold text-dark-2 dark:text-white">
             {getMonthName(currentDate.toISOString())} {getYear(currentDate)}
           </h2>
 

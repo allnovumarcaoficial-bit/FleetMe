@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import ServiceForm from "@/components/Fleet/Forms/ServiceForm";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
-import { Servicio, Vehicle } from "@/types/fleet";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import ServiceForm from '@/components/Fleet/Forms/ServiceForm';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { Servicio, Vehicle } from '@/types/fleet';
 
 const NewServicePageContent = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const NewServicePageContent = () => {
   const [loadingInitialData, setLoadingInitialData] = useState(true);
 
   useEffect(() => {
-    const vehicleIdParam = searchParams.get("vehicleId");
+    const vehicleIdParam = searchParams.get('vehicleId');
     if (vehicleIdParam) {
       const id = parseInt(vehicleIdParam);
       if (!isNaN(id)) {
@@ -28,12 +28,12 @@ const NewServicePageContent = () => {
   }, [searchParams]);
 
   const handleSuccess = () => {
-    console.log("Service created successfully!");
-    router.push("/fleet/services");
+    console.log('Servicio creado satisfactoriamente!');
+    router.push('/fleet/services');
   };
 
   const handleCancel = () => {
-    router.push("/fleet/services");
+    router.push('/fleet/services');
   };
 
   if (loadingInitialData) {
@@ -45,8 +45,8 @@ const NewServicePageContent = () => {
       <Breadcrumb
         pageName="Añadir Nuevo Servicio"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/services", label: "Servicios" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/services', label: 'Servicios' },
         ]}
       />
       <ServiceForm

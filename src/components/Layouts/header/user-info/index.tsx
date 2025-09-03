@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { ChevronUpIcon } from "@/assets/icons";
+import { ChevronUpIcon } from '@/assets/icons';
 import {
   Dropdown,
   DropdownContent,
   DropdownTrigger,
-} from "@/components/ui/dropdown";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { useSession, signOut } from "next-auth/react";
-import { LogOutIcon, SettingsIcon, UserIcon } from "./icons";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Role } from "@prisma/client";
+} from '@/components/ui/dropdown';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { LogOutIcon, SettingsIcon, UserIcon } from './icons';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Role } from '@prisma/client';
 
 export function UserInfo() {
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
 
-  if (status === "loading") {
+  if (status === 'loading') {
     return (
       <div className="flex items-center gap-3">
         <Skeleton className="size-12 rounded-full" />
@@ -30,7 +30,7 @@ export function UserInfo() {
     );
   }
 
-  if (status === "unauthenticated" || !session?.user) {
+  if (status === 'unauthenticated' || !session?.user) {
     return (
       <Link href="/auth/signin" className="text-primary">
         Iniciar Sesión
@@ -46,7 +46,7 @@ export function UserInfo() {
         <span className="sr-only">Mi cuenta</span>
 
         <figure className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2">
+          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2 dark:border-dark-4 dark:bg-dark-3">
             <UserIcon className="size-6" />
           </div>
           <figcaption className="flex items-center gap-1 font-medium text-dark dark:text-dark-6 max-[1024px]:sr-only">
@@ -55,8 +55,8 @@ export function UserInfo() {
             <ChevronUpIcon
               aria-hidden
               className={cn(
-                "rotate-180 transition-transform",
-                isOpen && "rotate-0",
+                'rotate-180 transition-transform',
+                isOpen && 'rotate-0'
               )}
               strokeWidth={1.5}
             />
@@ -71,7 +71,7 @@ export function UserInfo() {
         <h2 className="sr-only">Información del usuario</h2>
 
         <figure className="flex items-center gap-2.5 px-5 py-3.5">
-          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2">
+          <div className="flex size-12 items-center justify-center rounded-full bg-gray-2 dark:border-dark-4 dark:bg-dark-3">
             <UserIcon className="size-6" />
           </div>
 
@@ -89,7 +89,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6 [&>*]:cursor-pointer">
           {session?.user?.role === Role.ADMIN ? (
             <Link
-              href={"/gestionarusuarios"}
+              href={'/gestionarusuarios'}
               onClick={() => setIsOpen(false)}
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             >
@@ -101,7 +101,7 @@ export function UserInfo() {
             </Link>
           ) : (
             <Link
-              href={"/editarusuario"}
+              href={'/editarusuario'}
               onClick={() => setIsOpen(false)}
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
             >
@@ -114,7 +114,7 @@ export function UserInfo() {
           )}
 
           <Link
-            href={"/settings"}
+            href={'/settings'}
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
           >
@@ -131,7 +131,7 @@ export function UserInfo() {
         <div className="p-2 text-base text-[#4B5563] dark:text-dark-6">
           <button
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-[9px] hover:bg-gray-2 hover:text-dark dark:hover:bg-dark-3 dark:hover:text-white"
-            onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+            onClick={() => signOut({ callbackUrl: '/auth/signin' })}
           >
             <LogOutIcon />
 

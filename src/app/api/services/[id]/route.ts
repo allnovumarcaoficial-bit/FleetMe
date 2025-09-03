@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: paramId } = await params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Invalid service ID" },
-        { status: 400 },
+        { error: 'Invalid service ID' },
+        { status: 400 }
       );
     }
 
@@ -37,30 +37,30 @@ export async function GET(
     });
 
     if (!service) {
-      return NextResponse.json({ error: "Service not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
 
     return NextResponse.json(service);
   } catch (error) {
-    console.error("Error fetching service:", error);
+    console.error('Error fetching service:', error);
     return NextResponse.json(
-      { error: "Failed to fetch service" },
-      { status: 500 },
+      { error: 'Failed to fetch service' },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: paramId } = await params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Invalid service ID" },
-        { status: 400 },
+        { error: 'Invalid service ID' },
+        { status: 400 }
       );
     }
 
@@ -79,7 +79,6 @@ export async function PUT(
       vehicleId,
       driver_id,
     } = body;
-    console.log(body);
     const parsedFecha = new Date(fecha);
 
     const updatedServicio = await prisma.servicio.update({
@@ -123,30 +122,30 @@ export async function PUT(
 
     return NextResponse.json(updatedServicio);
   } catch (error: any) {
-    console.error("Error creating service:", {
+    console.error('Error creating service:', {
       message: error.message,
       stack: error.stack,
       code: error.code,
       meta: error.meta,
     });
     return NextResponse.json(
-      { error: "Failed to update service", details: error.message },
-      { status: 500 },
+      { error: 'Failed to update service', details: error.message },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id: paramId } = await params;
     const id = parseInt(paramId);
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Invalid service ID" },
-        { status: 400 },
+        { error: 'Invalid service ID' },
+        { status: 400 }
       );
     }
 
@@ -155,18 +154,18 @@ export async function DELETE(
     });
 
     return NextResponse.json(
-      { message: "Service deleted successfully" },
-      { status: 200 },
+      { message: 'Service deleted successfully' },
+      { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error deleting service:", error);
-    if (error.code === "P2025") {
+    console.error('Error deleting service:', error);
+    if (error.code === 'P2025') {
       // Record to delete does not exist
-      return NextResponse.json({ error: "Service not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
     return NextResponse.json(
-      { error: "Failed to delete service", details: error.message },
-      { status: 500 },
+      { error: 'Failed to delete service', details: error.message },
+      { status: 500 }
     );
   }
 }

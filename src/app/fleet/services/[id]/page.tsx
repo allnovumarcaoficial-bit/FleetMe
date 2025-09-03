@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import React, { useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
-import { Servicio } from "@/types/fleet";
-import { format } from "date-fns";
-import { ShowcaseSection } from "@/components/Layouts/showcase-section";
-import DetailsButtons from "@/components/Fleet/PageElements/DetailsButtons";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import React, { useEffect, useState, use } from 'react';
+import { useRouter } from 'next/navigation';
+import { Servicio } from '@/types/fleet';
+import { format } from 'date-fns';
+import { ShowcaseSection } from '@/components/Layouts/showcase-section';
+import DetailsButtons from '@/components/Fleet/PageElements/DetailsButtons';
 
 interface ServiceDetailsPageProps {
   params: Promise<{
@@ -45,22 +45,21 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
       router.push(`/fleet/services/${service.id}/edit`);
     }
   };
-  console.log(service);
   const handleDelete = async () => {
     if (!service) return;
 
     if (
-      window.confirm("¿Estás seguro de que quieres eliminar este servicio?")
+      window.confirm('¿Estás seguro de que quieres eliminar este servicio?')
     ) {
       try {
         const response = await fetch(`/api/services/${service.id}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        alert("Servicio eliminado exitosamente.");
-        router.push("/fleet/services");
+        alert('Servicio eliminado exitosamente.');
+        router.push('/fleet/services');
       } catch (e: any) {
         alert(`Error al eliminar servicio: ${e.message}`);
       }
@@ -73,8 +72,8 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles del Servicio"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/services", label: "Servicios" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/services', label: 'Servicios' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -90,8 +89,8 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles del Servicio"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/services", label: "Servicios" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/services', label: 'Servicios' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -107,8 +106,8 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
         <Breadcrumb
           pageName="Detalles del Servicio"
           links={[
-            { href: "/fleet", label: "Flota" },
-            { href: "/fleet/services", label: "Servicios" },
+            { href: '/fleet', label: 'Flota' },
+            { href: '/fleet/services', label: 'Servicios' },
           ]}
         />
         <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -123,8 +122,8 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
       <Breadcrumb
         pageName="Detalles del Servicio"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/services", label: "Servicios" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/services', label: 'Servicios' },
         ]}
       />
 
@@ -135,56 +134,56 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
               <strong>Tipo de Servicio:</strong> {service.tipoServicio}
             </p>
             <p>
-              <strong>Fecha:</strong>{" "}
+              <strong>Fecha:</strong>{' '}
               {service.fecha
-                ? format(new Date(service.fecha), "dd/MM/yyyy")
-                : "N/A"}
+                ? format(new Date(service.fecha), 'dd/MM/yyyy')
+                : 'N/A'}
             </p>
             <p>
               <strong>Odómetro Inicial:</strong> {service.odometroInicial}
             </p>
             <p>
-              <strong>Odómetro Final:</strong> {service.odometroFinal || "N/A"}
+              <strong>Odómetro Final:</strong> {service.odometroFinal || 'N/A'}
             </p>
             <p>
-              <strong>Kilómetros Recorridos:</strong>{" "}
+              <strong>Kilómetros Recorridos:</strong>{' '}
               {service.kilometrosRecorridos}
             </p>
             <p>
               <strong>Estado:</strong> {service.estado}
             </p>
             <p>
-              <strong>Vehículo:</strong>{" "}
+              <strong>Vehículo:</strong>{' '}
               {service.vehicle
                 ? `${service.vehicle.marca} (${service.vehicle.matricula})`
-                : "N/A"}
+                : 'N/A'}
             </p>
             <p>
-              <strong>Conductor:</strong>{" "}
+              <strong>Conductor:</strong>{' '}
               {service.driver
                 ? `${service.driver.nombre} (${service.driver.licencia})`
-                : "N/A"}
+                : 'N/A'}
             </p>
 
-            {service.tipoServicio === "Entrega de Pedidos" && (
+            {service.tipoServicio === 'Entrega de Pedidos' && (
               <p>
-                <strong>Cantidad de Pedidos:</strong>{" "}
-                {service.cantidadPedidos || "N/A"}
+                <strong>Cantidad de Pedidos:</strong>{' '}
+                {service.cantidadPedidos || 'N/A'}
               </p>
             )}
-            {service.tipoServicio === "Logistico" && (
+            {service.tipoServicio === 'Logistico' && (
               <>
                 <p>
-                  <strong>Origen:</strong> {service.origen || "N/A"}
+                  <strong>Origen:</strong> {service.origen || 'N/A'}
                 </p>
                 <p>
-                  <strong>Destino:</strong> {service.destino || "N/A"}
+                  <strong>Destino:</strong> {service.destino || 'N/A'}
                 </p>
               </>
             )}
-            {service.tipoServicio === "Administrativo" && (
+            {service.tipoServicio === 'Administrativo' && (
               <p>
-                <strong>Descripción:</strong> {service.descripcion || "N/A"}
+                <strong>Descripción:</strong> {service.descripcion || 'N/A'}
               </p>
             )}
           </div>
@@ -192,7 +191,7 @@ const ServiceDetailsPage = ({ params }: ServiceDetailsPageProps) => {
           <DetailsButtons
             handleDelete={handleDelete}
             handleEdit={handleEdit}
-            handleBack={() => router.push("/fleet/services")}
+            handleBack={() => router.push('/fleet/services')}
           />
         </div>
       </ShowcaseSection>

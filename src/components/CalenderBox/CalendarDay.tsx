@@ -25,14 +25,14 @@ export function CalendarDay({
 
   return (
     <div
-      className={`min-h-[120px] cursor-pointer border border-gray-700 p-2 transition-all duration-200 hover:bg-gray-700/50 ${
-        !isCurrentMonth ? 'bg-gray-800/30' : 'bg-gray-800/50'
-      } ${isToday ? 'ring-2 ring-blue-500' : ''}`}
+      className={`min-h-[120px] cursor-pointer border border-gray-700 p-2 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-gray-700/50 ${
+        !isCurrentMonth ? 'bg-white/30' : 'bg-white dark:bg-gray-800/50'
+      } ${isToday ? 'ring-2 ring-sky-400 dark:ring-blue-500' : ''}`}
       onClick={() => onClick(date)}
     >
       <div
         className={`mb-2 text-sm font-medium ${
-          isCurrentMonth ? 'text-white' : 'text-gray-500'
+          isCurrentMonth ? 'text-black dark:text-white' : 'text-gray-500'
         } ${isToday ? 'text-blue-400' : ''}`}
       >
         {date.getDate()}

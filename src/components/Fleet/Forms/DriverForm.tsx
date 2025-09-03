@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { Driver, Vehicle, DriverStatus } from "@/types/fleet";
-import InputGroup from "@/components/FormElements/InputGroup";
-import { Select } from "@/components/FormElements/select"; // Import Select component
-import { Alert } from "@/components/ui-elements/alert";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from 'react';
+import { Driver, Vehicle, DriverStatus } from '@/types/fleet';
+import InputGroup from '@/components/FormElements/InputGroup';
+import { Select } from '@/components/FormElements/select'; // Import Select component
+import { Alert } from '@/components/ui-elements/alert';
+import { useRouter } from 'next/navigation';
 
 interface DriverFormProps {
   initialData?: Driver;
@@ -16,7 +16,7 @@ interface DriverFormProps {
 const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   const router = useRouter();
   const [selectedFecha, setSelectedFecha] = useState<Date>(new Date());
-  const [lisStado, setEstado] = useState<DriverStatus>("Activo");
+  const [lisStado, setEstado] = useState<DriverStatus>('Activo');
   const [formData, setFormData] = useState<Partial<Driver>>(
     initialData
       ? {
@@ -26,18 +26,18 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
             : null,
         }
       : {
-          nombre: "",
-          licencia: "",
+          nombre: '',
+          licencia: '',
           fecha_vencimiento_licencia: null,
           carnet_peritage: false,
-          estado: "Activo", // Default to 'Activo'
-        },
+          estado: 'Activo', // Default to 'Activo'
+        }
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
       setSelectedFecha(
         initialData.fecha_vencimiento_licencia
           ? new Date(initialData.fecha_vencimiento_licencia)
-          : new Date(),
+          : new Date()
       );
     }
   }, [initialData]);
@@ -61,14 +61,14 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     if (selectedFecha < new Date()) {
       setFormData((prev) => ({
         ...prev,
-        estado: "Inactivo", // Fuerza "Inactivo" si la fecha está vencida
+        estado: 'Inactivo', // Fuerza "Inactivo" si la fecha está vencida
       }));
     } else if (selectedFecha > new Date()) {
       setFormData((prev) => {
-        if (prev.estado === "Inactivo") {
+        if (prev.estado === 'Inactivo') {
           return {
             ...prev,
-            estado: "Activo", // Fuerza "Activo" si estaba "Inactivo" y la fecha es futura
+            estado: 'Activo', // Fuerza "Activo" si estaba "Inactivo" y la fecha es futura
           };
         }
         return prev;
@@ -77,33 +77,33 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   }, [selectedFecha]);
 
   const validateField = useCallback((name: string, value: any): string => {
-    let error = "";
+    let error = '';
     switch (name) {
-      case "nombre":
-      case "licencia":
-      case "estado": // Add validation for estado
-        if (!value) error = "Este campo es requerido.";
+      case 'nombre':
+      case 'licencia':
+      case 'estado': // Add validation for estado
+        if (!value) error = 'Este campo es requerido.';
         break;
-      case "fecha_vencimiento_licencia":
+      case 'fecha_vencimiento_licencia':
         setSelectedFecha(value);
         if (!value || isNaN(new Date(value).getTime()))
-          error = "Fecha inválida.";
+          error = 'Fecha inválida.';
         break;
-      case "carnet":
+      case 'carnet':
         if (!value) {
-          error = "El carnet es requerido.";
+          error = 'El carnet es requerido.';
         } else if (!/^\d{7,11}$/.test(value)) {
-          error = "El carnet debe tener entre 7 y 11 dígitos.";
+          error = 'El carnet debe tener entre 7 y 11 dígitos.';
         }
         break;
 
-      case "phone":
-        if (!value) error = "El teléfono es requerido.";
+      case 'phone':
+        if (!value) error = 'El teléfono es requerido.';
         else if (!/^\+?\d{7,15}$/.test(value))
-          error = "Número de teléfono inválido.";
+          error = 'Número de teléfono inválido.';
         break;
-      case "address":
-        if (!value) error = "La dirección es requerida.";
+      case 'address':
+        if (!value) error = 'La dirección es requerida.';
         break;
     }
     return error;
@@ -112,14 +112,14 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
 
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       newValue = (e.target as HTMLInputElement).checked;
-    } else if (type === "date") {
+    } else if (type === 'date') {
       newValue = new Date(value);
     }
 
@@ -131,13 +131,13 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
     const fieldsToValidate: (keyof Driver)[] = [
-      "address",
-      "carnet",
-      "phone",
-      "licencia",
-      "estado",
-      "fecha_vencimiento_licencia",
-      "nombre",
+      'address',
+      'carnet',
+      'phone',
+      'licencia',
+      'estado',
+      'fecha_vencimiento_licencia',
+      'nombre',
     ];
 
     fieldsToValidate.forEach((field) => {
@@ -155,28 +155,26 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
 
     if (!validateForm()) {
-      console.log(validateForm());
       setFormStatus({
-        type: "error",
-        message: "Por favor, corrige los errores del formulario.",
+        type: 'error',
+        message: 'Por favor, corrige los errores del formulario.',
       });
       return;
     }
-    console.log("handleSubmit: Validation passed");
 
     setLoading(true);
     try {
-      const method = initialData ? "PUT" : "POST";
+      const method = initialData ? 'PUT' : 'POST';
       const url = initialData
         ? `/api/drivers/${initialData.id}`
-        : "/api/drivers";
+        : '/api/drivers';
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
@@ -187,19 +185,19 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Error al guardar el conductor.");
+        throw new Error(errorData.error || 'Error al guardar el conductor.');
       }
 
       setFormStatus({
-        type: "success",
-        message: `Conductor ${initialData ? "actualizado" : "creado"} exitosamente.`,
+        type: 'success',
+        message: `Conductor ${initialData ? 'actualizado' : 'creado'} exitosamente.`,
       });
       if (onSuccess) onSuccess();
-      router.push("/fleet/drivers");
+      router.push('/fleet/drivers');
     } catch (err: any) {
       setFormStatus({
-        type: "error",
-        message: err.message || "Ocurrió un error inesperado.",
+        type: 'error',
+        message: err.message || 'Ocurrió un error inesperado.',
       });
     } finally {
       setLoading(false);
@@ -211,8 +209,8 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -225,7 +223,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="nombre"
               type="text"
               placeholder="Introduce el nombre"
-              value={formData.nombre || ""}
+              value={formData.nombre || ''}
               handleChange={handleChange}
             />
             {errors.nombre && (
@@ -238,7 +236,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="carnet"
               type="text"
               placeholder="Introduce el Carnet de Identidad"
-              value={formData.carnet || ""}
+              value={formData.carnet || ''}
               handleChange={handleChange}
             />
             {errors.carnet && (
@@ -251,7 +249,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="phone"
               type="text"
               placeholder="Introduce el número de teléfono"
-              value={formData.phone || ""}
+              value={formData.phone || ''}
               handleChange={handleChange}
             />
             {errors.phone && (
@@ -264,7 +262,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="address"
               type="text"
               placeholder="Introduzca su dirección"
-              value={formData.address || ""}
+              value={formData.address || ''}
               handleChange={handleChange}
             />
             {errors.address && (
@@ -277,7 +275,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="photo"
               type="file"
               placeholder="Introduzca su foto de perfil"
-              value={formData.photo || ""}
+              value={formData.photo || ''}
               handleChange={handleChange}
             />
             {errors.photo && (
@@ -290,7 +288,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               name="licencia"
               type="text"
               placeholder="Introduce la licencia"
-              value={formData.licencia || ""}
+              value={formData.licencia || ''}
               handleChange={handleChange}
             />
             {errors.licencia && (
@@ -307,8 +305,8 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
                 formData.fecha_vencimiento_licencia
                   ? formData.fecha_vencimiento_licencia
                       .toISOString()
-                      .split("T")[0]
-                  : ""
+                      .split('T')[0]
+                  : ''
               }
               handleChange={handleChange}
             />
@@ -338,22 +336,22 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               label="Estado"
               items={
                 selectedFecha < new Date()
-                  ? [{ value: "Inactivo", label: "Inactivo" }]
+                  ? [{ value: 'Inactivo', label: 'Inactivo' }]
                   : [
-                      { value: "Activo", label: "Activo" },
-                      { value: "Vacaciones", label: "Vacaciones" },
+                      { value: 'Activo', label: 'Activo' },
+                      { value: 'Vacaciones', label: 'Vacaciones' },
                     ]
               }
               value={
                 selectedFecha < new Date()
-                  ? "Inactivo"
-                  : formData.estado === "Inactivo"
-                    ? "Activo"
-                    : formData.estado || "Activo"
+                  ? 'Inactivo'
+                  : formData.estado === 'Inactivo'
+                    ? 'Activo'
+                    : formData.estado || 'Activo'
               }
               placeholder="Selecciona un estado"
               onChange={(
-                e, // Solo permite cambios si la fecha es futura
+                e // Solo permite cambios si la fecha es futura
               ) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
               name="estado"
             />
@@ -377,10 +375,10 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
             {loading
-              ? "Guardando..."
+              ? 'Guardando...'
               : initialData
-                ? "Actualizar Conductor"
-                : "Crear Conductor"}
+                ? 'Actualizar Conductor'
+                : 'Crear Conductor'}
           </button>
         </div>
       </form>
