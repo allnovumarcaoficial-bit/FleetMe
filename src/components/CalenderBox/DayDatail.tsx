@@ -42,7 +42,8 @@ export function DayDetailModal({
                 {formatDate(selectedDate.toISOString())}
               </h2>
               <p className="mt-1 text-blue-100">
-                {dayEvents.length} {dayEvents.length === 1 ? 'event' : 'events'}
+                {dayEvents.length}{' '}
+                {dayEvents.length === 1 ? 'evento' : 'eventos'}
               </p>
             </div>
             <button
@@ -57,7 +58,7 @@ export function DayDetailModal({
         {/* Content */}
         <div className="p-6">
           {/* Add Event Button */}
-          <button
+          {/* <button
             onClick={() => {
               onAddEvent();
               onClose();
@@ -66,17 +67,19 @@ export function DayDetailModal({
           >
             <PlusIcon />
             <span>Add Event</span>
-          </button>
+          </button> */}
 
           {/* Events List */}
           <div className="max-h-96 space-y-3 overflow-y-auto">
             {dayEvents.length === 0 ? (
               <div className="py-12 text-center">
                 <Calendar className="mx-auto mb-4 text-gray-500" />
-                <p className="text-lg text-gray-400">No events scheduled</p>
-                <p className="mt-2 text-sm text-gray-500">
-                  Click {'Add Event'} to create your first event
+                <p className="text-lg text-gray-400">
+                  No hay eventos programados
                 </p>
+                {/* <p className="mt-2 text-sm text-gray-500">
+                  Click {'Add Event'} to create your first event
+                </p> */}
               </div>
             ) : (
               dayEvents.map((event) => (

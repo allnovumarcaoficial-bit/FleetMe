@@ -1,11 +1,11 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Table, Button, Input, Select, Popconfirm, Form, message } from "antd";
-import type { Rule } from "antd/es/form";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Input, Select, Popconfirm, Form, message } from 'antd';
+import type { Rule } from 'antd/es/form';
 
 enum Role {
-  USER = "USER",
-  ADMIN = "ADMIN",
+  USER = 'USER',
+  ADMIN = 'ADMIN',
 }
 
 interface User {
@@ -19,7 +19,7 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
   editing: boolean;
   dataIndex: string;
   title: any;
-  inputType: "text" | "select" | "password";
+  inputType: 'text' | 'select' | 'password';
   record: User;
   index: number;
 }
@@ -37,10 +37,10 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
   ...restProps
 }) => {
   const getInput = () => {
-    if (inputType === "password") {
+    if (inputType === 'password') {
       return <Input.Password placeholder="Contraseña" />;
     }
-    if (inputType === "select") {
+    if (inputType === 'select') {
       return (
         <Select disabled placeholder="Seleccionar rol">
           <Option value={Role.USER}>USER</Option>
@@ -58,8 +58,8 @@ const EditableCell: React.FC<React.PropsWithChildren<EditableCellProps>> = ({
     },
   ];
 
-  if (dataIndex === "email") {
-    rules.push({ type: "email", message: "Ingrese un email válido" });
+  if (dataIndex === 'email') {
+    rules.push({ type: 'email', message: 'Ingrese un email válido' });
   }
 
   return (
@@ -83,7 +83,7 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
   const [form] = Form.useForm();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingKey, setEditingKey] = useState("");
+  const [editingKey, setEditingKey] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
   const isEditing = (record: User) => record.id === editingKey;
@@ -93,20 +93,19 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
     try {
       const url = `/api/users/${userId}`;
       const res = await fetch(url, {
-        method: "GET",
+        method: 'GET',
       });
-      console.log(res);
       if (res.ok) {
         const data = await res.json();
         // const newData = data.fliter((item: any)=>(item.role === 'USER'))
         // console.log(newData)
         setUsers([data]);
       } else {
-        message.error("Error al cargar los usuarios");
+        message.error('Error al cargar los usuarios');
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
-      message.error("Error de conexión al cargar los usuarios");
+      console.error('Error fetching users:', error);
+      message.error('Error de conexión al cargar los usuarios');
     } finally {
       setLoading(false);
     }
@@ -117,95 +116,95 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
   }, []);
 
   const edit = (record: Partial<User> & { id: React.Key }) => {
-    form.setFieldsValue({ name: "", email: "", role: Role.USER, ...record });
+    form.setFieldsValue({ name: '', email: '', role: Role.USER, ...record });
     setEditingKey(record.id);
   };
 
   const cancel = () => {
     if (isCreating) {
-      setUsers(users.filter((user) => !user.id.startsWith("new-user-")));
+      setUsers(users.filter((user) => !user.id.startsWith('new-user-')));
       setIsCreating(false);
     }
-    setEditingKey("");
+    setEditingKey('');
   };
 
   const save = async (key: React.Key) => {
     try {
-      const row = (await form.validateFields()) as Omit<User, "id"> & {
+      const row = (await form.validateFields()) as Omit<User, 'id'> & {
         password?: string;
       };
 
       if (isCreating) {
         // Logic for creating a new user
         if (!row.password) {
-          message.error("La contraseña es obligatoria para nuevos usuarios");
+          message.error('La contraseña es obligatoria para nuevos usuarios');
           return;
         }
-        const response = await fetch("/api/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(row),
         });
 
         if (response.ok) {
-          message.success("Usuario creado exitosamente");
+          message.success('Usuario creado exitosamente');
           fetchUsers();
-          setEditingKey("");
+          setEditingKey('');
           setIsCreating(false);
         } else {
           const errorData = await response.json();
           message.error(
             `Error al crear el usuario: ${
               errorData.message || response.statusText
-            }`,
+            }`
           );
         }
       } else {
         // Logic for updating an existing user
         const url = `/api/users/${key}`;
         const response = await fetch(url, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(row),
         });
 
         if (response.ok) {
-          message.success("Usuario actualizado exitosamente");
+          message.success('Usuario actualizado exitosamente');
           fetchUsers();
-          setEditingKey("");
+          setEditingKey('');
         } else {
           const errorData = await response.json();
           message.error(
             `Error al actualizar el usuario: ${
               errorData.message || response.statusText
-            }`,
+            }`
           );
         }
       }
     } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
+      console.log('Validate Failed:', errInfo);
     }
   };
 
   const columns = [
     {
-      title: "Nombre",
-      dataIndex: "name",
+      title: 'Nombre',
+      dataIndex: 'name',
       editable: true,
     },
     {
-      title: "Email",
-      dataIndex: "email",
+      title: 'Email',
+      dataIndex: 'email',
       editable: false,
     },
     {
-      title: "Rol",
-      dataIndex: "role",
+      title: 'Rol',
+      dataIndex: 'role',
       editable: false,
     },
     {
-      title: "Contraseña",
-      dataIndex: "password",
+      title: 'Contraseña',
+      dataIndex: 'password',
       editable: true,
       render: (_: any, record: User) => {
         return isEditing(record) ? (
@@ -213,13 +212,13 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
             <Input.Password placeholder="Nueva contraseña" />
           </Form.Item>
         ) : (
-          "********"
+          '********'
         );
       },
     },
     {
-      title: "Acciones",
-      dataIndex: "actions",
+      title: 'Acciones',
+      dataIndex: 'actions',
       render: (_: any, record: User) => {
         const editable = isEditing(record);
         if (editable) {
@@ -244,7 +243,7 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
           <span>
             <Button
               type="link"
-              disabled={editingKey !== ""}
+              disabled={editingKey !== ''}
               onClick={() => edit(record)}
             >
               Editar
@@ -263,10 +262,10 @@ const UsersTableNotAdmin: React.FC<UsersTableNotAdminProps> = ({ userId }) => {
       ...col,
       onCell: (record: User) => ({
         record,
-        inputType: col.dataIndex === "role" ? "select" : "text",
+        inputType: col.dataIndex === 'role' ? 'select' : 'text',
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record) && col.dataIndex !== "password",
+        editing: isEditing(record) && col.dataIndex !== 'password',
       }),
     };
   });

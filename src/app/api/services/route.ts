@@ -1,23 +1,23 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const sortBy = searchParams.get("sortBy") || "id";
-    const sortOrder = searchParams.get("sortOrder") || "asc"; // 'asc' or 'desc'
-    const search = searchParams.get("search") || "";
-    const tipoServicio = searchParams.get("tipoServicio") || "";
-    const fechaDesde = searchParams.get("fechaDesde");
-    const fechaHasta = searchParams.get("fechaHasta");
-    const odometroInicial = searchParams.get("odometroInicial") || "";
-    const odometroFinal = searchParams.get("odometroFinal") || "";
-    const kilometrosRecorridos = searchParams.get("kilometrosRecorridos") || "";
-    const estado = searchParams.get("estado") || "";
-    const vehicleSearch = searchParams.get("vehicle") || "";
-    const vehicleId = searchParams.get("vehicleId"); // Keep this for specific vehicle filtering
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const sortBy = searchParams.get('sortBy') || 'id';
+    const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
+    const search = searchParams.get('search') || '';
+    const tipoServicio = searchParams.get('tipoServicio') || '';
+    const fechaDesde = searchParams.get('fechaDesde');
+    const fechaHasta = searchParams.get('fechaHasta');
+    const odometroInicial = searchParams.get('odometroInicial') || '';
+    const odometroFinal = searchParams.get('odometroFinal') || '';
+    const kilometrosRecorridos = searchParams.get('kilometrosRecorridos') || '';
+    const estado = searchParams.get('estado') || '';
+    const vehicleSearch = searchParams.get('vehicle') || '';
+    const vehicleId = searchParams.get('vehicleId'); // Keep this for specific vehicle filtering
 
     const skip = (page - 1) * limit;
 
@@ -104,10 +104,10 @@ export async function GET(request: Request) {
       totalPages: Math.ceil(totalServices / limit),
     });
   } catch (error) {
-    console.error("Error fetching services:", error);
+    console.error('Error fetching services:', error);
     return NextResponse.json(
-      { error: "Failed to fetch services" },
-      { status: 500 },
+      { error: 'Failed to fetch services' },
+      { status: 500 }
     );
   }
 }
@@ -115,7 +115,6 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log("Received payload:", typeof body);
 
     const {
       tipoServicio,
@@ -132,7 +131,6 @@ export async function POST(request: Request) {
       driver_id,
     } = body;
     const parsedFecha = new Date(fecha);
-    console.log(parsedFecha);
     const newServicio = await prisma.servicio.create({
       data: {
         tipoServicio,
@@ -149,7 +147,6 @@ export async function POST(request: Request) {
         vehicleId: parseInt(vehicleId) || null,
       },
     });
-    console.log(newServicio);
 
     if (newServicio.odometroFinal !== 0 && newServicio.odometroFinal !== null) {
       const vehicle = await prisma.vehicle.findUnique({
@@ -171,15 +168,15 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newServicio, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating service:", {
+    console.error('Error creating service:', {
       message: error.message,
       stack: error.stack,
       code: error.code,
       meta: error.meta,
     });
     return NextResponse.json(
-      { error: "Failed to create service", details: error.message },
-      { status: 500 },
+      { error: 'Failed to create service', details: error.message },
+      { status: 500 }
     );
   }
 }

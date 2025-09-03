@@ -41,7 +41,7 @@ const EditReservoirPage = ({ params }: EditReservoirPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log('Reservoir updated successfully!');
+    console.log('Reservorio actualizado correctamente!');
     // Redirection is handled within ReservoirForm
   };
 

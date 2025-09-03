@@ -62,7 +62,7 @@ export function PeriodPicker<TItem extends string>({
         {posibleTitle ? (
           <span className="capitalize">{selectedValue || posibleTitle}</span>
         ) : (
-          <span className="capitalize">{selectedValue || 'Time Period'}</span>
+          <span className="capitalize">{selectedValue || 'Período'}</span>
         )}
 
         <ChevronUpIcon className="size-4 rotate-180 transition-transform" />

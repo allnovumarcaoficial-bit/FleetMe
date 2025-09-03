@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import VehicleForm from "@/components/Fleet/Forms/VehicleForm";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { Vehicle } from "@/types/fleet";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import VehicleForm from '@/components/Fleet/Forms/VehicleForm';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { Vehicle } from '@/types/fleet';
 interface EditVehiclePageProps {
   params: Promise<{
     id: string;
@@ -38,12 +38,12 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log("Vehicle updated successfully!");
+    console.log('Vehículo actualizado correctamente!');
     // Redirection is handled within VehicleForm
   };
 
   const handleCancel = () => {
-    router.push("/fleet/vehicles");
+    router.push('/fleet/vehicles');
   };
 
   if (loading) return <p>Cargando vehículo para editar...</p>;
@@ -56,8 +56,8 @@ const EditVehiclePage = ({ params }: EditVehiclePageProps) => {
       <Breadcrumb
         pageName="Editar Vehículo"
         links={[
-          { href: "/fleet", label: "Flota" },
-          { href: "/fleet/vehicles", label: "Vehículos" },
+          { href: '/fleet', label: 'Flota' },
+          { href: '/fleet/vehicles', label: 'Vehículos' },
         ]}
       />
       <VehicleForm

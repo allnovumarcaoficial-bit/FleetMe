@@ -30,12 +30,12 @@ export default async function Home({ searchParams }: PropsType) {
   const { selected_time_frame } = await searchParams;
   const extractTimeFrame = createTimeFrameExtractor(selected_time_frame);
   return (
-    <>
+    <div className="flex min-h-screen w-full flex-col">
       <Suspense fallback={<OverviewCardsSkeleton />}>
         <OverviewCardsGroup />
       </Suspense>
 
-      <div className="mt-4 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
+      <div className="mt-4 grid flex-1 grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
         <GastoTotal
           className="col-span-12 xl:col-span-7"
           key={extractTimeFrame('gasto_total')}
@@ -46,24 +46,24 @@ export default async function Home({ searchParams }: PropsType) {
           timeFrame={
             extractTimeFrame('kilometros_recorridosChart')?.split(':')[1]
           }
-          className="col-span-12 w-full xl:col-span-5"
+          className="col-span-12 xl:col-span-5"
         />
 
         <CarDistribution
-          className="col-span-12 w-full xl:col-span-5"
+          className="col-span-12 xl:col-span-5"
           key={extractTimeFrame('vehicule_distribution')}
           timeFrame={
             extractTimeFrame('vehicule_distribution')?.split(':')[1] || 'Marca'
           }
         />
         <IndiceConsumo
-          className="col-span-12 w-full xl:col-span-5"
+          className="col-span-12 w-full xl:col-span-7"
           key={extractTimeFrame('indice_consumo')}
           timeFrame={extractTimeFrame('indice_consumo')?.split(':')[1]}
           vehicule_id={extractTimeFrame('vehicule_id')?.split(':')[0]}
         />
 
-        <div className="col-span-12 grid w-full xl:col-span-12">
+        <div className="col-span-12 xl:col-span-12">
           <Suspense fallback={<TopChannelsSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
@@ -72,8 +72,7 @@ export default async function Home({ searchParams }: PropsType) {
           </Suspense>
         </div>
 
-        {/* Contenedor corregido para la tabla Kilómetros Recorridos */}
-        <div className="col-span-12 w-full xl:col-span-12">
+        <div className="col-span-12 xl:col-span-12">
           <Suspense fallback={<TopChannelsSkeleton />}>
             <KilometrosRecorridosTable
               timeframe={
@@ -83,7 +82,8 @@ export default async function Home({ searchParams }: PropsType) {
             />
           </Suspense>
         </div>
-        <div className="col-span-12 w-full xl:col-span-12">
+
+        <div className="col-span-12 xl:col-span-12">
           <HistorialMantenimientoTable
             timeframe={
               extractTimeFrame('historial_mantenimientos')?.split(':')[1]
@@ -92,6 +92,6 @@ export default async function Home({ searchParams }: PropsType) {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

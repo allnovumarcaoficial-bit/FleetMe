@@ -9,7 +9,7 @@ const ReservorioPage = () => {
   const router = useRouter();
 
   const handleSuccess = () => {
-    console.log('Reservorio created successfully!');
+    console.log('Reservorio creado satisfactoriamente!');
   };
 
   const handleCancel = () => {

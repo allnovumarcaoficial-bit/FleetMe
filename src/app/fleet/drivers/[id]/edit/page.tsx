@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import DriverForm from "@/components/Fleet/Forms/DriverForm";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { Driver } from "@/types/fleet";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import DriverForm from '@/components/Fleet/Forms/DriverForm';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { Driver } from '@/types/fleet';
 
 interface EditDriverPageProps {
   params: Promise<{
@@ -39,12 +39,12 @@ const EditDriverPage = ({ params }: EditDriverPageProps) => {
   }, [paramId]);
 
   const handleSuccess = () => {
-    console.log("Driver updated successfully!");
+    console.log('Conductor actualizado correctamente!');
     // Redirection is handled within DriverForm
   };
 
   const handleCancel = () => {
-    router.push("/fleet/drivers");
+    router.push('/fleet/drivers');
   };
 
   if (loading) return <p>Cargando conductor para editar...</p>;
@@ -57,8 +57,8 @@ const EditDriverPage = ({ params }: EditDriverPageProps) => {
       <Breadcrumb
         pageName="Editar Conductor"
         links={[
-          { href: "/fleet/drivers", label: "Flota" },
-          { href: "/fleet/drivers", label: "Conductores" },
+          { href: '/fleet/drivers', label: 'Flota' },
+          { href: '/fleet/drivers', label: 'Conductores' },
         ]}
       />
       <DriverForm

@@ -83,7 +83,6 @@ export async function POST(request: Request) {
 
     const { nombre, capacidad_actual, capacidad_total, tipoCombustibleId } =
       body;
-    console.log('Creating reservorio with data:', body);
     const newReservorio = await prisma.reservorio.create({
       data: {
         nombre,

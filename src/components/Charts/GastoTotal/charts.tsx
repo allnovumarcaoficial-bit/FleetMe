@@ -2,7 +2,11 @@
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { ApexOptions } from 'apexcharts';
+import saveAs from 'file-saver';
+import { toJpeg, toPng } from 'html-to-image';
 import dynamic from 'next/dynamic';
+import { useRef } from 'react';
+import { MenuDropDownd } from '../chartDownload';
 
 type PropsType = {
   data: {
@@ -17,6 +21,67 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 export function GastoTotalChart({ data }: PropsType) {
   const isMobile = useIsMobile();
+  const chartRef = useRef<HTMLDivElement>(null);
+  const exportToPng = async () => {
+    if (chartRef.current === null) {
+      return;
+    }
+
+    try {
+      const dataUrl = await toPng(chartRef.current, {
+        quality: 1.0,
+        pixelRatio: 2, // Para mejor resolución
+      });
+      saveAs(dataUrl, 'Gastos.png');
+    } catch (error) {
+      console.error('Error al exportar PNG:', error);
+    }
+  };
+
+  // Función para exportar a JPG
+  const exportToJpg = async () => {
+    if (chartRef.current === null) {
+      return;
+    }
+
+    try {
+      const dataUrl = await toJpeg(chartRef.current, {
+        quality: 0.95,
+        pixelRatio: 2, // Para mejor resolución
+      });
+      saveAs(dataUrl, 'Gastos-chart.jpg');
+    } catch (error) {
+      console.error('Error al exportar JPG:', error);
+    }
+  };
+
+  // Función para exportar a CSV
+  const exportToCsv = () => {
+    // Obtener todas las fechas únicas
+    const allDates = [
+      ...new Set([
+        ...data.mantenimiento.map((item) => item.x),
+        ...data.combustible.map((item) => item.x),
+      ]),
+    ].sort();
+
+    // Crear el contenido CSV
+    const csvContent = [
+      ['Fecha', 'Mantenimiento', 'Combustible'], // Headers
+      ...allDates.map((date) => {
+        const mantenimientoValue =
+          data.mantenimiento.find((item) => item.x === date)?.y || '';
+        const combustibleValue =
+          data.combustible.find((item) => item.x === date)?.y || '';
+        return [date, mantenimientoValue, combustibleValue];
+      }),
+    ]
+      .map((row) => row.join(','))
+      .join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'mantenimiento-combustible-data.csv');
+  };
 
   const options: ApexOptions = {
     legend: {
@@ -95,22 +160,31 @@ export function GastoTotalChart({ data }: PropsType) {
   };
 
   return (
-    <div className="-ml-4 -mr-5 h-[310px]">
-      <Chart
-        options={options}
-        series={[
-          {
-            name: 'Combustible',
-            data: data.combustible,
-          },
-          {
-            name: 'Mantenimiento',
-            data: data.mantenimiento,
-          },
-        ]}
-        type="area"
-        height={310}
-      />
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <MenuDropDownd
+          exportToPng={exportToPng}
+          exportToJpg={exportToJpg}
+          exportToCsv={exportToCsv}
+        />
+      </div>
+      <div className="-ml-4 -mr-5 h-[310px]">
+        <Chart
+          options={options}
+          series={[
+            {
+              name: 'Combustible',
+              data: data.combustible,
+            },
+            {
+              name: 'Mantenimiento',
+              data: data.mantenimiento,
+            },
+          ]}
+          type="area"
+          height={310}
+        />
+      </div>
     </div>
   );
 }
