@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import { useSession } from "next-auth/react";
-import { Notification, NotificationType } from "@/types/notification";
-import { useNotificationDisplay } from "./notifications/useNotificationDisplay";
-import { useNotificationCreation } from "./notifications/useNotificationCreation";
-import { useNotificationGenerator } from "./notifications/useNotificationGenerator";
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { Notification, NotificationType } from '@/types/notification';
+import { useNotificationDisplay } from './notifications/useNotificationDisplay';
+import { useNotificationCreation } from './notifications/useNotificationCreation';
+import { useNotificationGenerator } from './notifications/useNotificationGenerator';
 
 // Suponiendo que tiene una función para mostrar toasts/mensajes de error
 const showErrorMessage = (message: string) => {
-  console.error("Error:", message);
+  console.error('Error:', message);
   // Aquí iría la lógica para mostrar un toast o alerta al usuario
   alert(`Error: ${message}`);
 };
@@ -22,56 +22,55 @@ interface UseNotificationsHook {
       details?: string;
       link?: string;
     },
-    showToast?: boolean,
+    showToast?: boolean
   ) => Promise<void>;
   markAsRead: (
     id: string,
-    updatedData?: Partial<Notification>,
+    updatedData?: Partial<Notification>
   ) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
   markAsUnread: (
     id: string,
-    updatedData?: Partial<Notification>,
+    updatedData?: Partial<Notification>
   ) => Promise<void>;
 }
 
 export const useNotifications = (): UseNotificationsHook => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { data: session, status } = useSession();
-  const [sessionValidated, setSessionValidated] = useState(false);
 
   const markAsRead = useCallback(
     async (id: string, updatedData?: Partial<Notification>) => {
       // Optimistic update
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, read: true, ...updatedData } : n,
-        ),
+          n.id === id ? { ...n, read: true, ...updatedData } : n
+        )
       );
       try {
         const response = await fetch(`/api/notifications/${id}`, {
-          method: "PATCH",
+          method: 'PATCH',
           body: JSON.stringify({ read: true, ...updatedData }),
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         });
         if (!response.ok) {
-          throw new Error("Failed to mark notification as read");
+          throw new Error('Failed to mark notification as read');
         }
       } catch (error: any) {
-        console.error("Error marking notification as read:", error);
+        console.error('Error marking notification as read:', error);
         showErrorMessage(
-          `No se pudo marcar la notificación como leída: ${error.message}`,
+          `No se pudo marcar la notificación como leída: ${error.message}`
         );
         // Revertir el estado si falla
         setNotifications((prev) =>
           prev.map(
-            (n) => (n.id === id ? { ...n, read: false } : n), // Asumiendo que el estado original era no leído
-          ),
+            (n) => (n.id === id ? { ...n, read: false } : n) // Asumiendo que el estado original era no leído
+          )
         );
       }
     },
-    [], // Dependencia vacía para useCallback, ya que setNotifications es estable
+    [] // Dependencia vacía para useCallback, ya que setNotifications es estable
   );
 
   const markAsUnread = useCallback(
@@ -79,46 +78,46 @@ export const useNotifications = (): UseNotificationsHook => {
       // Optimistic update
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === id ? { ...n, read: false, ...updatedData } : n,
-        ),
+          n.id === id ? { ...n, read: false, ...updatedData } : n
+        )
       );
       try {
         const response = await fetch(`/api/notifications/${id}`, {
-          method: "PATCH",
+          method: 'PATCH',
           body: JSON.stringify({ read: false, ...updatedData }),
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         });
         if (!response.ok) {
-          throw new Error("Failed to mark notification as unread");
+          throw new Error('Failed to mark notification as unread');
         }
       } catch (error: any) {
-        console.error("Error marking notification as unread:", error);
+        console.error('Error marking notification as unread:', error);
         showErrorMessage(
-          `No se pudo marcar la notificación como no leída: ${error.message}`,
+          `No se pudo marcar la notificación como no leída: ${error.message}`
         );
         // Revertir el estado si falla
         setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
+          prev.map((n) => (n.id === id ? { ...n, read: true } : n))
         );
       }
     },
-    [],
+    []
   );
 
   const markAllAsRead = useCallback(async () => {
     const originalNotifications = notifications;
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     try {
-      const response = await fetch("/api/notifications/mark-all-as-read", {
-        method: "PATCH",
+      const response = await fetch('/api/notifications/mark-all-as-read', {
+        method: 'PATCH',
       });
       if (!response.ok) {
-        throw new Error("Failed to mark all notifications as read");
+        throw new Error('Failed to mark all notifications as read');
       }
     } catch (error: any) {
-      console.error("Error marking all notifications as read:", error);
+      console.error('Error marking all notifications as read:', error);
       showErrorMessage(
-        `No se pudieron marcar todas las notificaciones como leídas: ${error.message}`,
+        `No se pudieron marcar todas las notificaciones como leídas: ${error.message}`
       );
       setNotifications(originalNotifications);
     }
@@ -130,64 +129,54 @@ export const useNotifications = (): UseNotificationsHook => {
       setNotifications((prev) => prev.filter((n) => n.id !== id));
       try {
         const response = await fetch(`/api/notifications/${id}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
         if (!response.ok) {
-          throw new Error("Failed to delete notification");
+          throw new Error('Failed to delete notification');
         }
       } catch (error: any) {
-        console.error("Error deleting notification:", error);
+        console.error('Error deleting notification:', error);
         showErrorMessage(
-          `No se pudo eliminar la notificación: ${error.message}`,
+          `No se pudo eliminar la notificación: ${error.message}`
         );
         setNotifications(originalNotifications);
       }
     },
-    [notifications],
+    [notifications]
   );
 
   const { displayNotification } = useNotificationDisplay(markAsRead);
   const { addNotification } = useNotificationCreation(
     setNotifications,
-    displayNotification,
+    displayNotification
   );
   const fetchNotifications = useCallback(async () => {
-    if (status !== "authenticated" || !sessionValidated) return;
+    if (status !== 'authenticated') return;
     try {
-      const response = await fetch("/api/notifications");
+      const response = await fetch('/api/notifications');
       if (response.ok) {
         const data: Notification[] = await response.json();
+        console.log('[Notifications] Fetched notifications:', data); // Añadir este log
         setNotifications(data);
       } else {
-        throw new Error("Failed to fetch notifications");
+        throw new Error('Failed to fetch notifications');
       }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
-      showErrorMessage("No se pudieron cargar las notificaciones.");
+      console.error('Error fetching notifications:', error);
+      showErrorMessage('No se pudieron cargar las notificaciones.');
     }
-  }, [status, sessionValidated]);
+  }, [status]);
 
   const { generateNotifications } = useNotificationGenerator(
     fetchNotifications,
-    displayNotification,
+    displayNotification
   );
 
   useEffect(() => {
-    // Esperar a que el SessionChecker valide la sesión
-    const checkValidation = () => {
-      const isValid =
-        sessionStorage.getItem("next-auth-session-active") === "true";
-      setSessionValidated(isValid);
-    };
-
-    checkValidation();
-  }, []);
-
-  useEffect(() => {
-    if (sessionValidated && status === "authenticated") {
+    if (status === 'authenticated') {
       generateNotifications();
     }
-  }, [sessionValidated, status, generateNotifications]);
+  }, [status, generateNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
