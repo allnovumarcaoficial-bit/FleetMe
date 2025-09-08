@@ -188,10 +188,11 @@ const VehicleForm = ({
         if (value < 0) error = 'El valor no puede ser negativo.';
         break;
       case 'driver':
-        if (!Array.isArray(value) || value.length === 0) {
-          error = 'Debe seleccionar al menos un conductor.';
-        }
-        if (value.length > formData.cantidad_conductores!) {
+        // Permitir que el campo de conductor esté vacío si se desvincula
+        if (
+          Array.isArray(value) &&
+          value.length > (formData.cantidad_conductores || 0)
+        ) {
           error = `No puede seleccionar más de ${formData.cantidad_conductores} conductores.`;
         }
         break;
@@ -248,14 +249,14 @@ const VehicleForm = ({
     selectedDriverIds: string[],
     sizeConductores: number
   ) => {
-    if (selectedDriverIds.length === 0) {
-      return;
+    let selectedDrivers: Driver[] = [];
+    if (selectedDriverIds.length > 0) {
+      const flatDrivers = drivers.flat();
+      // Filtrar drivers usando los IDs seleccionados
+      selectedDrivers = flatDrivers
+        .filter((driver) => selectedDriverIds.includes(driver.id.toString()))
+        .slice(0, sizeConductores); // Limitar al número de conductores permitidos
     }
-    const flatDrivers = drivers.flat();
-    // Filtrar drivers usando los IDs seleccionados
-    const selectedDrivers = flatDrivers
-      .filter((driver) => selectedDriverIds.includes(driver.id.toString()))
-      .slice(0, sizeConductores); // Limitar al número de conductores permitidosS
 
     setFormData((prev) => ({
       ...prev,
