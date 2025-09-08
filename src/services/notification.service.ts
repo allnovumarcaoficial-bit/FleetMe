@@ -1,10 +1,10 @@
-import prisma from "@/lib/prisma";
-import { Notification, NotificationType } from "@/types/notification";
+import prisma from '@/lib/prisma';
+import { Notification, NotificationType } from '@/types/notification';
 
 export const notificationService = {
   async getNotificationsByUserIdAndType(
     userId: string,
-    types: NotificationType[],
+    types: NotificationType[]
   ) {
     return prisma.notification.findMany({
       where: {
@@ -17,7 +17,7 @@ export const notificationService = {
   },
 
   async createNotification(
-    data: Omit<Notification, "id" | "date"> & { date?: Date },
+    data: Omit<Notification, 'id' | 'date'> & { date?: Date }
   ) {
     return prisma.notification.create({
       data: { ...data, date: data.date || new Date() },
@@ -39,14 +39,14 @@ export const notificationService = {
     expirationDate: Date,
     isExpired: boolean,
     daysUntilExpiration: number,
-    existingNotifications: Notification[],
+    existingNotifications: Notification[]
   ) {
     const link = `/fleet/drivers/${driverId}`;
     const existingWarningNotif = existingNotifications.find(
-      (n) => n.link === link && n.type === "warning",
+      (n) => n.link === link && n.type === 'warning'
     );
     const existingCriticalNotif = existingNotifications.find(
-      (n) => n.link === link && n.type === "critical",
+      (n) => n.link === link && n.type === 'critical'
     );
 
     let createdOrUpdatedNotification: Notification | null = null;
@@ -57,7 +57,7 @@ export const notificationService = {
       if (!existingCriticalNotif) {
         createdOrUpdatedNotification = await this.createNotification({
           userId: userId,
-          type: "critical",
+          type: 'critical',
           message: `Licencia Vencida: ${driverName}`,
           details: `La licencia de conducción del conductor ${driverName} ha vencido.`,
           link: link,
@@ -70,7 +70,7 @@ export const notificationService = {
             message: `Licencia Vencida: ${driverName}`,
             details: `La licencia de conducción del conductor ${driverName} ha vencido.`,
             read: false,
-          },
+          }
         );
       }
       if (existingWarningNotif) {
@@ -81,7 +81,7 @@ export const notificationService = {
       if (!existingWarningNotif) {
         createdOrUpdatedNotification = await this.createNotification({
           userId: userId,
-          type: "warning",
+          type: 'warning',
           message: `Licencia Próxima a Vencer: ${driverName}`,
           details: `La licencia del conductor ${driverName} vencerá en ${daysUntilExpiration} días.`,
           link: link,
@@ -94,7 +94,7 @@ export const notificationService = {
             message: `Licencia Próxima a Vencer: ${driverName}`,
             details: `La licencia del conductor ${driverName} vencerá en ${daysUntilExpiration} días.`,
             read: false,
-          },
+          }
         );
       }
       if (existingCriticalNotif) {
@@ -120,16 +120,16 @@ export const notificationService = {
     expirationDate: Date,
     isExpired: boolean,
     daysUntilExpiration: number,
-    existingNotifications: Notification[],
+    existingNotifications: Notification[]
   ) {
     const link = `/fleet/vehicles/${vehicleId}`;
-    const notificationIdentifier = `${link}-${documentType.replace(/\s+/g, "-")}`;
+    const notificationIdentifier = `${link}-${documentType.replace(/\s+/g, '-')}`;
 
     const existingWarningNotif = existingNotifications.find(
-      (n) => n.link === notificationIdentifier && n.type === "warning",
+      (n) => n.link === notificationIdentifier && n.type === 'warning'
     );
     const existingCriticalNotif = existingNotifications.find(
-      (n) => n.link === notificationIdentifier && n.type === "critical",
+      (n) => n.link === notificationIdentifier && n.type === 'critical'
     );
 
     let createdOrUpdatedNotification: Notification | null = null;
@@ -143,7 +143,7 @@ export const notificationService = {
       if (!existingCriticalNotif) {
         createdOrUpdatedNotification = await this.createNotification({
           userId: userId,
-          type: "critical",
+          type: 'critical',
           message,
           details,
           link: notificationIdentifier,
@@ -152,7 +152,7 @@ export const notificationService = {
       } else {
         createdOrUpdatedNotification = await this.updateNotification(
           existingCriticalNotif.id,
-          { message, details, read: false },
+          { message, details, read: false }
         );
       }
       if (existingWarningNotif) {
@@ -166,7 +166,7 @@ export const notificationService = {
       if (!existingWarningNotif) {
         createdOrUpdatedNotification = await this.createNotification({
           userId: userId,
-          type: "warning",
+          type: 'warning',
           message,
           details,
           link: notificationIdentifier,
@@ -175,7 +175,7 @@ export const notificationService = {
       } else {
         createdOrUpdatedNotification = await this.updateNotification(
           existingWarningNotif.id,
-          { message, details, read: false },
+          { message, details, read: false }
         );
       }
       if (existingCriticalNotif) {
@@ -183,6 +183,86 @@ export const notificationService = {
       }
     } else {
       // Si el documento no está vencido ni próximo a vencer, eliminar cualquier notificación existente para él
+      if (existingWarningNotif) {
+        notificationsToDelete.push(existingWarningNotif.id);
+      }
+      if (existingCriticalNotif) {
+        notificationsToDelete.push(existingCriticalNotif.id);
+      }
+    }
+    return { createdOrUpdatedNotification, notificationsToDelete };
+  },
+
+  async handleFuelCardNotification(
+    userId: string,
+    fuelCardId: number,
+    fuelCardNumber: string,
+    expirationDate: Date,
+    isExpired: boolean,
+    daysUntilExpiration: number,
+    existingNotifications: Notification[]
+  ) {
+    const link = `/fleet/fuelcards/${fuelCardId}`;
+    const existingWarningNotif = existingNotifications.find(
+      (n) => n.link === link && n.type === 'warning'
+    );
+    const existingCriticalNotif = existingNotifications.find(
+      (n) => n.link === link && n.type === 'critical'
+    );
+
+    let createdOrUpdatedNotification: Notification | null = null;
+    const notificationsToDelete: string[] = [];
+
+    if (isExpired) {
+      // Tarjeta de combustible vencida: Notificación crítica
+      if (!existingCriticalNotif) {
+        createdOrUpdatedNotification = await this.createNotification({
+          userId: userId,
+          type: 'critical',
+          message: `Tarjeta de Combustible Vencida: ${fuelCardNumber}`,
+          details: `La tarjeta de combustible número ${fuelCardNumber} ha vencido.`,
+          link: link,
+          read: false,
+        });
+      } else {
+        createdOrUpdatedNotification = await this.updateNotification(
+          existingCriticalNotif.id,
+          {
+            message: `Tarjeta de Combustible Vencida: ${fuelCardNumber}`,
+            details: `La tarjeta de combustible número ${fuelCardNumber} ha vencido.`,
+            read: false,
+          }
+        );
+      }
+      if (existingWarningNotif) {
+        notificationsToDelete.push(existingWarningNotif.id);
+      }
+    } else if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0) {
+      // Tarjeta de combustible próxima a vencer: Notificación de advertencia
+      if (!existingWarningNotif) {
+        createdOrUpdatedNotification = await this.createNotification({
+          userId: userId,
+          type: 'warning',
+          message: `Tarjeta de Combustible Próxima a Vencer: ${fuelCardNumber}`,
+          details: `La tarjeta de combustible número ${fuelCardNumber} vencerá en ${daysUntilExpiration} días.`,
+          link: link,
+          read: false,
+        });
+      } else {
+        createdOrUpdatedNotification = await this.updateNotification(
+          existingWarningNotif.id,
+          {
+            message: `Tarjeta de Combustible Próxima a Vencer: ${fuelCardNumber}`,
+            details: `La tarjeta de combustible número ${fuelCardNumber} vencerá en ${daysUntilExpiration} días.`,
+            read: false,
+          }
+        );
+      }
+      if (existingCriticalNotif) {
+        notificationsToDelete.push(existingCriticalNotif.id);
+      }
+    } else {
+      // Si la tarjeta no está vencida ni próxima a vencer, eliminar cualquier notificación existente para ella
       if (existingWarningNotif) {
         notificationsToDelete.push(existingWarningNotif.id);
       }
