@@ -63,17 +63,8 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         ...prev,
         estado: 'Inactivo', // Fuerza "Inactivo" si la fecha está vencida
       }));
-    } else if (selectedFecha > new Date()) {
-      setFormData((prev) => {
-        if (prev.estado === 'Inactivo') {
-          return {
-            ...prev,
-            estado: 'Activo', // Fuerza "Activo" si estaba "Inactivo" y la fecha es futura
-          };
-        }
-        return prev;
-      });
     }
+    // Se elimina la lógica que forzaba el estado a "Activo" si la fecha no estaba vencida y el estado era "Inactivo".
   }, [selectedFecha]);
 
   const validateField = useCallback((name: string, value: any): string => {
@@ -339,20 +330,19 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
                   ? [{ value: 'Inactivo', label: 'Inactivo' }]
                   : [
                       { value: 'Activo', label: 'Activo' },
+                      { value: 'Inactivo', label: 'Inactivo' },
                       { value: 'Vacaciones', label: 'Vacaciones' },
                     ]
               }
               value={
                 selectedFecha < new Date()
                   ? 'Inactivo'
-                  : formData.estado === 'Inactivo'
-                    ? 'Activo'
-                    : formData.estado || 'Activo'
+                  : formData.estado || 'Activo'
               }
               placeholder="Selecciona un estado"
-              onChange={(
-                e // Solo permite cambios si la fecha es futura
-              ) => handleChange(e as React.ChangeEvent<HTMLSelectElement>)}
+              onChange={(e) =>
+                handleChange(e as React.ChangeEvent<HTMLSelectElement>)
+              }
               name="estado"
             />
             {errors.estado && (
