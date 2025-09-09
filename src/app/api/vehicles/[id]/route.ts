@@ -79,6 +79,7 @@ export async function PUT(
       indice_consumo,
       driverIds,
       destino, // Nuevo campo
+      odometro, // Añadir el campo odometro
     } = body;
 
     // Validate required date fields
@@ -202,6 +203,7 @@ export async function PUT(
         capacidad_tanque,
         indice_consumo,
         destino, // Nuevo campo
+        odometro, // Añadir el campo odometro
         driver: {
           set: driverIds, // Usar 'set' para desvincular y vincular
         },
