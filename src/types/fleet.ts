@@ -118,6 +118,7 @@ export enum TipoCombustibleEnum2 {
   Diesel = 'Diesel',
   Gasolina_Especial = 'Gasolina Especial',
 }
+
 export type MonedaEnum = 'USD' | 'CUP' | 'MLC';
 
 export interface TipoCombustible {

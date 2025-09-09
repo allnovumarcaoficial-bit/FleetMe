@@ -7,6 +7,7 @@ import MultiSelect from '@/components/FormElements/MultiSelect';
 import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
+import { TipoCombustibleEnum2 } from '@/types/fleet'; // Importar el enum
 
 interface VehicleFormData extends Omit<Vehicle, 'listado_municipios'> {
   listado_municipios: string[];
@@ -804,7 +805,6 @@ const VehicleForm = ({
               placeholder="Introduce el odómetro"
               value={String(formData.odometro || 0)}
               handleChange={handleChange}
-              disabled={!!initialData}
             />
             {errors.odometro && (
               <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
@@ -944,11 +944,10 @@ const VehicleForm = ({
                 label="Tipo de Combustible"
                 name="tipo_combustible"
                 placeholder="Selecciona un tipo"
-                items={[
-                  { value: 'Gasolina', label: 'Gasolina' },
-                  { value: 'Diesel', label: 'Diesel' },
-                  { value: 'Gas', label: 'Gas' },
-                ]}
+                items={Object.values(TipoCombustibleEnum2).map((type) => ({
+                  value: type,
+                  label: type,
+                }))}
                 value={formData.tipo_combustible || ''}
                 onChange={(e) =>
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
