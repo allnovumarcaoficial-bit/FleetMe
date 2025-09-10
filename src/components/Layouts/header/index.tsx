@@ -1,13 +1,12 @@
-"use client";
+'use client';
 
-import { SearchIcon } from "@/assets/icons";
-import Image from "next/image";
-import Link from "next/link";
-import { useSidebarContext } from "../sidebar/sidebar-context";
-import { MenuIcon } from "./icons";
-import { Notification } from "./notification";
-import { ThemeToggleSwitch } from "./theme-toggle";
-import { UserInfo } from "./user-info";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useSidebarContext } from '../sidebar/sidebar-context';
+import { MenuIcon } from './icons';
+import { Notification } from './notification';
+import { ThemeToggleSwitch } from './theme-toggle';
+import { UserInfo } from './user-info';
 
 export function Header({ pageName }: { pageName: string }) {
   const { toggleSidebar, isMobile } = useSidebarContext();
@@ -23,9 +22,9 @@ export function Header({ pageName }: { pageName: string }) {
       </button>
 
       {isMobile && (
-        <Link href={"/"} className="ml-2 max-[430px]:hidden min-[375px]:ml-4">
+        <Link href={'/'} className="ml-2 max-[430px]:hidden min-[375px]:ml-4">
           <Image
-            src={"/images/logo/fleetLog.png"}
+            src={'/images/logo/fleetLog.png'}
             width={32}
             height={32}
             alt=""

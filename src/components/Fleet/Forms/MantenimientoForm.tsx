@@ -1,17 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Mantenimiento,
   MantenimientoTipo,
   MantenimientoEstado,
   Vehicle,
-} from "@/types/fleet";
-import InputGroup from "@/components/FormElements/InputGroup";
-import { Alert } from "@/components/ui-elements/alert";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { PlusIcon, MinusIcon } from "@/assets/icons"; // Assuming these icons exist or will be added
+} from '@/types/fleet';
+import InputGroup from '@/components/FormElements/InputGroup';
+import { Alert } from '@/components/ui-elements/alert';
+import { useRouter } from 'next/navigation';
+import { PlusIcon, MinusIcon } from '@/assets/icons'; // Assuming these icons exist or will be added
 
 interface Piece {
   id: number; // Unique ID for React list rendering
@@ -45,60 +44,60 @@ const MantenimientoForm = ({
           lista_de_piezas: initialData.lista_de_piezas
             ? (
                 JSON.parse(
-                  initialData.lista_de_piezas as unknown as string,
+                  initialData.lista_de_piezas as unknown as string
                 ) as Piece[]
               ).map((p: any, index: number) => ({ ...p, id: index }))
             : [
                 {
                   id: Date.now(),
-                  name: "",
+                  name: '',
                   cambio_de_pieza: false,
-                  numero_serie_anterior: "",
-                  numero_serie_nueva: "",
+                  numero_serie_anterior: '',
+                  numero_serie_nueva: '',
                 },
               ],
           cambio_de_pieza: initialData.cambio_de_pieza ?? false, // Initialize top-level cambio_de_pieza
-          estado: initialData.estado ?? "Pendiente", // Initialize estado
+          estado: initialData.estado ?? 'Pendiente', // Initialize estado
         }
       : {
           tipo: MantenimientoTipo.Correctivo,
           fecha: null,
           costo: 0,
-          descripcion: "",
+          descripcion: '',
           lista_de_piezas: [
             {
               id: Date.now(),
-              name: "",
+              name: '',
               cambio_de_pieza: false,
-              numero_serie_anterior: "",
-              numero_serie_nueva: "",
+              numero_serie_anterior: '',
+              numero_serie_nueva: '',
             },
           ], // Initialize with one empty piece
           cambio_de_pieza: false, // Default to false for new maintenance
-          estado: "Pendiente", // Default to Pendiente for new maintenance
+          estado: 'Pendiente', // Default to Pendiente for new maintenance
           vehicleId: selectedVehicleId || undefined,
-        },
+        }
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formStatus, setFormStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await fetch("/api/vehicles?limit=1000"); // Fetch all vehicles for selection
+        const res = await fetch('/api/vehicles?limit=1000'); // Fetch all vehicles for selection
         const data = await res.json();
         setVehicles(data.data || []);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching vehicles:", err);
+        console.error('Error fetching vehicles:', err);
         setFormStatus({
-          type: "error",
-          message: "Error al cargar la lista de vehículos.",
+          type: 'error',
+          message: 'Error al cargar la lista de vehículos.',
         });
         setLoading(false);
       }
@@ -114,16 +113,16 @@ const MantenimientoForm = ({
         lista_de_piezas: initialData.lista_de_piezas
           ? (
               JSON.parse(
-                initialData.lista_de_piezas as unknown as string,
+                initialData.lista_de_piezas as unknown as string
               ) as Piece[]
             ).map((p: any, index: number) => ({ ...p, id: index }))
           : [
               {
                 id: Date.now(),
-                name: "",
+                name: '',
                 cambio_de_pieza: false,
-                numero_serie_anterior: "",
-                numero_serie_nueva: "",
+                numero_serie_anterior: '',
+                numero_serie_nueva: '',
               },
             ],
       });
@@ -133,28 +132,28 @@ const MantenimientoForm = ({
   }, [initialData, selectedVehicleId]);
 
   const validateField = (name: string, value: any): string => {
-    let error = "";
+    let error = '';
     switch (name) {
-      case "tipo":
-        if (!value) error = "Debe seleccionar un tipo de mantenimiento.";
+      case 'tipo':
+        if (!value) error = 'Debe seleccionar un tipo de mantenimiento.';
         break;
-      case "fecha":
+      case 'fecha':
         if (!value || isNaN(new Date(value).getTime()))
-          error = "Fecha inválida.";
+          error = 'Fecha inválida.';
         break;
-      case "costo":
+      case 'costo':
         if (value === null || value === undefined || isNaN(parseFloat(value)))
-          error = "Costo inválido.";
-        if (parseFloat(value) < 0) error = "El costo no puede ser negativo.";
+          error = 'Costo inválido.';
+        if (parseFloat(value) < 0) error = 'El costo no puede ser negativo.';
         break;
-      case "descripcion":
-        if (!value) error = "La descripción es requerida.";
+      case 'descripcion':
+        if (!value) error = 'La descripción es requerida.';
         break;
-      case "vehicleId":
-        if (!value) error = "Debe seleccionar un vehículo.";
+      case 'vehicleId':
+        if (!value) error = 'Debe seleccionar un vehículo.';
         break;
-      case "estado":
-        if (!value) error = "Debe seleccionar un estado.";
+      case 'estado':
+        if (!value) error = 'Debe seleccionar un estado.';
         break;
     }
     return error;
@@ -162,20 +161,20 @@ const MantenimientoForm = ({
 
   const validatePieceField = (
     piece: Piece,
-    index: number,
+    index: number
   ): Record<string, string> => {
     const pieceErrors: Record<string, string> = {};
     if (!piece.name.trim()) {
-      pieceErrors[`pieceName-${index}`] = "El nombre de la pieza es requerido.";
+      pieceErrors[`pieceName-${index}`] = 'El nombre de la pieza es requerido.';
     }
     if (piece.cambio_de_pieza) {
       if (!piece.numero_serie_anterior?.trim()) {
         pieceErrors[`numero_serie_anterior-${index}`] =
-          "Número de serie anterior es requerido.";
+          'Número de serie anterior es requerido.';
       }
       if (!piece.numero_serie_nueva?.trim()) {
         pieceErrors[`numero_serie_nueva-${index}`] =
-          "Número de serie nueva es requerido.";
+          'Número de serie nueva es requerido.';
       }
     }
     return pieceErrors;
@@ -184,18 +183,18 @@ const MantenimientoForm = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    >
   ) => {
     const { name, value, type } = e.target;
     let newValue: any = value;
 
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       newValue = (e.target as HTMLInputElement).checked;
-    } else if (type === "date") {
+    } else if (type === 'date') {
       newValue = new Date(value);
-    } else if (name === "costo") {
+    } else if (name === 'costo') {
       newValue = parseFloat(value);
-    } else if (name === "vehicleId") {
+    } else if (name === 'vehicleId') {
       newValue = parseInt(value);
     }
 
@@ -206,11 +205,11 @@ const MantenimientoForm = ({
 
   const handlePieceChange = (
     index: number,
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
     const updatedPieces = [...(formData.lista_de_piezas as Piece[])];
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       updatedPieces[index] = {
         ...updatedPieces[index],
         [name]: (e.target as HTMLInputElement).checked,
@@ -226,7 +225,7 @@ const MantenimientoForm = ({
 
     const newListaDePiezas = updatedPieces;
     const anyPieceChanged = newListaDePiezas.some(
-      (piece) => piece.cambio_de_pieza,
+      (piece) => piece.cambio_de_pieza
     );
 
     setFormData((prev) => ({
@@ -247,10 +246,10 @@ const MantenimientoForm = ({
         ...(prev.lista_de_piezas as Piece[]),
         {
           id: Date.now(),
-          name: "",
+          name: '',
           cambio_de_pieza: false,
-          numero_serie_anterior: "",
-          numero_serie_nueva: "",
+          numero_serie_anterior: '',
+          numero_serie_nueva: '',
         },
       ],
     }));
@@ -260,7 +259,7 @@ const MantenimientoForm = ({
     setFormData((prev) => ({
       ...prev,
       lista_de_piezas: (prev.lista_de_piezas as Piece[]).filter(
-        (piece) => piece.id !== id,
+        (piece) => piece.id !== id
       ),
     }));
     // Also remove errors associated with this piece
@@ -279,7 +278,7 @@ const MantenimientoForm = ({
 
     // Validate main form fields
     for (const key in formData) {
-      if (key !== "lista_de_piezas") {
+      if (key !== 'lista_de_piezas') {
         // Exclude pieces for now
         const value = (formData as any)[key];
         const error = validateField(key, value);
@@ -295,7 +294,7 @@ const MantenimientoForm = ({
       !formData.lista_de_piezas ||
       (formData.lista_de_piezas as Piece[]).length === 0
     ) {
-      newErrors.lista_de_piezas = "Debe añadir al menos una pieza.";
+      newErrors.lista_de_piezas = 'Debe añadir al menos una pieza.';
       isValid = false;
     } else {
       (formData.lista_de_piezas as Piece[]).forEach((piece, index) => {
@@ -313,29 +312,29 @@ const MantenimientoForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormStatus({ type: "", message: "" });
+    setFormStatus({ type: '', message: '' });
 
     if (!validateForm()) {
       setFormStatus({
-        type: "error",
-        message: "Por favor, corrige los errores del formulario.",
+        type: 'error',
+        message: 'Por favor, corrige los errores del formulario.',
       });
       return;
     }
 
     setLoading(true);
     try {
-      const method = initialData ? "PUT" : "POST";
+      const method = initialData ? 'PUT' : 'POST';
       const url = initialData
         ? `/api/mantenimientos/${initialData.id}`
-        : "/api/mantenimientos";
+        : '/api/mantenimientos';
 
       const payload = {
         ...formData,
         fecha: formData.fecha?.toISOString(),
         // Map pieces to the format expected by the API (without the temporary 'id' field)
         lista_de_piezas: (formData.lista_de_piezas as Piece[]).map(
-          ({ id, ...rest }) => rest,
+          ({ id, ...rest }) => rest
         ),
         cambio_de_pieza: formData.cambio_de_pieza, // Include the top-level cambio_de_pieza
       };
@@ -343,7 +342,7 @@ const MantenimientoForm = ({
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       });
@@ -351,20 +350,20 @@ const MantenimientoForm = ({
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || "Error al guardar el mantenimiento.",
+          errorData.error || 'Error al guardar el mantenimiento.'
         );
       }
 
       setFormStatus({
-        type: "success",
-        message: `Mantenimiento ${initialData ? "actualizado" : "creado"} exitosamente.`,
+        type: 'success',
+        message: `Mantenimiento ${initialData ? 'actualizado' : 'creado'} exitosamente.`,
       });
       if (onSuccess) onSuccess();
-      router.push("/fleet/mantenimientos");
+      router.push('/fleet/mantenimientos');
     } catch (err: any) {
       setFormStatus({
-        type: "error",
-        message: err.message || "Ocurrió un error inesperado.",
+        type: 'error',
+        message: err.message || 'Ocurrió un error inesperado.',
       });
     } finally {
       setLoading(false);
@@ -378,8 +377,8 @@ const MantenimientoForm = ({
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {formStatus.type && (
         <Alert
-          variant={formStatus.type === "success" ? "success" : "error"}
-          title={formStatus.type === "success" ? "Éxito" : "Error"}
+          variant={formStatus.type === 'success' ? 'success' : 'error'}
+          title={formStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={formStatus.message}
         />
       )}
@@ -396,7 +395,7 @@ const MantenimientoForm = ({
             <select
               id="vehicleId"
               name="vehicleId"
-              value={formData.vehicleId || ""}
+              value={formData.vehicleId || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
               disabled={!!selectedVehicleId} // Disable if vehicle is pre-selected
@@ -425,7 +424,7 @@ const MantenimientoForm = ({
             <select
               id="tipo"
               name="tipo"
-              value={formData.tipo || ""}
+              value={formData.tipo || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
             >
@@ -453,7 +452,7 @@ const MantenimientoForm = ({
             <select
               id="estado"
               name="estado"
-              value={formData.estado || ""}
+              value={formData.estado || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
             >
@@ -476,7 +475,7 @@ const MantenimientoForm = ({
               type="date"
               placeholder="Selecciona la fecha"
               value={
-                formData.fecha ? formData.fecha.toISOString().split("T")[0] : ""
+                formData.fecha ? formData.fecha.toISOString().split('T')[0] : ''
               }
               handleChange={handleChange}
             />
@@ -491,7 +490,7 @@ const MantenimientoForm = ({
               name="costo"
               type="number"
               placeholder="Introduce el costo"
-              value={formData.costo?.toString() || ""}
+              value={formData.costo?.toString() || ''}
               handleChange={handleChange}
             />
             {errors.costo && (
@@ -505,7 +504,7 @@ const MantenimientoForm = ({
               name="descripcion"
               type="textarea"
               placeholder="Introduce la descripción del mantenimiento"
-              value={formData.descripcion || ""}
+              value={formData.descripcion || ''}
               handleChange={handleChange}
             />
             {errors.descripcion && (
@@ -541,7 +540,7 @@ const MantenimientoForm = ({
                   name="name"
                   type="text"
                   placeholder="Introduce el nombre de la pieza"
-                  value={piece.name || ""}
+                  value={piece.name || ''}
                   handleChange={(e) => handlePieceChange(index, e)}
                 />
                 {errors[`pieceName-${index}`] && (
@@ -574,7 +573,7 @@ const MantenimientoForm = ({
                         name="numero_serie_anterior"
                         type="text"
                         placeholder="Introduce el número de serie anterior"
-                        value={piece.numero_serie_anterior || ""}
+                        value={piece.numero_serie_anterior || ''}
                         handleChange={(e) => handlePieceChange(index, e)}
                       />
                       {errors[`numero_serie_anterior-${index}`] && (
@@ -589,7 +588,7 @@ const MantenimientoForm = ({
                         name="numero_serie_nueva"
                         type="text"
                         placeholder="Introduce el número de serie nueva"
-                        value={piece.numero_serie_nueva || ""}
+                        value={piece.numero_serie_nueva || ''}
                         handleChange={(e) => handlePieceChange(index, e)}
                       />
                       {errors[`numero_serie_nueva-${index}`] && (
@@ -631,10 +630,10 @@ const MantenimientoForm = ({
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50 lg:px-8 xl:px-10"
           >
             {loading
-              ? "Guardando..."
+              ? 'Guardando...'
               : initialData
-                ? "Actualizar Mantenimiento"
-                : "Crear Mantenimiento"}
+                ? 'Actualizar Mantenimiento'
+                : 'Crear Mantenimiento'}
           </button>
         </div>
       </form>

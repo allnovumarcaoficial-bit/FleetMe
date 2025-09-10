@@ -1,6 +1,5 @@
 import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
 import UsersTableNotAdmin from '@/components/Users/notAdminUser';
-import UsersTable from '@/components/Users/UsersTable';
 import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 

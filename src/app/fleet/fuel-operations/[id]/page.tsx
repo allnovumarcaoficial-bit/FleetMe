@@ -11,7 +11,6 @@ import {
   FuelDistribution,
 } from '@/types/fleet';
 import dayjs from 'dayjs';
-import Link from 'next/link';
 import { ShowcaseSection } from '@/components/Layouts/showcase-section';
 import DetailsButtons from '@/components/Fleet/PageElements/DetailsButtons';
 

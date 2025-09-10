@@ -1,8 +1,5 @@
-import Signin from "@/components/Auth/Signin";
-import { getServerSession } from "next-auth/next";
-import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth";
-import Image from "next/image";
+import Signin from '@/components/Auth/Signin';
+import Image from 'next/image';
 
 export default async function SignIn() {
   return (
@@ -13,7 +10,7 @@ export default async function SignIn() {
           <div className="mb-4 flex-col items-center justify-center">
             <Image
               className="mx-auto hidden items-center justify-center dark:block"
-              src={"/images/logo/fleetLog.png"}
+              src={'/images/logo/fleetLog.png'}
               alt="Logo"
               width={176}
               height={32}
@@ -37,14 +34,14 @@ export default async function SignIn() {
           <div className="custom-gradient-1 overflow-hidden rounded-2xl px-12.5 pt-12.5 dark:!bg-dark-2 dark:bg-none">
             <Image
               className="hidden dark:block"
-              src={"/images/logo/fleetLog.png"}
+              src={'/images/logo/fleetLog.png'}
               alt="Logo"
               width={176}
               height={32}
             />
             <Image
               className="dark:hidden"
-              src={"/images/logo/fleetLog.png"}
+              src={'/images/logo/fleetLog.png'}
               alt="Logo"
               width={176}
               height={32}
@@ -64,7 +61,7 @@ export default async function SignIn() {
 
             <div className="mt-31">
               <Image
-                src={"/images/grids/grid-02.svg"}
+                src={'/images/grids/grid-02.svg'}
                 alt="Logo"
                 width={405}
                 height={325}

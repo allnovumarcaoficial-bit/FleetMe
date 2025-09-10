@@ -10,8 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
-import { PreviewIcon } from '@/components/Tables/icons';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
@@ -20,8 +18,6 @@ import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
-import type { Dayjs } from 'dayjs';
-import { format } from 'date-fns';
 import { formatDate } from '@/lib/utils';
 
 const DieselTypeTable = () => {

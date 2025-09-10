@@ -1,19 +1,18 @@
-"use client";
-import { EmailIcon, EyeIcon, EyeOffIcon, PasswordIcon } from "@/assets/icons";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import InputGroup, { InputGroupPass } from "../FormElements/InputGroup";
+'use client';
+import { EmailIcon, EyeIcon, EyeOffIcon, PasswordIcon } from '@/assets/icons';
+import React, { useEffect, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import InputGroup, { InputGroupPass } from '../FormElements/InputGroup';
 
 export default function SigninWithPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const callbackUrl = searchParams.get('callbackUrl');
 
   const [data, setData] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,11 +27,11 @@ export default function SigninWithPassword() {
   useEffect(() => {
     // Verificar si el inicio de sesión fue exitoso
     const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get("error");
+    const error = urlParams.get('error');
 
     if (!error) {
       // Establecer el flag de sesión activa
-      sessionStorage.setItem("next-auth-session-active", "true");
+      sessionStorage.setItem('next-auth-session-active', 'true');
     }
   }, []);
 
@@ -41,7 +40,7 @@ export default function SigninWithPassword() {
     setLoading(true);
     setError(null);
 
-    const result = await signIn("credentials", {
+    const result = await signIn('credentials', {
       ...data,
       redirect: false, // No redirigir automáticamente, manejaremos la respuesta
     });
@@ -49,12 +48,12 @@ export default function SigninWithPassword() {
     setLoading(false);
 
     if (result?.ok) {
-      sessionStorage.setItem("next-auth-session-active", "true");
+      sessionStorage.setItem('next-auth-session-active', 'true');
       // Si el inicio de sesión es exitoso, redirigir a la URL de retorno o al dashboard
-      router.push("/");
+      router.push('/');
     } else {
       // Si hay un error, mostrarlo
-      setError(result?.error || "An unknown error occurred");
+      setError(result?.error || 'An unknown error occurred');
     }
   };
 
@@ -77,7 +76,7 @@ export default function SigninWithPassword() {
       />
 
       <InputGroupPass
-        type={isVible ? "text" : "password"}
+        type={isVible ? 'text' : 'password'}
         label="Contraseña"
         className="mb-5 [&_input]:py-[15px]"
         placeholder="Enter your password"
