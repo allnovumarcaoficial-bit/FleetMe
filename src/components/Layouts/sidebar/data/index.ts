@@ -5,14 +5,9 @@ export const NAV_DATA = [
     label: 'MENÚ PRINCIPAL',
     items: [
       {
-        title: 'Dashboard',
+        title: 'Inicio',
         icon: Icons.HomeIcon,
-        items: [
-          {
-            title: 'Reportes',
-            url: '/',
-          },
-        ],
+        url: '/',
       },
       {
         title: 'Calendario',

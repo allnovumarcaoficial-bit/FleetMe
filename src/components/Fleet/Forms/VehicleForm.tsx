@@ -225,11 +225,12 @@ const VehicleForm = ({
         'amperage',
         'voltage',
         'capacidad_tanque',
-        'indice_consumo',
         'odometro',
       ].includes(name)
     ) {
       newValue = value === '' ? null : parseInt(value, 10);
+    } else if (name === 'indice_consumo') {
+      newValue = value === '' ? null : parseFloat(value);
     }
 
     setFormData((prev) => ({ ...prev, [name]: newValue }));
