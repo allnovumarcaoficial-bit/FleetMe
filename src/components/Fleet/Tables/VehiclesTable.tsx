@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { Vehicle, VehicleStatus } from "@/types/fleet";
+import { useEffect, useState, useCallback } from 'react';
+import { Vehicle, VehicleStatus } from '@/types/fleet';
 import {
   Table,
   TableBody,
@@ -9,20 +9,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import { TrashIcon, PencilSquareIcon } from "@/assets/icons";
-import { PreviewIcon } from "@/components/Tables/icons";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import Pagination from "@/components/Tables/Pagination";
+} from '@/components/ui/table';
+import { cn } from '@/lib/utils';
+import { TrashIcon, PencilSquareIcon } from '@/assets/icons';
+import { PreviewIcon } from '@/components/Tables/icons';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
-} from "../PageElements/AdvancedTableFilter";
-import { Alert } from "@/components/ui-elements/alert";
-import type { Dayjs } from "dayjs";
-import { Button } from "antd";
+} from '../PageElements/AdvancedTableFilter';
+import { Alert } from '@/components/ui-elements/alert';
+import type { Dayjs } from 'dayjs';
+import { Button } from 'antd';
 
 const VehiclesTable = () => {
   const router = useRouter();
@@ -33,49 +33,49 @@ const VehiclesTable = () => {
   const [limit, setLimit] = useState(10);
   const [totalVehicles, setTotalVehicles] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [sortBy, setSortBy] = useState("id");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState('id');
+  const [sortOrder, setSortOrder] = useState('asc');
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({});
   const [actionStatus, setActionStatus] = useState<{
-    type: "success" | "error" | "";
+    type: 'success' | 'error' | '';
     message: string;
-  }>({ type: "", message: "" });
+  }>({ type: '', message: '' });
 
   const vehicleColumns: ColumnFilter[] = [
-    { key: "marca", title: "Marca", type: "text" },
-    { key: "modelo", title: "Modelo", type: "text" },
-    { key: "vin", title: "VIN", type: "text" },
-    { key: "matricula", title: "Matrícula", type: "text" },
+    { key: 'marca', title: 'Marca', type: 'text' },
+    { key: 'modelo', title: 'Modelo', type: 'text' },
+    { key: 'vin', title: 'VIN', type: 'text' },
+    { key: 'matricula', title: 'Matrícula', type: 'text' },
     {
-      key: "estado",
-      title: "Estado",
-      type: "select",
+      key: 'estado',
+      title: 'Estado',
+      type: 'select',
       options: [
-        { value: "Activo", label: "Activo" },
-        { value: "Inactivo", label: "Inactivo" },
-        { value: "En Mantenimiento", label: "En Mantenimiento" },
-        { value: "Baja", label: "Baja" },
+        { value: 'Activo', label: 'Activo' },
+        { value: 'Inactivo', label: 'Inactivo' },
+        { value: 'En Mantenimiento', label: 'En Mantenimiento' },
+        { value: 'Baja', label: 'Baja' },
       ],
     },
-    { key: "fecha_compra", title: "Fecha de Compra", type: "dateRange" },
+    { key: 'fecha_compra', title: 'Fecha de Compra', type: 'dateRange' },
     {
-      key: "fecha_vencimiento_licencia_operativa",
-      title: "Vencimiento Licencia Operativa",
-      type: "dateRange",
+      key: 'fecha_vencimiento_licencia_operativa',
+      title: 'Vencimiento Licencia Operativa',
+      type: 'dateRange',
     },
     {
-      key: "fecha_vencimiento_circulacion",
-      title: "Vencimiento Circulación",
-      type: "dateRange",
+      key: 'fecha_vencimiento_circulacion',
+      title: 'Vencimiento Circulación',
+      type: 'dateRange',
     },
     {
-      key: "fecha_vencimiento_somaton",
-      title: "Vencimiento Somatón",
-      type: "dateRange",
+      key: 'fecha_vencimiento_somaton',
+      title: 'Vencimiento Somatón',
+      type: 'dateRange',
     },
-    { key: "gps", title: "GPS", type: "boolean" },
-    { key: "tipo_vehiculo", title: "Tipo de Vehículo", type: "text" },
-    { key: "driver", title: "Conductor Asignado", type: "text" },
+    { key: 'gps', title: 'GPS', type: 'boolean' },
+    { key: 'tipo_vehiculo', title: 'Tipo de Vehículo', type: 'text' },
+    { key: 'driver', title: 'Conductor Asignado', type: 'text' },
   ];
 
   const fetchVehicles = useCallback(async () => {
@@ -90,64 +90,64 @@ const VehiclesTable = () => {
       });
 
       if (activeFilters.globalSearch) {
-        params.append("search", activeFilters.globalSearch);
+        params.append('search', activeFilters.globalSearch);
       }
 
       if (activeFilters.columnFilters) {
         for (const key in activeFilters.columnFilters) {
           const value = activeFilters.columnFilters[key];
-          if (value !== undefined && value !== null && value !== "") {
+          if (value !== undefined && value !== null && value !== '') {
             if (Array.isArray(value)) {
-              if (key === "fecha_compra" && value[0] && value[1]) {
+              if (key === 'fecha_compra' && value[0] && value[1]) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
-                params.append("fechaCompraDesde", startDate.toISOString());
-                params.append("fechaCompraHasta", endDate.toISOString());
+                params.append('fechaCompraDesde', startDate.toISOString());
+                params.append('fechaCompraHasta', endDate.toISOString());
               } else if (
-                key === "fecha_vencimiento_licencia_operativa" &&
+                key === 'fecha_vencimiento_licencia_operativa' &&
                 value[0] &&
                 value[1]
               ) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
                 params.append(
-                  "fechaVencimientoLicenciaOperativaDesde",
-                  startDate.toISOString(),
+                  'fechaVencimientoLicenciaOperativaDesde',
+                  startDate.toISOString()
                 );
                 params.append(
-                  "fechaVencimientoLicenciaOperativaHasta",
-                  endDate.toISOString(),
+                  'fechaVencimientoLicenciaOperativaHasta',
+                  endDate.toISOString()
                 );
               } else if (
-                key === "fecha_vencimiento_circulacion" &&
+                key === 'fecha_vencimiento_circulacion' &&
                 value[0] &&
                 value[1]
               ) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
                 params.append(
-                  "fechaVencimientoCirculacionDesde",
-                  startDate.toISOString(),
+                  'fechaVencimientoCirculacionDesde',
+                  startDate.toISOString()
                 );
                 params.append(
-                  "fechaVencimientoCirculacionHasta",
-                  endDate.toISOString(),
+                  'fechaVencimientoCirculacionHasta',
+                  endDate.toISOString()
                 );
               } else if (
-                key === "fecha_vencimiento_somaton" &&
+                key === 'fecha_vencimiento_somaton' &&
                 value[0] &&
                 value[1]
               ) {
                 const [startDate, endDate] = value as [Dayjs, Dayjs];
                 params.append(
-                  "fechaVencimientoSomatonDesde",
-                  startDate.toISOString(),
+                  'fechaVencimientoSomatonDesde',
+                  startDate.toISOString()
                 );
                 params.append(
-                  "fechaVencimientoSomatonHasta",
-                  endDate.toISOString(),
+                  'fechaVencimientoSomatonHasta',
+                  endDate.toISOString()
                 );
               } else if (value.length > 0) {
-                params.append(key, value.join(","));
+                params.append(key, value.join(','));
               }
-            } else if (typeof value === "boolean") {
+            } else if (typeof value === 'boolean') {
               params.append(key, value.toString());
             } else {
               params.append(key, value.toString());
@@ -182,35 +182,35 @@ const VehiclesTable = () => {
 
   const handleSort = (column: string) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(column);
-      setSortOrder("asc");
+      setSortOrder('asc');
     }
   };
 
   const handleDelete = async (id: number) => {
     if (
-      window.confirm("¿Estás seguro de que quieres eliminar este vehículo?")
+      window.confirm('¿Estás seguro de que quieres eliminar este vehículo?')
     ) {
-      setActionStatus({ type: "", message: "" });
+      setActionStatus({ type: '', message: '' });
       try {
         const response = await fetch(`/api/vehicles/${id}`, {
-          method: "DELETE",
+          method: 'DELETE',
         });
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "Error al eliminar el vehículo.");
+          throw new Error(errorData.error || 'Error al eliminar el vehículo.');
         }
         setActionStatus({
-          type: "success",
-          message: "Vehículo eliminado exitosamente.",
+          type: 'success',
+          message: 'Vehículo eliminado exitosamente.',
         });
         fetchVehicles(); // Re-fetch vehicles after deletion
       } catch (e: any) {
         setActionStatus({
-          type: "error",
-          message: e.message || "Ocurrió un error al eliminar el vehículo.",
+          type: 'error',
+          message: e.message || 'Ocurrió un error al eliminar el vehículo.',
         });
       }
     }
@@ -220,8 +220,8 @@ const VehiclesTable = () => {
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {actionStatus.type && (
         <Alert
-          variant={actionStatus.type === "success" ? "success" : "error"}
-          title={actionStatus.type === "success" ? "Éxito" : "Error"}
+          variant={actionStatus.type === 'success' ? 'success' : 'error'}
+          title={actionStatus.type === 'success' ? 'Éxito' : 'Error'}
           description={actionStatus.message}
         />
       )}
@@ -251,45 +251,45 @@ const VehiclesTable = () => {
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
                 <TableHead
                   className="min-w-[155px] cursor-pointer xl:pl-7.5"
-                  onClick={() => handleSort("marca")}
+                  onClick={() => handleSort('marca')}
                 >
-                  Marca{" "}
-                  {sortBy === "marca" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Marca{' '}
+                  {sortBy === 'marca' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("modelo")}
+                  onClick={() => handleSort('modelo')}
                 >
-                  Modelo{" "}
-                  {sortBy === "modelo" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Modelo{' '}
+                  {sortBy === 'modelo' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("vin")}
+                  onClick={() => handleSort('vin')}
                 >
-                  VIN {sortBy === "vin" && (sortOrder === "asc" ? "▲" : "▼")}
+                  VIN {sortBy === 'vin' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("matricula")}
+                  onClick={() => handleSort('matricula')}
                 >
-                  Matrícula{" "}
-                  {sortBy === "matricula" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Matrícula{' '}
+                  {sortBy === 'matricula' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("estado")}
+                  onClick={() => handleSort('estado')}
                 >
-                  Estado{" "}
-                  {sortBy === "estado" && (sortOrder === "asc" ? "▲" : "▼")}
+                  Estado{' '}
+                  {sortBy === 'estado' && (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() => handleSort("tipo_vehiculo")}
+                  onClick={() => handleSort('tipo_vehiculo')}
                 >
-                  Tipo{" "}
-                  {sortBy === "tipo_vehiculo" &&
-                    (sortOrder === "asc" ? "▲" : "▼")}
+                  Tipo{' '}
+                  {sortBy === 'tipo_vehiculo' &&
+                    (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead className="text-right xl:pr-7.5">Acciones</TableHead>
               </TableRow>
@@ -322,15 +322,15 @@ const VehiclesTable = () => {
                   <TableCell>
                     <div
                       className={cn(
-                        "max-w-fit rounded-full px-3.5 py-1 text-sm font-medium",
+                        'max-w-fit rounded-full px-3.5 py-1 text-sm font-medium',
                         {
-                          "bg-[#219653]/[0.08] text-[#219653]":
-                            vehicle.estado === "Activo",
-                          "bg-[#D34053]/[0.08] text-[#D34053]":
-                            vehicle.estado === "Inactivo",
-                          "bg-[#FFA70B]/[0.08] text-[#FFA70B]":
-                            vehicle.estado === "En Mantenimiento",
-                        },
+                          'bg-[#219653]/[0.08] text-[#219653]':
+                            vehicle.estado === 'Activo',
+                          'bg-[#D34053]/[0.08] text-[#D34053]':
+                            vehicle.estado === 'Inactivo',
+                          'bg-[#FFA70B]/[0.08] text-[#FFA70B]':
+                            vehicle.estado === 'En Mantenimiento',
+                        }
                       )}
                     >
                       {vehicle.estado}
@@ -355,7 +355,6 @@ const VehiclesTable = () => {
                         size="small"
                         ghost
                         className="border-none hover:bg-transparent"
-                        disabled={true ? vehicle.estado === "Inactivo" : false}
                       >
                         <Link
                           href={`/fleet/vehicles/${vehicle.id}/edit`}
