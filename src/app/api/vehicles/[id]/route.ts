@@ -82,95 +82,68 @@ export async function PUT(
       odometro, // Añadir el campo odometro
     } = body;
 
-    // Validate required date fields
-    if (!fecha_compra) {
+    if (
+      estado === 'Activo' &&
+      (!fecha_compra ||
+        !fecha_vencimiento_licencia_operativa ||
+        !fecha_vencimiento_circulacion ||
+        !fecha_vencimiento_somaton)
+    ) {
       return NextResponse.json(
-        { error: 'Fecha de compra es requerida.' },
-        { status: 400 }
-      );
-    }
-    if (!fecha_vencimiento_licencia_operativa) {
-      return NextResponse.json(
-        { error: 'Fecha de vencimiento de licencia operativa es requerida.' },
-        { status: 400 }
-      );
-    }
-    if (!fecha_vencimiento_circulacion) {
-      return NextResponse.json(
-        { error: 'Fecha de vencimiento de circulación es requerida.' },
-        { status: 400 }
-      );
-    }
-    if (!fecha_vencimiento_somaton) {
-      return NextResponse.json(
-        { error: 'Fecha de vencimiento de somatón es requerida.' },
+        {
+          error:
+            'No se puede activar un vehículo si falta alguna de las fechas requeridas.',
+        },
         { status: 400 }
       );
     }
 
-    // Convert date strings to Date objects
-    const parsedFechaCompra = new Date(fecha_compra);
-    const parsedFechaVencimientoLicenciaOperativa = new Date(
+    // Convert date strings to Date objects or null if empty
+    const parsedFechaCompra = fecha_compra ? new Date(fecha_compra) : null;
+    const parsedFechaVencimientoLicenciaOperativa =
       fecha_vencimiento_licencia_operativa
-    );
-    const parsedFechaVencimientoCirculacion = new Date(
-      fecha_vencimiento_circulacion
-    );
-    const parsedFechaVencimientoSomaton = new Date(fecha_vencimiento_somaton);
+        ? new Date(fecha_vencimiento_licencia_operativa)
+        : null;
+    const parsedFechaVencimientoCirculacion = fecha_vencimiento_circulacion
+      ? new Date(fecha_vencimiento_circulacion)
+      : null;
+    const parsedFechaVencimientoSomaton = fecha_vencimiento_somaton
+      ? new Date(fecha_vencimiento_somaton)
+      : null;
 
-    // Check for invalid dates after parsing
-    if (isNaN(parsedFechaCompra.getTime())) {
+    // Check for invalid dates after parsing, only if they are not null
+    if (parsedFechaCompra && isNaN(parsedFechaCompra.getTime())) {
       return NextResponse.json(
         { error: 'Fecha de compra inválida.' },
         { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoLicenciaOperativa.getTime())) {
+    if (
+      parsedFechaVencimientoLicenciaOperativa &&
+      isNaN(parsedFechaVencimientoLicenciaOperativa.getTime())
+    ) {
       return NextResponse.json(
         { error: 'Fecha de vencimiento de licencia operativa inválida.' },
         { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoCirculacion.getTime())) {
+    if (
+      parsedFechaVencimientoCirculacion &&
+      isNaN(parsedFechaVencimientoCirculacion.getTime())
+    ) {
       return NextResponse.json(
         { error: 'Fecha de vencimiento de circulación inválida.' },
         { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoSomaton.getTime())) {
+    if (
+      parsedFechaVencimientoSomaton &&
+      isNaN(parsedFechaVencimientoSomaton.getTime())
+    ) {
       return NextResponse.json(
         { error: 'Fecha de vencimiento de somatón inválida.' },
         { status: 400 }
       );
-    }
-
-    if (estado === 'Activo') {
-      const vehicle = await prisma.vehicle.findUnique({
-        where: { id },
-      });
-
-      if (vehicle) {
-        const now = new Date();
-        const isLicenciaOperativaExpired =
-          new Date(vehicle.fecha_vencimiento_licencia_operativa) < now;
-        const isCirculacionExpired =
-          new Date(vehicle.fecha_vencimiento_circulacion) < now;
-        const isSomatonExpired =
-          new Date(vehicle.fecha_vencimiento_somaton) < now;
-
-        if (
-          isLicenciaOperativaExpired ||
-          isCirculacionExpired ||
-          isSomatonExpired
-        ) {
-          return NextResponse.json(
-            {
-              error: 'No se puede activar un vehículo con documentos vencidos.',
-            },
-            { status: 400 }
-          );
-        }
-      }
     }
 
     const updatedVehicle = await prisma.vehicle.update({

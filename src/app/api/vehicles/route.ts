@@ -1,41 +1,41 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const sortBy = searchParams.get("sortBy") || "id";
-    const sortOrder = searchParams.get("sortOrder") || "asc"; // 'asc' or 'desc'
-    const search = searchParams.get("search") || "";
-    const marca = searchParams.get("marca") || "";
-    const modelo = searchParams.get("modelo") || "";
-    const vin = searchParams.get("vin") || "";
-    const matricula = searchParams.get("matricula") || "";
-    const estado = searchParams.get("estado") || "";
-    const fechaCompraDesde = searchParams.get("fechaCompraDesde");
-    const fechaCompraHasta = searchParams.get("fechaCompraHasta");
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const sortBy = searchParams.get('sortBy') || 'id';
+    const sortOrder = searchParams.get('sortOrder') || 'asc'; // 'asc' or 'desc'
+    const search = searchParams.get('search') || '';
+    const marca = searchParams.get('marca') || '';
+    const modelo = searchParams.get('modelo') || '';
+    const vin = searchParams.get('vin') || '';
+    const matricula = searchParams.get('matricula') || '';
+    const estado = searchParams.get('estado') || '';
+    const fechaCompraDesde = searchParams.get('fechaCompraDesde');
+    const fechaCompraHasta = searchParams.get('fechaCompraHasta');
     const fechaVencimientoLicenciaOperativaDesde = searchParams.get(
-      "fechaVencimientoLicenciaOperativaDesde",
+      'fechaVencimientoLicenciaOperativaDesde'
     );
     const fechaVencimientoLicenciaOperativaHasta = searchParams.get(
-      "fechaVencimientoLicenciaOperativaHasta",
+      'fechaVencimientoLicenciaOperativaHasta'
     );
     const fechaVencimientoCirculacionDesde = searchParams.get(
-      "fechaVencimientoCirculacionDesde",
+      'fechaVencimientoCirculacionDesde'
     );
     const fechaVencimientoCirculacionHasta = searchParams.get(
-      "fechaVencimientoCirculacionHasta",
+      'fechaVencimientoCirculacionHasta'
     );
     const fechaVencimientoSomatonDesde = searchParams.get(
-      "fechaVencimientoSomatonDesde",
+      'fechaVencimientoSomatonDesde'
     );
     const fechaVencimientoSomatonHasta = searchParams.get(
-      "fechaVencimientoSomatonHasta",
+      'fechaVencimientoSomatonHasta'
     );
-    const gps = searchParams.get("gps"); // 'true' or 'false' string
-    const tipo_vehiculo = searchParams.get("tipo_vehiculo") || "";
+    const gps = searchParams.get('gps'); // 'true' or 'false' string
+    const tipo_vehiculo = searchParams.get('tipo_vehiculo') || '';
 
     const skip = (page - 1) * limit;
 
@@ -96,7 +96,7 @@ export async function GET(request: Request) {
       };
     }
     if (gps !== null && gps !== undefined) {
-      where.gps = gps === "true";
+      where.gps = gps === 'true';
     }
     if (tipo_vehiculo) {
       where.tipo_vehiculo = { contains: tipo_vehiculo };
@@ -126,10 +126,10 @@ export async function GET(request: Request) {
       totalPages: Math.ceil(totalVehicles / limit),
     });
   } catch (error) {
-    console.error("Error fetching vehicles:", error);
+    console.error('Error fetching vehicles:', error);
     return NextResponse.json(
-      { error: "Failed to fetch vehicles" },
-      { status: 500 },
+      { error: 'Failed to fetch vehicles' },
+      { status: 500 }
     );
   }
 }
@@ -169,65 +169,61 @@ export async function POST(request: Request) {
       destino, // Nuevo campo
     } = body;
 
-    // Validate required date fields
-    if (!fecha_compra) {
-      return NextResponse.json(
-        { error: "Fecha de compra es requerida." },
-        { status: 400 },
-      );
-    }
-    if (!fecha_vencimiento_licencia_operativa) {
-      return NextResponse.json(
-        { error: "Fecha de vencimiento de licencia operativa es requerida." },
-        { status: 400 },
-      );
-    }
-    if (!fecha_vencimiento_circulacion) {
-      return NextResponse.json(
-        { error: "Fecha de vencimiento de circulación es requerida." },
-        { status: 400 },
-      );
-    }
-    if (!fecha_vencimiento_somaton) {
-      return NextResponse.json(
-        { error: "Fecha de vencimiento de somatón es requerida." },
-        { status: 400 },
-      );
+    let finalEstado = estado;
+    if (
+      !fecha_compra ||
+      !fecha_vencimiento_licencia_operativa ||
+      !fecha_vencimiento_circulacion ||
+      !fecha_vencimiento_somaton
+    ) {
+      finalEstado = 'Inactivo';
     }
 
-    // Convert date strings to Date objects
-    const parsedFechaCompra = new Date(fecha_compra);
-    const parsedFechaVencimientoLicenciaOperativa = new Date(
-      fecha_vencimiento_licencia_operativa,
-    );
-    const parsedFechaVencimientoCirculacion = new Date(
-      fecha_vencimiento_circulacion,
-    );
-    const parsedFechaVencimientoSomaton = new Date(fecha_vencimiento_somaton);
+    // Convert date strings to Date objects or null if empty
+    const parsedFechaCompra = fecha_compra ? new Date(fecha_compra) : null;
+    const parsedFechaVencimientoLicenciaOperativa =
+      fecha_vencimiento_licencia_operativa
+        ? new Date(fecha_vencimiento_licencia_operativa)
+        : null;
+    const parsedFechaVencimientoCirculacion = fecha_vencimiento_circulacion
+      ? new Date(fecha_vencimiento_circulacion)
+      : null;
+    const parsedFechaVencimientoSomaton = fecha_vencimiento_somaton
+      ? new Date(fecha_vencimiento_somaton)
+      : null;
 
-    // Check for invalid dates after parsing
-    if (isNaN(parsedFechaCompra.getTime())) {
+    // Check for invalid dates after parsing, only if they are not null
+    if (parsedFechaCompra && isNaN(parsedFechaCompra.getTime())) {
       return NextResponse.json(
-        { error: "Fecha de compra inválida." },
-        { status: 400 },
+        { error: 'Fecha de compra inválida.' },
+        { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoLicenciaOperativa.getTime())) {
+    if (
+      parsedFechaVencimientoLicenciaOperativa &&
+      isNaN(parsedFechaVencimientoLicenciaOperativa.getTime())
+    ) {
       return NextResponse.json(
-        { error: "Fecha de vencimiento de licencia operativa inválida." },
-        { status: 400 },
+        { error: 'Fecha de vencimiento de licencia operativa inválida.' },
+        { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoCirculacion.getTime())) {
+    if (
+      parsedFechaVencimientoCirculacion &&
+      isNaN(parsedFechaVencimientoCirculacion.getTime())
+    ) {
       return NextResponse.json(
-        { error: "Fecha de vencimiento de circulación inválida." },
-        { status: 400 },
+        { error: 'Fecha de vencimiento de circulación inválida.' },
+        { status: 400 }
       );
     }
-    if (isNaN(parsedFechaVencimientoSomaton.getTime())) {
+    if (
+      parsedFechaVencimientoSomaton &&
+      isNaN(parsedFechaVencimientoSomaton.getTime())
+    ) {
       return NextResponse.json(
-        { error: "Fecha de vencimiento de somatón inválida." },
-        { status: 400 },
+        { error: 'Fecha de vencimiento de somatón inválida.' },
+        { status: 400 }
       );
     }
 
@@ -242,7 +238,7 @@ export async function POST(request: Request) {
           parsedFechaVencimientoLicenciaOperativa,
         fecha_vencimiento_circulacion: parsedFechaVencimientoCirculacion,
         fecha_vencimiento_somaton: parsedFechaVencimientoSomaton,
-        estado,
+        estado: finalEstado,
         gps,
         listado_municipios,
         tipo_vehiculo,
@@ -267,30 +263,30 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newVehicle, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating vehicle:", error);
-    if (error.code === "P2002") {
+    console.error('Error creating vehicle:', error);
+    if (error.code === 'P2002') {
       return NextResponse.json(
-        { error: "VIN o Matrícula ya existen." },
-        { status: 409 },
+        { error: 'VIN o Matrícula ya existen.' },
+        { status: 409 }
       );
     }
     return NextResponse.json(
-      { error: "Failed to create vehicle", details: error.message },
-      { status: 500 },
+      { error: 'Failed to create vehicle', details: error.message },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(request: Request) {
   return NextResponse.json(
-    { message: "PUT not implemented yet" },
-    { status: 501 },
+    { message: 'PUT not implemented yet' },
+    { status: 501 }
   );
 }
 
 export async function DELETE(request: Request) {
   return NextResponse.json(
-    { message: "DELETE not implemented yet" },
-    { status: 501 },
+    { message: 'DELETE not implemented yet' },
+    { status: 501 }
   );
 }
