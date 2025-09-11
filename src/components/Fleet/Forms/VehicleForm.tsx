@@ -171,7 +171,7 @@ const VehicleForm = ({
       case 'fecha_vencimiento_licencia_operativa':
       case 'fecha_vencimiento_circulacion':
       case 'fecha_vencimiento_somaton':
-        if (!value || isNaN(new Date(value).getTime()))
+        if (value && isNaN(new Date(value).getTime()))
           error = 'Fecha inválida.';
         break;
       case 'listado_municipios':
@@ -272,18 +272,33 @@ const VehicleForm = ({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
+
+    // Custom validation for activating a vehicle
+    if (
+      formData.estado === 'Activo' &&
+      (!formData.fecha_compra ||
+        !formData.fecha_vencimiento_licencia_operativa ||
+        !formData.fecha_vencimiento_circulacion ||
+        !formData.fecha_vencimiento_somaton)
+    ) {
+      newErrors.estado =
+        'No se puede activar un vehículo si faltan fechas importantes.';
+      isValid = false;
+    }
+
     for (const key in formData) {
       const value = (formData as any)[key];
       const destiny = (formData as any)['destino'];
       if (key === 'listado_municipios' && destiny !== 'Reparto') {
-        return isValid;
-      } // Get value from formData
-      const error = validateField(key, value); // Pass value to validateField
+        continue; // Use continue to ensure all fields are validated
+      }
+      const error = validateField(key, value);
       if (error) {
         newErrors[key] = error;
         isValid = false;
       }
     }
+
     setErrors(newErrors);
     console.log('validateForm: newErrors', newErrors);
     return isValid;
