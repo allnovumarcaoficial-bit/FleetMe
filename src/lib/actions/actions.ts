@@ -549,8 +549,8 @@ export async function getEventsCalendar() {
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
         title: `Vencimiento de la circulación del vehículo ${item.matricula}`,
-        startDate: item.fecha_vencimiento_circulacion,
-        endDate: item.fecha_vencimiento_circulacion,
+        startDate: item.fecha_vencimiento_circulacion || new Date(),
+        endDate: item.fecha_vencimiento_circulacion || new Date(),
         color: '#e32f21',
       }))
     );
@@ -558,8 +558,8 @@ export async function getEventsCalendar() {
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
         title: `Vencimiento de la licencia operativa del vehículo ${item.matricula}`,
-        startDate: item.fecha_vencimiento_licencia_operativa,
-        endDate: item.fecha_vencimiento_licencia_operativa,
+        startDate: item.fecha_vencimiento_licencia_operativa || new Date(),
+        endDate: item.fecha_vencimiento_licencia_operativa || new Date(),
         color: '#e32f21',
       }))
     );
@@ -567,8 +567,8 @@ export async function getEventsCalendar() {
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
         title: `Vencimiento del somatón del vehículo ${item.matricula}`,
-        startDate: item.fecha_vencimiento_somaton,
-        endDate: item.fecha_vencimiento_somaton,
+        startDate: item.fecha_vencimiento_somaton || new Date(),
+        endDate: item.fecha_vencimiento_somaton || new Date(),
         color: '#e32f21',
       }))
     );

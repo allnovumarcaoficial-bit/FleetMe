@@ -80,12 +80,12 @@ model Vehicle {
   modelo                               String
   vin                                  String             @unique
   matricula                            String             @unique
-  fecha_compra                         DateTime
-  fecha_vencimiento_licencia_operativa DateTime
+  fecha_compra                         DateTime?
+  fecha_vencimiento_licencia_operativa DateTime?
   km_recorrido                         Float             @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
-  fecha_vencimiento_circulacion        DateTime
-  fecha_vencimiento_somaton            DateTime
+  fecha_vencimiento_circulacion        DateTime?
+  fecha_vencimiento_somaton            DateTime?
   estado                               String
   gps                                  Boolean
   listado_municipios                   String? // Stored as JSON string for SQLite
