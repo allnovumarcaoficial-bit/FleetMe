@@ -145,7 +145,7 @@ export async function PUT(
         { status: 400 }
       );
     }
-
+    console.log(parsedFechaCompra);
     const updatedVehicle = await prisma.vehicle.update({
       where: { id },
       data: {
@@ -153,7 +153,7 @@ export async function PUT(
         modelo,
         vin,
         matricula,
-        fecha_compra: parsedFechaCompra || '',
+        fecha_compra: parsedFechaCompra || null,
         fecha_vencimiento_licencia_operativa:
           parsedFechaVencimientoLicenciaOperativa || '',
         fecha_vencimiento_circulacion: parsedFechaVencimientoCirculacion || '',

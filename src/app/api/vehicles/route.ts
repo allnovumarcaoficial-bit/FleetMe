@@ -233,11 +233,12 @@ export async function POST(request: Request) {
         modelo,
         vin,
         matricula,
-        fecha_compra: parsedFechaCompra || '',
+        fecha_compra: parsedFechaCompra || null,
         fecha_vencimiento_licencia_operativa:
-          parsedFechaVencimientoLicenciaOperativa || '',
-        fecha_vencimiento_circulacion: parsedFechaVencimientoCirculacion || '',
-        fecha_vencimiento_somaton: parsedFechaVencimientoSomaton || '',
+          parsedFechaVencimientoLicenciaOperativa || null,
+        fecha_vencimiento_circulacion:
+          parsedFechaVencimientoCirculacion || null,
+        fecha_vencimiento_somaton: parsedFechaVencimientoSomaton || null,
         estado: finalEstado,
         gps,
         listado_municipios,

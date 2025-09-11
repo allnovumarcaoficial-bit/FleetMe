@@ -25,6 +25,7 @@ const VehicleForm = ({
   onCancel,
 }: VehicleFormProps) => {
   const router = useRouter();
+  const [isEstado, setEstado] = useState('Activo');
   const [formData, setFormData] = useState<Partial<VehicleFormData>>(() => {
     const defaults: Partial<VehicleFormData> = {
       marca: '',
@@ -122,7 +123,25 @@ const VehicleForm = ({
     };
     fetchDependencies();
   }, [initialData]);
-
+  useEffect(() => {
+    if (
+      !formData.fecha_compra ||
+      !formData.fecha_vencimiento_circulacion ||
+      !formData.fecha_vencimiento_licencia_operativa ||
+      !formData.fecha_vencimiento_somaton
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        estado: 'Inactivo',
+      }));
+    }
+    // Se elimina la lógica que forzaba el estado a "Activo" si la fecha no estaba vencida y el estado era "Inactivo".
+  }, [
+    formData.fecha_compra,
+    formData.fecha_vencimiento_circulacion,
+    formData.fecha_vencimiento_circulacion,
+    formData.fecha_vencimiento_somaton,
+  ]);
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
@@ -685,13 +704,25 @@ const VehicleForm = ({
           <div>
             <Select
               label="Estado"
-              items={[
-                { value: 'Activo', label: 'Activo' },
-                { value: 'Inactivo', label: 'Inactivo' },
-                { value: 'En Mantenimiento', label: 'En Mantenimiento' },
-                { value: 'Baja', label: 'Baja' },
-              ]}
-              value={formData.estado || ''} // Use value prop
+              items={
+                !formData.fecha_compra ||
+                !formData.fecha_vencimiento_circulacion ||
+                !formData.fecha_vencimiento_licencia_operativa ||
+                !formData.fecha_vencimiento_somaton
+                  ? [{ value: 'Inactivo', label: 'Inactivo' }]
+                  : [
+                      { value: 'Activo', label: 'Activo' },
+                      { value: 'Inactivo', label: 'Inactivo' },
+                    ]
+              }
+              value={
+                !formData.fecha_compra ||
+                !formData.fecha_vencimiento_circulacion ||
+                !formData.fecha_vencimiento_licencia_operativa ||
+                !formData.fecha_vencimiento_somaton
+                  ? 'Inactivo'
+                  : formData.estado || 'Activo'
+              }
               placeholder="Selecciona un estado"
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
