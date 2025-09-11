@@ -117,9 +117,9 @@ export const notificationService = {
     vehicleId: number,
     vehicleMatricula: string,
     documentType: string,
-    expirationDate: Date,
+    expirationDate: Date | null,
     isExpired: boolean,
-    daysUntilExpiration: number,
+    daysUntilExpiration: number | null,
     existingNotifications: Notification[]
   ) {
     const link = `/fleet/vehicles/${vehicleId}`;
@@ -158,7 +158,11 @@ export const notificationService = {
       if (existingWarningNotif) {
         notificationsToDelete.push(existingWarningNotif.id);
       }
-    } else if (daysUntilExpiration <= 30 && daysUntilExpiration >= 0) {
+    } else if (
+      daysUntilExpiration &&
+      daysUntilExpiration <= 30 &&
+      daysUntilExpiration >= 0
+    ) {
       // Documento próximo a vencer: Notificación de advertencia
       const message = `${documentType} Próximo a Vencer: ${vehicleMatricula}`;
       const details = `El documento '${documentType}' del vehículo con matrícula ${vehicleMatricula} vencerá en ${daysUntilExpiration} días.`;

@@ -1,8 +1,8 @@
-import prisma from "@/lib/prisma";
-import { differenceInDays, isPast } from "date-fns";
-import { notificationService } from "@/services/notification.service";
-import { Notification, NotificationChecker } from "@/types/notification";
-import { notificationManager } from "../notificationManager.service";
+import prisma from '@/lib/prisma';
+import { differenceInDays, isPast } from 'date-fns';
+import { notificationService } from '@/services/notification.service';
+import { Notification, NotificationChecker } from '@/types/notification';
+import { notificationManager } from '../notificationManager.service';
 
 class VehicleChecker implements NotificationChecker {
   async check(userId: string): Promise<Notification[]> {
@@ -14,8 +14,8 @@ class VehicleChecker implements NotificationChecker {
 
     const existingNotifications =
       await notificationService.getNotificationsByUserIdAndType(userId, [
-        "warning",
-        "critical",
+        'warning',
+        'critical',
       ]);
 
     const notificationsToCreateOrUpdate: Notification[] = [];
@@ -25,25 +25,24 @@ class VehicleChecker implements NotificationChecker {
     for (const vehicle of vehicles) {
       const documents = [
         {
-          type: "Licencia Operativa",
+          type: 'Licencia Operativa',
           date: vehicle.fecha_vencimiento_licencia_operativa,
         },
         {
-          type: "Circulación",
+          type: 'Circulación',
           date: vehicle.fecha_vencimiento_circulacion,
         },
-        { type: "Somatón", date: vehicle.fecha_vencimiento_somaton },
+        { type: 'Somatón', date: vehicle.fecha_vencimiento_somaton },
       ];
 
       let isAnyDocumentExpired = false;
 
       for (const doc of documents) {
-        const expirationDate = new Date(doc.date);
-        const daysUntilExpiration = differenceInDays(
-          expirationDate,
-          new Date(),
-        );
-        const isExpired = isPast(expirationDate);
+        const expirationDate = doc.date ? new Date(doc.date) : null;
+        const daysUntilExpiration = expirationDate
+          ? differenceInDays(expirationDate, new Date())
+          : null;
+        const isExpired = expirationDate ? isPast(expirationDate) : false;
 
         if (isExpired) {
           isAnyDocumentExpired = true;
@@ -55,10 +54,10 @@ class VehicleChecker implements NotificationChecker {
             vehicle.id,
             vehicle.matricula,
             doc.type,
-            expirationDate,
+            expirationDate || null,
             isExpired,
-            daysUntilExpiration,
-            existingNotifications,
+            daysUntilExpiration || null,
+            existingNotifications
           );
 
         if (createdOrUpdatedNotification) {
@@ -67,11 +66,11 @@ class VehicleChecker implements NotificationChecker {
         notificationsToDeleteIds.push(...notificationsToDelete);
       }
 
-      if (isAnyDocumentExpired && vehicle.estado !== "Inactivo") {
+      if (isAnyDocumentExpired && vehicle.estado !== 'Inactivo') {
         vehicleStateNeedsUpdate = true;
         await prisma.vehicle.update({
           where: { id: vehicle.id },
-          data: { estado: "Inactivo" },
+          data: { estado: 'Inactivo' },
         });
       }
     }
