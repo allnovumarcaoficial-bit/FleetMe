@@ -15,13 +15,14 @@ import { PreviewIcon } from '@/components/Tables/icons'; // Reusing existing ico
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
-import { cn, formatDate } from '@/lib/utils'; // Import cn for conditional styling
+import { cn } from '@/lib/utils'; // Import cn for conditional styling
 import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
 import type { Dayjs } from 'dayjs';
+import { formatDate } from 'date-fns';
 
 interface DriverTableProps {}
 
@@ -275,9 +276,8 @@ const DriverTable = ({}: DriverTableProps) => {
                     <p className="text-dark dark:text-white">
                       {driver.fecha_vencimiento_licencia
                         ? formatDate(
-                            new Date(
-                              driver.fecha_vencimiento_licencia
-                            ).toLocaleDateString()
+                            new Date(driver.fecha_vencimiento_licencia),
+                            'dd/MM/yyyy'
                           )
                         : 'N/A'}
                     </p>

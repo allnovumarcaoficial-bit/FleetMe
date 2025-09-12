@@ -18,7 +18,7 @@ import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from 'date-fns';
 
 const DieselTypeTable = () => {
   const router = useRouter();
@@ -259,7 +259,10 @@ const DieselTypeTable = () => {
                   <TableCell className="text-center">
                     <p className="text-center text-dark dark:text-white">
                       {tipo.fechaUpdate
-                        ? formatDate(new Date(tipo.fechaUpdate).toISOString())
+                        ? formatDate(
+                            new Date(tipo.fechaUpdate).toISOString(),
+                            'dd/MM/yyyy'
+                          )
                         : 'N/A'}
                     </p>
                   </TableCell>

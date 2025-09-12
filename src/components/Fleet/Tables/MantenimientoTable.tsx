@@ -21,7 +21,8 @@ import AdvancedTableFilter, {
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
 import type { Dayjs } from 'dayjs';
-import { cn, formatDate } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
+import { cn } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
+import { formatDate } from 'date-fns';
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -260,7 +261,8 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
                     <p className="text-dark dark:text-white">
                       {mantenimiento.fecha
                         ? formatDate(
-                            new Date(mantenimiento.fecha).toLocaleDateString()
+                            new Date(mantenimiento.fecha),
+                            'dd/MM/yyyy'
                           )
                         : 'N/A'}
                     </p>

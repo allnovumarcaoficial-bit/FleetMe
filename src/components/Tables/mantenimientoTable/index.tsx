@@ -6,12 +6,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { cn, formatDate, getDateByMonth } from '@/lib/utils';
+import { cn, getDateByMonth } from '@/lib/utils';
 import { PeriodPicker } from '@/components/period-picker';
 import {
   getKilometrosRecorridos,
   getMantenimientosTable,
 } from '@/lib/actions/actions';
+import { formatDate } from 'date-fns';
 
 export async function HistorialMantenimientoTable({
   className,
@@ -124,7 +125,7 @@ export async function HistorialMantenimientoTable({
                 className="border-b border-gray-100 last:border-0 dark:border-gray-800"
               >
                 <TableCell className="px-4 py-3 text-left font-medium text-gray-900 dark:text-white sm:px-6">
-                  {formatDate(mantenimiento.fecha.toISOString())}
+                  {formatDate(mantenimiento.fecha, 'dd/MM/yyyy')}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 sm:px-6">
                   {mantenimiento.vehicle?.matricula}

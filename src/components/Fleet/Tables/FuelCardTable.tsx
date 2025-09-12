@@ -21,7 +21,7 @@ import AdvancedTableFilter, {
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
 import type { Dayjs } from 'dayjs';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from 'date-fns';
 
 const FuelCardTable = () => {
   const router = useRouter();
@@ -291,9 +291,8 @@ const FuelCardTable = () => {
                     <p className="text-dark dark:text-white">
                       {fuelCard.fechaVencimiento
                         ? formatDate(
-                            new Date(
-                              fuelCard.fechaVencimiento
-                            ).toLocaleDateString()
+                            new Date(fuelCard.fechaVencimiento),
+                            'dd/MM/yyyy'
                           )
                         : 'N/A'}
                     </p>
