@@ -12,8 +12,12 @@ export const getTitle = (path: string): string => {
     '/fleet/mantenimientos/new': 'Crear Mantenimiento',
     '/fleet/services': 'Servicios',
     '/fleet/services/new': 'Crear Servicio',
+    '/fleet/desielType': 'Tipo de Combustible',
+    '/fleet/desielType/new': 'Crear Tipo de Combustible',
     '/fleet/fuel-cards': 'Tarjetas de Combustible',
     '/fleet/fuel-cards/new': 'Crear Tarjeta de Combustible',
+    '/fleet/reservorio': 'Reservorio',
+    '/fleet/reservorio/new': 'Crear Reservorio',
     '/fleet/fuel-operations': 'Operaciones de Combustible',
     '/fleet/fuel-operations/new': 'Crear Operación de Combustible',
   };
@@ -27,10 +31,26 @@ export const getTitle = (path: string): string => {
   const dynamicPathMap: [RegExp, string][] = [
     [/^\/fleet\/vehicles\/[^/]+$/, 'Detalles de Vehículo'],
     [/^\/fleet\/vehicles\/[^/]+\/edit$/, 'Editar Vehículo'],
-    [/^\/fleet\/drivers\/[^/]+$/, 'Detalles de Conductor'],
+    [/\/fleet\/drive^rs\/[^/]+$/, 'Detalles de Conductor'],
     [/^\/fleet\/drivers\/[^/]+\/edit$/, 'Editar Conductor'],
+    [/\/fleet\/mantenimientos\/[^/]+$/, 'Detalles del Mantenimiento'],
+    [/^\/fleet\/mantenimientos\/[^/]+\/edit$/, 'Editar Mantenimiento'],
     [/^\/fleet\/services\/[^/]+$/, 'Detalles de Servicio'],
     [/^\/fleet\/services\/[^/]+\/edit$/, 'Editar Servicio'],
+    [/^\/fleet\/desielType\/[^/]+$/, 'Detalles del Tipo de Combustible'],
+    [/^\/fleet\/desielType\/[^/]+\/edit$/, 'Editar Tipo de Combustible'],
+    [/^\/fleet\/fuel-cards\/[^/]+$/, 'Detalles de la Tarjeta de Combustible'],
+    [/^\/fleet\/fuel-cards\/[^/]+\/edit$/, 'Editar Tarjeta de Combustible'],
+    [/^\/fleet\/reservorio\/[^/]+$/, 'Detalles del Reservorio'],
+    [/^\/fleet\/reservorio\/[^/]+\/edit$/, 'Editar Reservorio'],
+    [
+      /^\/fleet\/fuel-operations\/[^/]+$/,
+      'Detalles de la Operación de Combustible',
+    ],
+    [
+      /^\/fleet\/fuel-operations\/[^/]+\/edit$/,
+      'Editar Operación de Combustible',
+    ],
     // Agrega más patrones según necesites
   ];
 
