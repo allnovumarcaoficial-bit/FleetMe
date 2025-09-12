@@ -1,8 +1,9 @@
 import { CloseIcon, PlusIcon, XIcon } from '@/assets/icons';
-import { formatDate } from '@/lib/utils';
+
 import { CalendarEvent } from '@/types/calendar';
 import React from 'react';
 import { Calendar } from '../Layouts/sidebar/icons';
+import { formatDate } from 'date-fns';
 
 interface DayDetailModalProps {
   isOpen: boolean;
@@ -25,10 +26,10 @@ export function DayDetailModal({
 
   const dayEvents = events.filter(
     (event) =>
-      formatDate(event.startDate.toISOString()) ===
-        formatDate(selectedDate.toISOString()) ||
-      formatDate(event.endDate.toISOString()) ===
-        formatDate(selectedDate.toISOString())
+      formatDate(event.startDate.toISOString(), 'dd/MM/yyyy') ===
+        formatDate(selectedDate.toISOString(), 'dd/MM/yyyy') ||
+      formatDate(event.endDate.toISOString(), 'dd/MM/yyyy') ===
+        formatDate(selectedDate.toISOString(), 'dd/MM/yyyy')
   );
 
   return (
@@ -39,7 +40,7 @@ export function DayDetailModal({
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white">
-                {formatDate(selectedDate.toISOString())}
+                {formatDate(selectedDate.toISOString(), 'dd/MM/yyyy')}
               </h2>
               <p className="mt-1 text-blue-100">
                 {dayEvents.length}{' '}

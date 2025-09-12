@@ -3,8 +3,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { de, id, tr } from 'date-fns/locale';
-import { endOfMonth, startOfMonth, subMonths } from 'date-fns';
-import { formatDate } from '../utils';
+import { endOfMonth, formatDate, startOfMonth, subMonths } from 'date-fns';
 import { CalendarEvent } from '@/types/calendar';
 export async function createDriver(id: number) {
   try {
@@ -309,7 +308,7 @@ export async function getKilometrosRecorridosChart(params: { fecha: Date }) {
       },
     });
     const result = getKilometros.map((item) => ({
-      x: formatDate(item.createdAt.toISOString()),
+      x: formatDate(item.createdAt, 'dd/MM/yyyy'),
       y: item.km_recorrido,
     }));
     return {
