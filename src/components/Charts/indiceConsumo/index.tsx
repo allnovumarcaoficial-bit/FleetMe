@@ -1,8 +1,9 @@
 import { PeriodPicker } from '@/components/period-picker';
 import { standardFormat } from '@/lib/format-number';
-import { cn, formatDate, getDateByMonth } from '@/lib/utils';
+import { cn, getDateByMonth } from '@/lib/utils';
 import { getIndiceConsumo } from '@/lib/actions/actions';
 import { IndiceConsumoChart } from './chart';
+import { formatDate } from 'date-fns';
 type PropsType = {
   timeFrame?: string;
   className?: string;
@@ -33,7 +34,10 @@ export async function IndiceConsumo({
   const data = await getIndiceConsumo(parseInt(vehicule_id || '0'), date);
   const promedioConsumo = data.data.map((item) => {
     return {
-      x: formatDate(item.fecha?.toISOString() || new Date().toISOString()),
+      x: formatDate(
+        item.fecha?.toISOString() || new Date().toISOString(),
+        'dd/MM/yyyy'
+      ),
       y: item.indiceConsumo,
     };
   });

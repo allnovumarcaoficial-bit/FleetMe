@@ -15,13 +15,14 @@ import { PreviewIcon } from '@/components/Tables/icons';
 import { useRouter } from 'next/navigation';
 import { Alert } from '@/components/ui-elements/alert';
 import Link from 'next/link';
-import { cn, formatDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import Pagination from '@/components/Tables/Pagination';
 import AdvancedTableFilter, {
   ColumnFilter,
   ActiveFilters,
 } from '../PageElements/AdvancedTableFilter';
 import type { Dayjs } from 'dayjs';
+import { formatDate } from 'date-fns';
 
 interface ServiceTableProps {
   // vehicleId?: number; // This prop will now be handled by AdvancedTableFilter
@@ -277,9 +278,7 @@ const ServiceTable = ({}: ServiceTableProps) => {
                   <TableCell>
                     <p className="text-dark dark:text-white">
                       {service.fecha
-                        ? formatDate(
-                            new Date(service.fecha).toLocaleDateString()
-                          )
+                        ? formatDate(new Date(service.fecha), 'dd/MM/yyyy')
                         : 'N/A'}
                     </p>
                   </TableCell>

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ShowcaseSection } from '@/components/Layouts/showcase-section';
 import DetailsButtons from '@/components/Fleet/PageElements/DetailsButtons';
 import { TipoCombustible, TipoCombustibleEnum2 } from '@/types/fleet';
-import { formatDate } from '@/lib/utils';
+import { formatDate } from 'date-fns';
 
 // Enums y tipos basados en el modelo Prisma
 interface FuelTypeDetailsPageProps {
@@ -154,7 +154,10 @@ const FuelTypeDetailsPage = ({ params }: FuelTypeDetailsPageProps) => {
             <p>
               <strong>Última Actualización de Precio:</strong>{' '}
               <span className="text-blue-600">
-                {formatDate(new Date(fuelType.fechaUpdate).toISOString())}
+                {formatDate(
+                  new Date(fuelType.fechaUpdate).toISOString(),
+                  'dd/MM/yyyy'
+                )}
               </span>
             </p>
           </div>

@@ -17,12 +17,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { compactFormat, standardFormat } from '@/lib/format-number';
-import { cn, formatDate, getDateByMonth, getMonthName } from '@/lib/utils';
+import { cn, getDateByMonth, getMonthName } from '@/lib/utils';
 import Image from 'next/image';
 import { getTopChannels } from '../fetch';
 import { PeriodPicker } from '@/components/period-picker';
 import { getChipFuel } from '@/lib/actions/actions';
 import { OperationTipo, TipoCombustible } from '@/types/fleet';
+import { formatDate } from 'date-fns';
 
 export async function ChipsCombustible({
   className,
@@ -90,7 +91,7 @@ export async function ChipsCombustible({
               key={chip.id}
             >
               <TableCell className="flex min-w-fit items-center gap-3">
-                <div className="">{formatDate(chip.fecha.toISOString())}</div>
+                <div className="">{formatDate(chip.fecha, 'dd/MM/yyyy')}</div>
               </TableCell>
 
               <TableCell>{chip.fecha.getTime()}</TableCell>
