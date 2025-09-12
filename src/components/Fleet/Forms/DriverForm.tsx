@@ -319,7 +319,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               htmlFor="carnet_peritage"
               className="text-dark dark:text-white"
             >
-              Tiene Carnet de Peritaje
+              Tiene Carnet Profesional
             </label>
           </div>
           <div>
