@@ -23,6 +23,8 @@ import AdvancedTableFilter, {
 import { Alert } from '@/components/ui-elements/alert';
 import type { Dayjs } from 'dayjs';
 import { Button } from 'antd';
+import { MenuDropDowndTable } from '@/components/Charts/chartDownload';
+import * as XLSX from 'xlsx';
 
 const VehiclesTable = () => {
   const router = useRouter();
@@ -215,7 +217,38 @@ const VehiclesTable = () => {
       }
     }
   };
+  const exportToExcel = () => {
+    // Crear un nuevo libro de trabajo
+    const wb = XLSX.utils.book_new();
 
+    // Preparar los datos en el formato correcto
+    const datosFormateados = vehicles.map((item) => ({
+      Marca: item.marca,
+      Modelo: item.modelo,
+      VIN: item.vin,
+      Matrícula: item.matricula,
+      'Tipo de Vehículo': item.tipo_vehiculo,
+      Estado: item.estado,
+    }));
+
+    // Crear una hoja de trabajo a partir de los datos
+    const ws = XLSX.utils.json_to_sheet(datosFormateados);
+
+    // Ajustar el ancho de las columnas para mejor visualización
+    const columnWidths = [
+      { wch: 25 }, // Nombre de Tipo de combustible
+      { wch: 10 }, // Precio
+      { wch: 20 }, // Última Actualización
+      { wch: 10 }, // Moneda
+    ];
+    ws['!cols'] = columnWidths;
+
+    // Añadir la hoja al libro
+    XLSX.utils.book_append_sheet(wb, ws, 'Conductores');
+
+    // Escribir el archivo y forzar la descarga
+    XLSX.writeFile(wb, 'Conductores.xlsx');
+  };
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
       {actionStatus.type && (
@@ -246,6 +279,9 @@ const VehiclesTable = () => {
         <p className="text-red-500">{error}</p>
       ) : (
         <>
+          <div className="mx-auto flex justify-end">
+            <MenuDropDowndTable exportToExcel={exportToExcel} />
+          </div>
           <Table>
             <TableHeader>
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">

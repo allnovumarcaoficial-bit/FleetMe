@@ -15,8 +15,7 @@ interface MenuDropDowndProps {
 }
 
 interface MenuDropDowndFileProps {
-  exportToJSON: () => void;
-  exportToCSV: () => void;
+  exportToExcel: () => void;
 }
 
 export function MenuDropDownd({
@@ -75,22 +74,36 @@ export function MenuDropDownd({
   );
 }
 
-// export function MenuDropDowndTable({ onDownloadJSON, onDownloadCSV }: MenuDropDowndFileProps) {
-//     const [position, setPosition] = React.useState("bottom")
+export function MenuDropDowndTable({ exportToExcel }: MenuDropDowndFileProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-//     return (
-//         <DropdownMenu>
-//             <DropdownMenuTrigger asChild>
-//                 <Button variant="ghost"><Icons.ellipsis /></Button>
-//             </DropdownMenuTrigger>
-//             <DropdownMenuContent className="w-56">
-//                 <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
-//                 <DropdownMenuSeparator />
-//                 <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-//                     <DropdownMenuRadioItem onClick={onDownloadJSON} value="descargarJSON">Descargar JSON</DropdownMenuRadioItem>
-//                     <DropdownMenuRadioItem onClick={onDownloadCSV} value="descargarCSV">Descargar CSV</DropdownMenuRadioItem>
-//                 </DropdownMenuRadioGroup>
-//             </DropdownMenuContent>
-//         </DropdownMenu>
-//     )
-// }
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        className="rounded-full p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800"
+        type="button"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="2" />
+          <circle cx="12" cy="5" r="2" />
+          <circle cx="12" cy="19" r="2" />
+        </svg>
+      </button>
+
+      {isMenuOpen && (
+        <div className="absolute right-0 top-full z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg dark:bg-gray-800 dark:text-white">
+          <button
+            onClick={() => {
+              exportToExcel();
+              setIsMenuOpen(false);
+            }}
+            className="w-full border-t border-gray-100 px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-500"
+          >
+            Exportar datos Excel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
