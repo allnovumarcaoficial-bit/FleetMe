@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useTheme } from 'next-themes';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Input,
   Button,
@@ -13,19 +14,19 @@ import {
   Row,
   Col,
   Spin,
-} from "antd";
+} from 'antd';
 import {
   FilterOutlined,
   SearchOutlined,
   ClearOutlined,
-} from "@ant-design/icons";
-import { useIsMobile } from "@/hooks/use-mobile";
-import type { MenuProps } from "antd"; // Keep moment for now for compatibility with existing data if any
-import type { Dayjs } from "dayjs";
+} from '@ant-design/icons';
+import { useIsMobile } from '@/hooks/use-mobile';
+import type { MenuProps } from 'antd'; // Keep moment for now for compatibility with existing data if any
+import type { Dayjs } from 'dayjs';
 
 const { RangePicker } = DatePicker;
 
-export type FilterType = "text" | "select" | "dateRange" | "boolean";
+export type FilterType = 'text' | 'select' | 'dateRange' | 'boolean';
 
 export interface ColumnFilter {
   key: string;
@@ -54,10 +55,11 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
   loading = false,
   applyFiltersAutomatically = true,
 }) => {
+  const { theme } = useTheme();
   const isMobile = useIsMobile();
-  const [globalSearchText, setGlobalSearchText] = useState<string>("");
+  const [globalSearchText, setGlobalSearchText] = useState<string>('');
   const [columnFilters, setColumnFilters] = useState<
-    ActiveFilters["columnFilters"]
+    ActiveFilters['columnFilters']
   >({});
   const [activeFilterCount, setActiveFilterCount] = useState<number>(0);
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
@@ -73,7 +75,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
       if (
         value !== undefined &&
         value !== null &&
-        value !== "" &&
+        value !== '' &&
         !(Array.isArray(value) && value.length === 0)
       ) {
         count++;
@@ -114,7 +116,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
   };
 
   const handleClearFilters = () => {
-    setGlobalSearchText("");
+    setGlobalSearchText('');
     setColumnFilters({});
     form.resetFields();
     if (applyFiltersAutomatically) {
@@ -126,7 +128,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
 
   const renderFilterInput = (column: ColumnFilter) => {
     switch (column.type) {
-      case "text":
+      case 'text':
         return (
           <Input
             placeholder={`Buscar por ${column.title}`}
@@ -136,7 +138,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
             value={columnFilters?.[column.key] as string | undefined}
           />
         );
-      case "select":
+      case 'select':
         return (
           <Select
             placeholder={`Seleccionar ${column.title}`}
@@ -146,7 +148,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
             allowClear
           />
         );
-      case "dateRange":
+      case 'dateRange':
         const dateRangeValue = columnFilters?.[column.key] as
           | [Dayjs, Dayjs]
           | undefined;
@@ -154,10 +156,10 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
           <RangePicker
             onChange={(dates) => handleColumnFilterChange(column.key, dates)}
             value={dateRangeValue}
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           />
         );
-      case "boolean":
+      case 'boolean':
         return (
           <Switch
             checkedChildren="Sí"
@@ -173,7 +175,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
     }
   };
 
-  const filterMenuItems: MenuProps["items"] = columns.map((column) => ({
+  const filterMenuItems: MenuProps['items'] = columns.map((column) => ({
     key: column.key,
     label: (
       <Form.Item
@@ -213,8 +215,8 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
       <Space
         style={{
           marginBottom: 16,
-          width: "100%",
-          justifyContent: "flex-start",
+          width: '100%',
+          justifyContent: 'flex-start',
         }}
       >
         <Input.Search
@@ -223,7 +225,7 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
           onSearch={handleGlobalSearch}
           onChange={(e) => setGlobalSearchText(e.target.value)}
           value={globalSearchText}
-          style={{ width: isMobile ? "100%" : 250 }}
+          style={{ width: isMobile ? '100%' : 250 }}
           prefix={<SearchOutlined />}
         />
 
@@ -238,22 +240,22 @@ const AdvancedTableFilter: React.FC<AdvancedTableFilterProps> = ({
           <Dropdown
             popupRender={() => (
               <div
+                className="bg-white dark:bg-dark-2"
                 style={{
-                  background: "#fff",
                   padding: 16,
                   borderRadius: 8,
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 }}
               >
                 {filterContent}
               </div>
             )}
-            trigger={["click"]}
+            trigger={['click']}
             placement="bottomLeft"
             arrow
           >
             <Button icon={<FilterOutlined />}>
-              Filtros por Columna{" "}
+              Filtros por Columna{' '}
               <Badge
                 count={activeFilterCount}
                 offset={[5, -5]}
