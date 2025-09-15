@@ -220,16 +220,6 @@ const ReservorioTable = () => {
                 </TableHead>
                 <TableHead
                   className="cursor-pointer"
-                  onClick={() =>
-                    handleSort('tipoDeCombustible.tipoCombustibleEnum')
-                  }
-                >
-                  Tipo de Combustible{' '}
-                  {sortBy === 'tipoDeCombustible.tipoCombustibleEnum' &&
-                    (sortOrder === 'asc' ? '▲' : '▼')}
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer"
                   onClick={() => handleSort('tipoCombustible.precio')}
                 >
                   Precio del Combustible{' '}
@@ -252,17 +242,17 @@ const ReservorioTable = () => {
                     </h5>
                   </TableCell>
                   <TableCell>
-                    <p className="text-dark dark:text-white">
+                    <p className="text-center text-dark dark:text-white">
                       {reservorio.capacidad_actual}
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-dark dark:text-white">
+                    <p className="text-center text-dark dark:text-white">
                       {reservorio.capacidad_total}
                     </p>
                   </TableCell>
                   <TableCell>
-                    <p className="text-dark dark:text-white">
+                    <p className="text-center text-dark dark:text-white">
                       {reservorio.tipoCombustible?.precio}
                     </p>
                   </TableCell>
