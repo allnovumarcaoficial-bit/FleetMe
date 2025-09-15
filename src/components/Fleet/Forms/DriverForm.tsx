@@ -89,8 +89,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         break;
 
       case 'phone':
-        if (!value) error = 'El teléfono es requerido.';
-        else if (!/^\+?\d{7,15}$/.test(value))
+        if (value && !/^\+?\d{7,15}$/.test(value))
           error = 'Número de teléfono inválido.';
         break;
       case 'address':
@@ -124,7 +123,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
     const fieldsToValidate: (keyof Driver)[] = [
       'address',
       'carnet',
-      'phone',
       'licencia',
       'estado',
       'fecha_vencimiento_licencia',
