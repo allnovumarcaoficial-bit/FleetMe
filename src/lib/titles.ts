@@ -4,6 +4,7 @@ export const getTitle = (path: string): string => {
   const staticPathMap: Record<string, string> = {
     '/': 'Inicio',
     '/calendar': 'Calendario',
+    '/gestionarusuarios': 'Gestionar Usuarios',
     '/fleet/vehicles': 'Vehículos',
     '/fleet/vehicles/new': 'Crear Vehículo',
     '/fleet/drivers': 'Conductores',

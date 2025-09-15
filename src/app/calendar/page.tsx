@@ -13,13 +13,7 @@ export default async function CalendarPage() {
 
   return (
     <>
-      <Breadcrumb
-        pageName="Calendar"
-        links={[
-          { href: '/', label: 'Home' },
-          { href: '/calendar', label: 'Calendar' },
-        ]}
-      />
+      <Breadcrumb pageName="Calendar" links={[{ href: '/', label: 'Home' }]} />
 
       <CalendarBox eventsData={eventsData} />
     </>
