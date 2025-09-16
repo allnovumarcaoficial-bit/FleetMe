@@ -23,6 +23,8 @@ import AdvancedTableFilter, {
 import type { Dayjs } from 'dayjs';
 import { cn } from '@/lib/utils'; // Asegúrate de que la ruta sea correcta según tu proyecto
 import { formatDate } from 'date-fns';
+import * as XLSX from 'xlsx';
+import { MenuDropDowndTable } from '@/components/Charts/chartDownload';
 
 interface MantenimientoTableProps {
   vehicleId?: number; // Optional prop to filter maintenances by vehicle
@@ -176,6 +178,38 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
       setLoading(false);
     }
   };
+  const exportToExcel = () => {
+    // Crear un nuevo libro de trabajo
+    const wb = XLSX.utils.book_new();
+
+    // Preparar los datos en el formato correcto
+    const datosFormateados = mantenimientos.map((item) => ({
+      'Tipo de Mantenimiento': item.tipo,
+      Fecha: new Date(item.fecha || '').toLocaleDateString('es-ES'),
+      Vehículo: item.vehicle?.modelo,
+      Estado: item.estado,
+      Costo: item.costo,
+      descripción: item.descripcion,
+    }));
+
+    // Crear una hoja de trabajo a partir de los datos
+    const ws = XLSX.utils.json_to_sheet(datosFormateados);
+
+    // Ajustar el ancho de las columnas para mejor visualización
+    const columnWidths = [
+      { wch: 25 }, // Nombre de Tipo de combustible
+      { wch: 10 }, // Precio
+      { wch: 20 }, // Última Actualización
+      { wch: 10 }, // Moneda
+    ];
+    ws['!cols'] = columnWidths;
+
+    // Añadir la hoja al libro
+    XLSX.utils.book_append_sheet(wb, ws, 'Conductores');
+
+    // Escribir el archivo y forzar la descarga
+    XLSX.writeFile(wb, 'Conductores.xlsx');
+  };
 
   return (
     <div className="rounded-[10px] border border-stroke bg-white p-4 shadow-1 dark:border-dark-3 dark:bg-gray-dark dark:shadow-card sm:p-7.5">
@@ -210,6 +244,9 @@ const MantenimientoTable = ({ vehicleId }: MantenimientoTableProps) => {
         <p className="text-red-500">{error}</p>
       ) : (
         <>
+          <div className="mx-auto flex justify-end">
+            <MenuDropDowndTable exportToExcel={exportToExcel} />
+          </div>
           <Table>
             <TableHeader>
               <TableRow className="border-none bg-[#F7F9FC] dark:bg-dark-2 [&>th]:py-4 [&>th]:text-base [&>th]:text-dark [&>th]:dark:text-white">
