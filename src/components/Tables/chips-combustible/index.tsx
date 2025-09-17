@@ -46,8 +46,10 @@ export async function ChipsCombustible({
     'Noviembre',
     'Diciembre',
   ];
+  console.log('timeframe', timeframe);
   const date = getDateByMonth(timeframe || '');
   const data = await getChipFuel(date);
+  console.log('data chips combustible', data);
   if (!Array.isArray(data)) {
     // Manejar el error en UI
     return <div>Error al cargar los vehículos</div>;
@@ -66,8 +68,8 @@ export async function ChipsCombustible({
         </h2>
         <PeriodPicker
           items={months}
-          defaultValue={months[new Date().getMonth()]}
-          sectionKey="chips-combustible"
+          defaultValue={months[new Date().getMonth()] || 'Septiembre'}
+          sectionKey="chips_combustible"
         />
       </div>
 
@@ -94,7 +96,13 @@ export async function ChipsCombustible({
                 <div className="">{formatDate(chip.fecha, 'dd/MM/yyyy')}</div>
               </TableCell>
 
-              <TableCell>{chip.fecha.getTime()}</TableCell>
+              <TableCell>
+                {chip.fecha.toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </TableCell>
 
               <TableCell className="!text-right text-green-light-1">
                 {chip.tipoOperacion}
@@ -102,9 +110,9 @@ export async function ChipsCombustible({
 
               <TableCell>{chip.tipoCombustible?.nombre || ''}</TableCell>
 
-              <TableCell>{chip.valorOperacionLitros}%</TableCell>
-              <TableCell>{chip.saldoInicio}%</TableCell>
-              <TableCell>{chip.saldoFinal}%</TableCell>
+              <TableCell>{chip.valorOperacionLitros?.toFixed(2)}L</TableCell>
+              <TableCell>{chip.saldoInicio?.toFixed(2)}$</TableCell>
+              <TableCell>{chip.saldoFinal?.toFixed(2)}$</TableCell>
             </TableRow>
           ))}
         </TableBody>

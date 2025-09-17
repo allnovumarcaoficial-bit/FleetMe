@@ -1,19 +1,19 @@
 import { PeriodPicker } from '@/components/period-picker';
 import { standardFormat } from '@/lib/format-number';
 import { cn, getDateByMonth } from '@/lib/utils';
-import { getIndiceConsumo } from '@/lib/actions/actions';
+import { getAllVehiculos, getIndiceConsumo } from '@/lib/actions/actions';
 import { IndiceConsumoChart } from './chart';
 import { formatDate } from 'date-fns';
 type PropsType = {
   timeFrame?: string;
   className?: string;
-  vehicule_id?: string;
+  vehiculo_id?: string;
 };
 
 export async function IndiceConsumo({
   timeFrame,
   className,
-  vehicule_id,
+  vehiculo_id,
 }: PropsType) {
   const months = [
     'Enero',
@@ -31,7 +31,7 @@ export async function IndiceConsumo({
   ];
 
   const date = getDateByMonth(timeFrame || months[new Date().getMonth()]);
-  const data = await getIndiceConsumo(parseInt(vehicule_id || '0'), date);
+  const data = await getIndiceConsumo(vehiculo_id || '', date);
   const promedioConsumo = data.data.map((item) => {
     return {
       x: formatDate(
@@ -41,7 +41,7 @@ export async function IndiceConsumo({
       y: item.indiceConsumo,
     };
   });
-  const autos = data.data.map((item) => item.auto);
+  const autos = (await getAllVehiculos()).map((vehiculo) => vehiculo.matricula);
 
   return (
     <div
@@ -57,7 +57,7 @@ export async function IndiceConsumo({
         <div className="flex flex-wrap justify-between gap-4">
           <PeriodPicker
             items={autos}
-            defaultValue={vehicule_id}
+            defaultValue={vehiculo_id}
             sectionKey="vehiculo_id"
             posibleTitle="Seleccione un vehículo"
           />

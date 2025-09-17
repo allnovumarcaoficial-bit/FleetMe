@@ -96,6 +96,7 @@ model Vehicle {
   cantidad_conductores                 Int?
   ciclo_mantenimiento_km               Int?
   odometro                             Int?
+  odometro_Actual                      Int?
   es_electrico                         Boolean?
   cantidad_baterias                    Int?
   tipo_bateria                         String?
@@ -103,6 +104,7 @@ model Vehicle {
   voltage                              Float?
   tipo_combustible                     String?
   capacidad_tanque                     Float?
+  capacidad_actual                     Float?
   indice_consumo                       Float?
   createdAt                            DateTime           @default(now())
   updatedAt                            DateTime           @updatedAt

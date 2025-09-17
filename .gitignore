@@ -53,3 +53,7 @@ prisma/dev.db
 
 # seed.js
 seed2.js
+
+# backup files
+backupDatos.json
+bd_backUPJson.js

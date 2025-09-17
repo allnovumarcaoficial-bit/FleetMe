@@ -57,6 +57,12 @@ export async function HistorialMantenimientoTable({
       }
     }
   }
+  data.map((item) =>
+    console.log(
+      'item',
+      item.lista_de_piezas.split(',').map((pieza) => pieza.trim())
+    )
+  );
 
   return (
     <div
@@ -146,17 +152,26 @@ export async function HistorialMantenimientoTable({
                   {mantenimiento.cambio_de_pieza ? 'Sí' : 'No'}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {mantenimiento.lista_de_piezas
-                    .split(',')
-                    .map((pieza, index) => (
-                      <div key={index}>{pieza.trim()}</div>
-                    ))}
+                  {JSON.parse(mantenimiento.lista_de_piezas).map(
+                    (pieza: any, index: any) => (
+                      <div key={index} className="pieza-item">
+                        <strong>Name:</strong> {pieza.name}
+                        <br />
+                        <strong>Serie Anterior:</strong>{' '}
+                        {pieza.numero_serie_anterior || 'N/A'}
+                        <br />
+                        <strong>Serie Nueva:</strong>{' '}
+                        {pieza.numero_serie_nueva || 'N/A'}
+                        <hr />
+                      </div>
+                    )
+                  )}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {mantenimiento.numero_serie_anterior}
+                  {mantenimiento.numero_serie_anterior || 'N/A'}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {mantenimiento.numero_serie_nueva}
+                  {mantenimiento.numero_serie_nueva || 'N/A'}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
                   {mantenimiento.tipo}

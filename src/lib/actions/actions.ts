@@ -5,6 +5,7 @@ import prisma from '@/lib/prisma';
 import { de, id, tr } from 'date-fns/locale';
 import { endOfMonth, formatDate, startOfMonth, subMonths } from 'date-fns';
 import { CalendarEvent } from '@/types/calendar';
+import { parse } from 'path';
 export async function createDriver(id: number) {
   try {
     if (isNaN(id)) {
@@ -223,6 +224,7 @@ export async function getChipFuel(fecha: Date) {
         fecha: true,
         tipoCombustible: true,
         tipoCombustible_id: true,
+        descripcion: true,
       },
     });
     return getchips;
@@ -607,14 +609,19 @@ export async function getEventsCalendar() {
   }
 }
 
-export async function getIndiceConsumo(vehicleId: number, fecha: Date) {
+export async function getIndiceConsumo(vehicleId: string, fecha: Date) {
   try {
     const result = [];
     const startMonth = startOfMonth(fecha);
     const endMonth = endOfMonth(fecha);
+    const vehicule = await prisma.vehicle.findFirst({
+      where: {
+        matricula: vehicleId,
+      },
+    });
     const operaciones = await prisma.fuelDistribution.findMany({
       where: {
-        vehicleId: vehicleId,
+        vehicleId: vehicule?.id,
         fuelOperation: {
           fecha: {
             gte: startMonth,
@@ -631,14 +638,18 @@ export async function getIndiceConsumo(vehicleId: number, fecha: Date) {
 
     for (let i = 1; i < operaciones.length; i++) {
       const kilometrosRecorridos = operaciones[i].odometro_Vehicle || 0;
-
+      const kilometroOperacionAnterior =
+        operaciones[i - 1].odometro_Vehicle || 0;
       const liters = operaciones[i - 1].liters || 0;
       if (kilometrosRecorridos > 0) {
-        const indiceConsumo = liters > 0 ? kilometrosRecorridos / liters : 0;
+        const indiceConsumo =
+          liters > 0
+            ? (kilometrosRecorridos - kilometroOperacionAnterior) / liters
+            : 0;
 
         result.push({
           fecha: operaciones[i].fuelOperation?.fecha,
-          indiceConsumo,
+          indiceConsumo: parseFloat(indiceConsumo.toFixed(2)),
           auto: operaciones[i].vehicle?.matricula || '',
         });
       }
@@ -655,5 +666,44 @@ export async function getIndiceConsumo(vehicleId: number, fecha: Date) {
   } catch (error) {
     console.error('Error fetching indice de consumo:', error);
     throw new Error('Error fetching indice de consumo');
+  }
+}
+
+export async function getAllVehiculos() {
+  try {
+    const vehiculos = await prisma.vehicle.findMany({
+      select: {
+        id: true,
+        matricula: true,
+        marca: true,
+        modelo: true,
+      },
+      orderBy: {
+        matricula: 'asc',
+      },
+    });
+    return vehiculos;
+  } catch (error) {
+    console.error('Error fetching vehiculos:', error);
+    return [];
+  }
+}
+
+export async function getAllDrivers() {
+  try {
+    const drivers = await prisma.driver.findMany({
+      select: {
+        id: true,
+        nombre: true,
+        licencia: true,
+      },
+      orderBy: {
+        nombre: 'asc',
+      },
+    });
+    return drivers;
+  } catch (error) {
+    console.error('Error fetching drivers:', error);
+    return [];
   }
 }

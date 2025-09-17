@@ -55,7 +55,7 @@ export default async function Home({ searchParams }: PropsType) {
           className="col-span-12 w-full xl:col-span-7"
           key={extractTimeFrame('indice_consumo')}
           timeFrame={extractTimeFrame('indice_consumo')?.split(':')[1]}
-          vehicule_id={extractTimeFrame('vehicule_id')?.split(':')[0]}
+          vehiculo_id={extractTimeFrame('vehiculo_id')?.split(':')[1]}
         />
 
         <div className="col-span-12 xl:col-span-12">
