@@ -40,6 +40,9 @@ export async function HistorialMantenimientoTable({
 
   const date = getDateByMonth(timeframe || months[new Date().getMonth()]);
   const data = await getMantenimientosTable(date);
+  const totalgastado = data.reduce((total, mantenimiento) => {
+    return total + mantenimiento.costo;
+  }, 0);
 
   if (!Array.isArray(data)) {
     return <div>Error al cargar los mantenimientos</div>;
@@ -57,12 +60,6 @@ export async function HistorialMantenimientoTable({
       }
     }
   }
-  data.map((item) =>
-    console.log(
-      'item',
-      item.lista_de_piezas.split(',').map((pieza) => pieza.trim())
-    )
-  );
 
   return (
     <div
@@ -84,6 +81,12 @@ export async function HistorialMantenimientoTable({
       </div>
 
       {/* Contenedor responsive con scroll horizontal */}
+      <div className="flex flex-1 flex-wrap">
+        <h1 className="text-xl">Total Gastado: </h1>
+        <p className="px-1 text-lg text-green-600 dark:text-green-400">
+          {totalgastado.toFixed(2)}
+        </p>
+      </div>
       <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
         <Table className="min-w-full">
           <TableHeader className="bg-gray-50 dark:bg-gray-800">

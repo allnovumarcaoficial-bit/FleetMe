@@ -68,7 +68,7 @@ export async function ChipsCombustible({
         </h2>
         <PeriodPicker
           items={months}
-          defaultValue={months[new Date().getMonth()] || 'Septiembre'}
+          defaultValue={months[new Date().getMonth()]}
           sectionKey="chips_combustible"
         />
       </div>
