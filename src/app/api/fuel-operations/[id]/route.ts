@@ -16,6 +16,11 @@ export async function GET(
             vehicle: true,
           },
         },
+        operationReservorio: {
+          include: {
+            reservorio: true,
+          },
+        },
       },
     });
 

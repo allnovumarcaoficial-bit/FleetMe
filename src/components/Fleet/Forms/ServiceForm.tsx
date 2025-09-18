@@ -62,13 +62,20 @@ const ServiceForm = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVehicles = async () => {
+    const fetchInitialData = async () => {
       try {
-        const res = await fetch('/api/vehicles');
-        const data = (await res.json()) as { data: Vehicle[] };
+        const [vehiclesRes, driversRes] = await Promise.all([
+          fetch('/api/vehicles'),
+          fetch('/api/drivers'),
+        ]);
+
+        const vehiclesData = (await vehiclesRes.json()) as { data: Vehicle[] };
+        const driversData = (await driversRes.json()) as { data: Driver[] };
+
         const activeVehicles =
-          data.data.filter((car) => car.estado === 'Activo') || [];
+          vehiclesData.data.filter((car) => car.estado === 'Activo') || [];
         setVehicles(activeVehicles);
+        setDrivers(driversData.data || []);
 
         // Si hay datos iniciales, carga el vehículo correspondiente
         if (initialData?.vehicleId) {
@@ -86,15 +93,17 @@ const ServiceForm = ({
           }
         }
 
-        setDrivers(activeVehicles.map((car) => car.driver || []).flat());
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching vehicles:', err);
-        setFormStatus({ type: 'error', message: 'Error al cargar vehículos.' });
+        console.error('Error fetching data:', err);
+        setFormStatus({
+          type: 'error',
+          message: 'Error al cargar vehículos o conductores.',
+        });
         setLoading(false);
       }
     };
-    fetchVehicles();
+    fetchInitialData();
   }, [initialData?.vehicleId]); // Agrega dependencia
 
   useEffect(() => {
@@ -131,23 +140,24 @@ const ServiceForm = ({
         case 'tipoServicio':
         case 'fecha':
         case 'odometroInicial':
+          if (value === null || value === undefined)
+            error = 'Este campo es requerido.';
+          break;
         case 'estado':
         case 'vehicleId':
           if (!value) error = 'Este campo es requerido.';
           break;
         case 'odometroFinal':
-          if (
-            formData.estado === ServicioEstado.Completado &&
-            (!value || value <= 0)
-          ) {
-            error =
-              'Odómetro final es requerido y debe ser mayor que cero cuando el estado es Terminado.';
-          } else if (
-            value &&
-            formData.odometroInicial &&
-            value < formData.odometroInicial
-          ) {
-            error = 'Odómetro final no puede ser menor que el inicial.';
+          if (formData.estado === ServicioEstado.Completado) {
+            if (!value || value <= 0) {
+              error =
+                'Odómetro final es requerido y debe ser mayor que cero cuando el estado es Terminado.';
+            } else if (
+              formData.odometroInicial &&
+              value < formData.odometroInicial
+            ) {
+              error = 'Odómetro final no puede ser menor que el inicial.';
+            }
           }
           break;
         case 'cantidadPedidos':
@@ -433,25 +443,21 @@ const ServiceForm = ({
               <option value="" disabled>
                 Selecciona un vehículo
               </option>
-              {vehicles
-                .filter(
-                  (vehicule) => vehicule.driver && vehicule.driver.length > 0
-                )
-                .map((vehicle) => (
-                  <option key={vehicle.id} value={vehicle.id}>
-                    {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
-                  </option>
-                ))}
+              {vehicles.map((vehicle) => (
+                <option key={vehicle.id} value={vehicle.id}>
+                  {vehicle.marca} {vehicle.modelo} ({vehicle.matricula})
+                </option>
+              ))}
             </select>
             {errors.vehicleId && (
               <p className="mt-1 text-sm text-red-500">{errors.vehicleId}</p>
             )}
           </div>
-          {formData.vehicle && formData.vehicle.driver ? (
+          {formData.vehicleId && (
             <div>
               <Select
                 label="Conductor"
-                items={formData.vehicle.driver.map((driver) => ({
+                items={drivers.map((driver) => ({
                   value: driver.id.toString(),
                   label: driver.nombre,
                 }))}
@@ -466,8 +472,6 @@ const ServiceForm = ({
                 <p className="mt-1 text-sm text-red-500">{errors.driver_id}</p>
               )}
             </div>
-          ) : (
-            <></>
           )}
 
           {formData.tipoServicio === ServicioTipo.EntregaDePedidos && (
