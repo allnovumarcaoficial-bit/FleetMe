@@ -37,7 +37,6 @@ model Notification {
   @@index([userId])
 }
 
-
 // Modelos requeridos por NextAuth
 model Account {
   id                String  @id @default(cuid())
@@ -82,7 +81,7 @@ model Vehicle {
   matricula                            String             @unique
   fecha_compra                         DateTime?
   fecha_vencimiento_licencia_operativa DateTime?
-  km_recorrido                         Float             @default(0) // Nuevo campo para el kilometraje recorrido
+  km_recorrido                         Float              @default(0) // Nuevo campo para el kilometraje recorrido
   photo_Car                            String?
   fecha_vencimiento_circulacion        DateTime?
   fecha_vencimiento_somaton            DateTime?
@@ -112,7 +111,6 @@ model Vehicle {
   fuelDistributions                    FuelDistribution[]
   destino                              DestinoVehiculo    @default(Administrativo)
 }
-
 
 model Driver {
   id                         Int        @id @default(autoincrement())
@@ -211,11 +209,11 @@ model FuelOperation {
   fuelCardId           Int?
   descripcion          String?
   ubicacion_cupet      String?
-  fuelCard             FuelCard?              @relation(fields: [fuelCardId], references: [id])
+  fuelCard             FuelCard?             @relation(fields: [fuelCardId], references: [id])
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   tipoCombustible_id   Int?
-  tipoCombustible      TipoCombustible?       @relation(fields: [tipoCombustible_id], references: [id])
+  tipoCombustible      TipoCombustible?      @relation(fields: [tipoCombustible_id], references: [id])
   operationReservorio  OperationReservorio[]
   fuelDistributions    FuelDistribution[]
 }
@@ -231,15 +229,15 @@ model FuelDistribution {
 }
 
 model TipoCombustible {
-  id                  Int                 @id @default(autoincrement())
-  nombre              String              @unique
-  precio              Float
-  fechaUpdate         DateTime            @default(now())
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
-  moneda              Moneda
+  id          Int      @id @default(autoincrement())
+  nombre      String   @unique
+  precio      Float
+  fechaUpdate DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  moneda      Moneda
 
-  reservorios         Reservorio[] // Opposite relation field for Reservorio
+  reservorios Reservorio[] // Opposite relation field for Reservorio
 
   FuelOperation FuelOperation[]
 }
