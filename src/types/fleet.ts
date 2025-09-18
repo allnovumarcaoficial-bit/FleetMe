@@ -186,6 +186,7 @@ export interface FuelOperation {
   saldoFinal: number;
   saldoFinalLitros: number;
   fuelCardId: number;
+  reservorioId?: string | null;
   descripcion?: string;
   ubicacion_cupet?: string;
   fuelCard: FuelCard;
@@ -194,6 +195,7 @@ export interface FuelOperation {
   operationReservorio: OperationReservorio[];
   fuelDistributions: FuelDistribution[];
   operationTipos: OperationTipo[];
+  reservorio?: Reservorio | null;
 }
 
 export interface FuelOperationForm2 {

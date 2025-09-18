@@ -28,7 +28,11 @@ import * as XLSX from 'xlsx';
 const FuelOperationsTable = () => {
   const router = useRouter();
   const [fuelOperations, setFuelOperations] = useState<
-    (FuelOperation & { fuelCard: FuelCard; vehicle: Vehicle | null })[]
+    (FuelOperation & {
+      fuelCard: FuelCard;
+      vehicle: Vehicle | null;
+      reservorio: { nombre: string } | null;
+    })[]
   >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +57,7 @@ const FuelOperationsTable = () => {
     { key: 'valorOperacionLitros', title: 'Valor Litros', type: 'text' },
     { key: 'saldoFinal', title: 'Saldo Final', type: 'text' },
     { key: 'saldoFinalLitros', title: 'Saldo Final Litros', type: 'text' },
-    { key: 'vehicle.matricula', title: 'Vehículo Destino', type: 'text' },
+    { key: 'vehicle.matricula', title: 'Destino', type: 'text' },
   ];
 
   const fetchFuelOperations = useCallback(async () => {
@@ -261,7 +265,7 @@ const FuelOperationsTable = () => {
                   className="cursor-pointer"
                   onClick={() => handleSort('vehicle.matricula')}
                 >
-                  Vehículo Destino{' '}
+                  Destino{' '}
                   {orderBy === 'vehicle.matricula' &&
                     (orderDirection === 'asc' ? '▲' : '▼')}
                 </TableHead>
@@ -317,7 +321,9 @@ const FuelOperationsTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.vehicle?.matricula || 'N/A'}
+                      {operation.reservorio?.nombre ||
+                        operation.vehicle?.matricula ||
+                        'N/A'}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">
@@ -329,13 +335,13 @@ const FuelOperationsTable = () => {
                         <span className="sr-only">Ver Operación</span>
                         <PreviewIcon />
                       </Link>
-                      <Link
+                      {/* <Link
                         href={`/fleet/fuel-operations/${operation.id}/edit`}
                         className="hover:text-primary"
                       >
                         <span className="sr-only">Editar Operación</span>
                         <PencilSquareIcon />
-                      </Link>
+                      </Link> */}
                       <button
                         onClick={() => handleDelete(operation.id)}
                         className="hover:text-primary"

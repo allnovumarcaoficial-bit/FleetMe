@@ -186,6 +186,16 @@ const FuelOperationForm = ({
   }, [fetchDependencies]);
 
   useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        fecha: initialData.fecha ? new Date(initialData.fecha) : new Date(),
+      });
+      setEsReservorio(!!initialData.reservorioId);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
     const calculateDerivedFields = async () => {
       // Si es operación con reservorio
       if (esReservorio && formData.reservorioId) {
@@ -253,7 +263,6 @@ const FuelOperationForm = ({
           valorOperacionLitros = 0; // Establecer a 0 para operaciones de carga con tarjeta
           calculatedSaldoFinalLitros = 0; // Establecer a 0 para operaciones de carga con tarjeta
         }
-
         setFormData((prev) => ({
           ...prev,
           saldoInicio: currentSaldoInicio,
@@ -369,7 +378,13 @@ const FuelOperationForm = ({
       }
       return error;
     },
-    [destinationVehicles, formData, esReservorio, currentReservoirCapacity]
+    [
+      destinationVehicles,
+      reservorioDestination,
+      formData,
+      esReservorio,
+      currentReservoirCapacity,
+    ]
   );
 
   // (Removed stray block that referenced undefined variable 'e')
@@ -939,7 +954,7 @@ const FuelOperationForm = ({
                       name={'ubicacion_cupet'}
                       type="text"
                       placeholder="Ubicación del Cupet"
-                      value={formData.ubicacion_cupet}
+                      value={formData.ubicacion_cupet || ''}
                       handleChange={handleChange}
                     />
                   </div>
@@ -1103,7 +1118,7 @@ const FuelOperationForm = ({
               name="descripcion"
               type="text"
               placeholder="Ingresa una descripción"
-              value={formData.descripcion}
+              value={formData.descripcion || ''}
               handleChange={handleChange}
             />
             {errors.descripcion && (
