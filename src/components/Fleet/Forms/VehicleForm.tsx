@@ -869,6 +869,7 @@ const VehicleForm = ({
               placeholder="Introduce el odómetro"
               value={String(formData.odometro || 0)}
               handleChange={handleChange}
+              disabled={!!initialData}
             />
             {errors.odometro && (
               <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
@@ -882,6 +883,7 @@ const VehicleForm = ({
               placeholder="Introduce el odómetro inicial"
               value={String(formData.odometro_inicial || 0)}
               handleChange={handleChange}
+              disabled={!!initialData}
             />
             {errors.odometro_inicial && (
               <p className="mt-1 text-sm text-red-500">
