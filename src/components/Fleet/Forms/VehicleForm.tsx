@@ -199,9 +199,12 @@ const VehicleForm = ({
         }
         break;
       case 'odometro':
-        if (value === null || value === undefined || isNaN(value)) {
-          error = 'El odómetro es requerido y debe ser un número.';
+        if (isNaN(value)) {
+          error = 'El odómetro debe ser un número.';
+        } else if (value < 0) {
+          error = 'El odómetro no puede ser negativo.';
         }
+        break;
       case 'cantidad_neumaticos':
       case 'cantidad_conductores':
       case 'ciclo_mantenimiento_km':
@@ -244,10 +247,11 @@ const VehicleForm = ({
         'amperage',
         'voltage',
         'capacidad_tanque',
-        'odometro',
       ].includes(name)
     ) {
       newValue = value === '' ? null : parseInt(value, 10);
+    } else if (name === 'odometro') {
+      newValue = value === '' ? 0 : parseInt(value, 10);
     } else if (name === 'indice_consumo') {
       newValue = value === '' ? null : parseFloat(value);
     }
@@ -852,6 +856,7 @@ const VehicleForm = ({
               placeholder="Introduce el odómetro"
               value={String(formData.odometro || 0)}
               handleChange={handleChange}
+              disabled={!!initialData}
             />
             {errors.odometro && (
               <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
@@ -878,7 +883,7 @@ const VehicleForm = ({
               formData.cantidad_conductores > 0 && (
                 <>
                   <MultiSelect
-                    label="Conductores Asignados"
+                    label="Responsable"
                     options={[
                       ...drivers
                         .filter(

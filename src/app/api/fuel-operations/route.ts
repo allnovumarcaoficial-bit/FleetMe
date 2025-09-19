@@ -97,13 +97,24 @@ export async function GET(request: Request) {
             vehicle: true,
           },
         },
+        operationReservorio: {
+          include: {
+            reservorio: true,
+          },
+        },
       },
     });
 
     const total = await prisma.fuelOperation.count({ where });
 
+    const formattedOperations = fuelOperations.map((op) => ({
+      ...op,
+      vehicle: op.fuelDistributions[0]?.vehicle || null,
+      reservorio: op.operationReservorio[0]?.reservorio || null,
+    }));
+
     return NextResponse.json({
-      data: fuelOperations,
+      data: formattedOperations,
       total,
       page,
       limit,
@@ -149,15 +160,20 @@ export async function POST(request: Request) {
         );
       }
 
-      const lastOperation = await prisma.fuelOperation.findFirst({
-        where: { fuelCardId },
-        orderBy: { fecha: 'desc' },
-      });
-      saldoInicio = lastOperation ? lastOperation.saldoFinal : fuelCard.saldo;
+      saldoInicio = fuelCard.saldo;
 
       if (tipoOperacion === 'Carga') {
         saldoFinal = (saldoInicio || 0) + valorOperacionDinero;
       } else if (tipoOperacion === 'Consumo') {
+        if (valorOperacionDinero > (saldoInicio || 0)) {
+          return NextResponse.json(
+            {
+              message:
+                'El valor de la operación no puede ser mayor al saldo de la tarjeta',
+            },
+            { status: 400 }
+          );
+        }
         saldoFinal = (saldoInicio || 0) - valorOperacionDinero;
       } else {
         return NextResponse.json(
@@ -169,6 +185,51 @@ export async function POST(request: Request) {
       // Si no hay fuelCardId, la operación es con reservorio, y los saldos de tarjeta no aplican.
       saldoInicio = undefined;
       saldoFinal = undefined;
+    }
+
+    if (tipoOperacion === 'Consumo') {
+      const totalLitrosVehicles = fuelDistributions
+        ? fuelDistributions.reduce(
+            (sum: number, dist: any) => sum + dist.liters,
+            0
+          )
+        : 0;
+      const totalLitrosReservorios = operationReservorio
+        ? operationReservorio.reduce(
+            (sum: number, opRes: any) => sum + opRes.litros,
+            0
+          )
+        : 0;
+      const totalLitrosDestinos = totalLitrosVehicles + totalLitrosReservorios;
+
+      if (Math.abs(totalLitrosDestinos - (valorOperacionLitros || 0)) > 0.01) {
+        return NextResponse.json(
+          {
+            message: `La suma de litros (${totalLitrosDestinos.toFixed(2)}) de los destinos debe ser igual al valor de la operación en litros (${(valorOperacionLitros || 0).toFixed(2)}).`,
+          },
+          { status: 400 }
+        );
+      }
+
+      if (fuelDistributions) {
+        for (const dist of fuelDistributions) {
+          const vehicle = await prisma.vehicle.findUnique({
+            where: { id: dist.vehicleId },
+          });
+          if (
+            vehicle &&
+            vehicle.capacidad_tanque !== null &&
+            dist.liters > vehicle.capacidad_tanque
+          ) {
+            return NextResponse.json(
+              {
+                message: `Los litros para el vehículo ${vehicle.matricula} exceden la capacidad de su tanque`,
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
     }
 
     const newFuelOperation = await prisma.fuelOperation.create({

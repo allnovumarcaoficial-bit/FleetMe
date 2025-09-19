@@ -346,6 +346,8 @@ const ServiceTable = ({}: ServiceTableProps) => {
                             service.estado === 'Completado',
                           'bg-[#FFA70B]/[0.08] text-[#FFA70B]':
                             service.estado === 'Pendiente',
+                          'bg-[#D34053]/[0.08] text-[#D34053]':
+                            service.estado === 'Cancelado',
                         }
                       )}
                     >

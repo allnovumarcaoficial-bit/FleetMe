@@ -9,6 +9,8 @@ import {
   FuelCard,
   Vehicle,
   FuelDistribution,
+  OperationReservorio,
+  Reservorio,
 } from '@/types/fleet';
 import dayjs from 'dayjs';
 import { ShowcaseSection } from '@/components/Layouts/showcase-section';
@@ -25,6 +27,9 @@ const ViewFuelOperationPage = ({
     | (FuelOperation & {
         fuelCard: FuelCard;
         fuelDistributions: (FuelDistribution & { vehicle: Vehicle })[];
+        operationReservorio: (OperationReservorio & {
+          reservorio: Reservorio;
+        })[];
       })
     | null
   >(null);
@@ -137,18 +142,27 @@ const ViewFuelOperationPage = ({
                 {fuelOperation.saldoFinalLitros?.toFixed(2) || 'N/A'}
               </p>
             </div>
-            {fuelOperation.tipoOperacion === 'Consumo' &&
-              fuelOperation.fuelDistributions &&
-              fuelOperation.fuelDistributions.length > 0 && (
+            {(fuelOperation.tipoOperacion === 'Consumo' ||
+              fuelOperation.tipoOperacion === 'Carga') &&
+              ((fuelOperation.fuelDistributions &&
+                fuelOperation.fuelDistributions.length > 0) ||
+                (fuelOperation.operationReservorio &&
+                  fuelOperation.operationReservorio.length > 0)) && (
                 <div className="mt-4">
                   <h4 className="mb-2 text-lg font-semibold text-dark dark:text-white">
-                    Vehículos Destino:
+                    Destino:
                   </h4>
                   <ul className="list-disc pl-5">
                     {fuelOperation.fuelDistributions.map((dist, index) => (
                       <li key={index} className="text-dark dark:text-white">
                         {dist.vehicle?.matricula || 'Vehículo Desconocido'} -{' '}
                         {dist.liters?.toFixed(2) || 'N/A'} Litros
+                      </li>
+                    ))}
+                    {fuelOperation.operationReservorio.map((op, index) => (
+                      <li key={index} className="text-dark dark:text-white">
+                        {op.reservorio?.nombre || 'Reservorio Desconocido'} -{' '}
+                        {(op as any).litros?.toFixed(2) || 'N/A'} Litros
                       </li>
                     ))}
                   </ul>
