@@ -16,9 +16,9 @@ export interface KilometrosRecorridosData {
   matricula: string;
   odometro: number | null;
   createdAt: Date;
-  km_recorrido: number;
-  gasto_mantenimientos: number;
-  liters: number;
+  KilometrosRecorridosData?: number | null;
+  gasto_mantenimientos?: number | null;
+  liters?: number | null;
 }
 
 export async function KilometrosRecorridosTable({
@@ -123,13 +123,13 @@ export async function KilometrosRecorridosTable({
                   {vh.odometro}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.km_recorrido.toFixed(2)}
+                  {vh.kilometrosRecorridos.toFixed(2)}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.gasto_mantenimientos.toFixed(2)}
+                  {vh.gasto_mantenimientos?.toFixed(2) || 0.0} $
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.liters.toFixed(2)}
+                  {vh.liters?.toFixed(2) || 0.0} L
                 </TableCell>
               </TableRow>
             ))}

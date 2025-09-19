@@ -251,41 +251,95 @@ export async function getKilometrosRecorridos(fecha: Date) {
   const startMonth = startOfMonth(fecha);
   const endMonth = endOfMonth(fecha);
   try {
-    const getKilometros = await prisma.vehicle.findMany({
+    const getKilometros = await prisma.servicio.findMany({
       where: {
-        updatedAt: {
+        fecha: {
           gte: startMonth,
           lte: endMonth,
         },
       },
       select: {
         id: true,
-        matricula: true,
-        createdAt: true,
-        km_recorrido: true,
-        odometro: true,
-        mantenimientos: true,
-        fuelDistributions: true,
+        fecha: true,
+        kilometrosRecorridos: true,
+        vehicle: {
+          select: {
+            id: true,
+            matricula: true,
+            odometro: true,
+            mantenimientos: {
+              where: {
+                fecha: {
+                  gte: startMonth,
+                  lte: endMonth,
+                },
+              },
+            },
+            fuelDistributions: true,
+          },
+        },
       },
       orderBy: {
-        km_recorrido: 'asc',
+        kilometrosRecorridos: 'asc',
       },
     });
     const kilometros = getKilometros.map((item) => ({
       id: item.id,
-      matricula: item.matricula,
-      createdAt: item.createdAt,
-      km_recorrido: item.km_recorrido,
-      odometro: item.odometro,
-      gasto_mantenimientos: item.mantenimientos.reduce(
+      matricula: item.vehicle?.matricula || 'Sin matrícula',
+      createdAt: item.fecha,
+      kilometrosRecorridos: item.kilometrosRecorridos || 0,
+      odometro: item.vehicle?.odometro || 0,
+      gasto_mantenimientos: item.vehicle?.mantenimientos.reduce(
         (acc, curr) => acc + (curr.costo || 0),
         0
       ),
-      liters: item.fuelDistributions.reduce(
+      liters: item.vehicle?.fuelDistributions.reduce(
         (acc, curr) => acc + (curr.liters || 0),
         0
       ),
     }));
+    const resultado = kilometros.reduce(
+      (acumulador, actual) => {
+        const matricula = actual.matricula;
+
+        if (!acumulador[matricula]) {
+          // Crear nuevo grupo manteniendo algunos campos del primer registro
+          acumulador[matricula] = {
+            matricula: matricula,
+            kilometrosRecorridos: 0,
+            odometro: Math.max(actual.odometro, 0), // Tomar el odómetro más alto
+            gasto_mantenimientos: 0,
+            liters: 0,
+            cantidadRegistros: 0,
+            primerRegistro: actual.createdAt,
+            ultimoRegistro: actual.createdAt,
+          };
+        }
+
+        // Sumar los valores numéricos
+        acumulador[matricula].kilometrosRecorridos +=
+          actual.kilometrosRecorridos || 0;
+        acumulador[matricula].gasto_mantenimientos +=
+          actual.gasto_mantenimientos || 0;
+        acumulador[matricula].liters += actual.liters || 0;
+        acumulador[matricula].cantidadRegistros += 1;
+
+        // Actualizar fechas
+        if (actual.createdAt < acumulador[matricula].primerRegistro) {
+          acumulador[matricula].primerRegistro = actual.createdAt;
+        }
+        if (actual.createdAt > acumulador[matricula].ultimoRegistro) {
+          acumulador[matricula].ultimoRegistro = actual.createdAt;
+        }
+
+        return acumulador;
+      },
+      {} as Record<string, any>
+    );
+
+    // Convertir a array
+    const resultadoArray = Object.values(resultado);
+    console.log('Resultado Array:', resultadoArray);
     return kilometros;
   } catch (error) {
     console.error('Error fetching kilometros recorridos:', error);
