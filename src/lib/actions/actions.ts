@@ -6,6 +6,7 @@ import { de, id, tr } from 'date-fns/locale';
 import { endOfMonth, formatDate, startOfMonth, subMonths } from 'date-fns';
 import { CalendarEvent } from '@/types/calendar';
 import { parse } from 'path';
+import { KilometrosRecorridosData } from '@/components/Tables/kilometros-recorridos';
 export async function createDriver(id: number) {
   try {
     if (isNaN(id)) {
@@ -303,44 +304,30 @@ export async function getKilometrosRecorridos(fecha: Date) {
         const matricula = actual.matricula;
 
         if (!acumulador[matricula]) {
-          // Crear nuevo grupo manteniendo algunos campos del primer registro
           acumulador[matricula] = {
+            id: actual.id,
+            createdAt: actual.createdAt,
             matricula: matricula,
             kilometrosRecorridos: 0,
-            odometro: Math.max(actual.odometro, 0), // Tomar el odómetro más alto
-            gasto_mantenimientos: 0,
-            liters: 0,
-            cantidadRegistros: 0,
-            primerRegistro: actual.createdAt,
-            ultimoRegistro: actual.createdAt,
+            odometro: Math.max(actual.odometro, 0),
+            gasto_mantenimientos: actual.gasto_mantenimientos,
+            liters: actual.liters,
           };
         }
 
-        // Sumar los valores numéricos
-        acumulador[matricula].kilometrosRecorridos +=
-          actual.kilometrosRecorridos || 0;
-        acumulador[matricula].gasto_mantenimientos +=
-          actual.gasto_mantenimientos || 0;
-        acumulador[matricula].liters += actual.liters || 0;
-        acumulador[matricula].cantidadRegistros += 1;
-
-        // Actualizar fechas
-        if (actual.createdAt < acumulador[matricula].primerRegistro) {
-          acumulador[matricula].primerRegistro = actual.createdAt;
-        }
-        if (actual.createdAt > acumulador[matricula].ultimoRegistro) {
-          acumulador[matricula].ultimoRegistro = actual.createdAt;
-        }
+        acumulador[matricula].kilometrosRecorridos =
+          (acumulador[matricula]?.kilometrosRecorridos || 0) +
+          (actual.kilometrosRecorridos || 0);
 
         return acumulador;
       },
-      {} as Record<string, any>
+      {} as Record<string, KilometrosRecorridosData>
     );
 
     // Convertir a array
     const resultadoArray = Object.values(resultado);
-    console.log('Resultado Array:', resultadoArray);
-    return kilometros;
+
+    return resultadoArray;
   } catch (error) {
     console.error('Error fetching kilometros recorridos:', error);
     return NextResponse.json(
@@ -519,7 +506,10 @@ export async function getMantenimientoTotal(fecha: Date) {
   }
 }
 
-export async function getGastoCombustible_Total(fecha: Date) {
+export async function getGastoCombustible_Total(
+  fecha: Date,
+  fuelCardId: string
+) {
   const startMonth = startOfMonth(fecha);
   const endMonth = endOfMonth(fecha);
   try {
@@ -529,6 +519,10 @@ export async function getGastoCombustible_Total(fecha: Date) {
           gte: startMonth,
           lte: endMonth,
         },
+        fuelCard: {
+          numeroDeTarjeta: fuelCardId,
+        },
+        tipoOperacion: 'Consumo',
       },
       _sum: {
         valorOperacionDinero: true,
@@ -541,15 +535,44 @@ export async function getGastoCombustible_Total(fecha: Date) {
   }
 }
 
-export async function getReporteGastos() {
+export async function getSaldoCombustible_Total(
+  fecha: Date,
+  fuelCardId: string
+) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const combustible = await prisma.fuelOperation.aggregate({
+      where: {
+        fecha: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+        fuelCard: {
+          numeroDeTarjeta: fuelCardId,
+        },
+        tipoOperacion: 'Carga',
+      },
+      _sum: {
+        saldoFinal: true,
+      },
+    });
+    return combustible._sum.saldoFinal || 0;
+  } catch (error) {
+    console.error('Error fetching reporte de combustible:', error);
+    throw new Error('Error fetching reporte de combustible');
+  }
+}
+
+export async function getReporteGastos({ fuelCardId }: { fuelCardId: string }) {
   try {
     const mantenimientosGastos = [];
     const combustibleGastos = [];
     for (let i = 0; i < 12; i++) {
       const fecha = new Date();
       fecha.setMonth(i);
-      const combustible = await getGastoCombustible_Total(fecha);
-      const mantenimiento = await getMantenimientoTotal(fecha);
+      const combustible = await getGastoCombustible_Total(fecha, fuelCardId);
+      const mantenimiento = await getSaldoCombustible_Total(fecha, fuelCardId);
       mantenimientosGastos.push(mantenimiento);
       combustibleGastos.push(combustible);
     }
@@ -768,6 +791,16 @@ export async function getAllDrivers() {
     return drivers;
   } catch (error) {
     console.error('Error fetching drivers:', error);
+    return [];
+  }
+}
+
+export async function getFuelCardData() {
+  try {
+    const fueldCard = await prisma.fuelCard.findMany();
+    return fueldCard;
+  } catch (error) {
+    console.error('Error fetching fuel card data:', error);
     return [];
   }
 }

@@ -16,8 +16,9 @@ export interface KilometrosRecorridosData {
   matricula: string;
   odometro: number | null;
   createdAt: Date;
-  KilometrosRecorridosData?: number | null;
+  kilometrosRecorridos?: number | null;
   gasto_mantenimientos?: number | null;
+  odometroInicial?: number | null;
   liters?: number | null;
 }
 
@@ -96,7 +97,10 @@ export async function KilometrosRecorridosTable({
                 Matrícula
               </TableHead>
               <TableHead className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300 sm:px-6">
-                Odómetro
+                Odómetro Inicial
+              </TableHead>
+              <TableHead className="px-4 py-3 text-center font-medium text-gray-700 dark:text-gray-300 sm:px-6">
+                Odómetro Actual
               </TableHead>
               <TableHead className="px-4 py-3 text-right font-medium text-gray-700 dark:text-gray-300 sm:px-6">
                 Kilómetros Recorridos
@@ -120,10 +124,13 @@ export async function KilometrosRecorridosTable({
                   {vh.matricula}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 sm:px-6">
+                  {vh.odometroInicial || 0}
+                </TableCell>
+                <TableCell className="px-4 py-3 text-center text-gray-700 dark:text-gray-300 sm:px-6">
                   {vh.odometro}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {vh.kilometrosRecorridos.toFixed(2)}
+                  {vh.kilometrosRecorridos?.toFixed(2) || 0.0} KM
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
                   {vh.gasto_mantenimientos?.toFixed(2) || 0.0} $

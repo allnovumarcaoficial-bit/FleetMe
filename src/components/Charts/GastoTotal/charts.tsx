@@ -67,7 +67,7 @@ export function GastoTotalChart({ data }: PropsType) {
 
     // Crear el contenido CSV
     const csvContent = [
-      ['Fecha', 'Mantenimiento', 'Combustible'], // Headers
+      ['Fecha', 'Carga', 'Consumo'], // Headers
       ...allDates.map((date) => {
         const mantenimientoValue =
           data.mantenimiento.find((item) => item.x === date)?.y || '';
@@ -80,7 +80,7 @@ export function GastoTotalChart({ data }: PropsType) {
       .join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    saveAs(blob, 'mantenimiento-combustible-data.csv');
+    saveAs(blob, `mantenimiento-combustible-data_${1}.csv`);
   };
 
   const options: ApexOptions = {
@@ -173,11 +173,11 @@ export function GastoTotalChart({ data }: PropsType) {
           options={options}
           series={[
             {
-              name: 'Combustible',
+              name: 'Consumo',
               data: data.combustible,
             },
             {
-              name: 'Mantenimiento',
+              name: 'Carga',
               data: data.mantenimiento,
             },
           ]}

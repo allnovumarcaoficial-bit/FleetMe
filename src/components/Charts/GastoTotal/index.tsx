@@ -3,6 +3,7 @@ import { cn, getDateByMonth } from '@/lib/utils';
 import { getWeeksProfitData } from '@/services/charts.services';
 import { GastoTotalChart } from './charts';
 import {
+  getFuelCardData,
   getGastoCombustible_Total,
   getMantenimientoTotal,
   getReporteGastos,
@@ -30,11 +31,10 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
     'Noviembre',
     'Diciembre',
   ];
-
-  const date = getDateByMonth(timeFrame || months[new Date().getMonth()]);
-  const { mantenimientosGastos, combustibleGastos } = await getReporteGastos();
-  const startYear = startOfYear(date.toISOString());
-  const endYear = endOfYear(date.toISOString());
+  const fuelCardId = timeFrame || '';
+  const { mantenimientosGastos, combustibleGastos } = await getReporteGastos({
+    fuelCardId,
+  });
   const mantenimientoData2 = mantenimientosGastos.map((item, index) => {
     return {
       y: item,
@@ -51,6 +51,9 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
     mantenimiento: mantenimientoData2,
     combustible: gastosCombustibleData,
   };
+  const fueldCard = (await getFuelCardData()).map(
+    (fueldCarde) => fueldCarde.numeroDeTarjeta
+  );
   return (
     <div
       className={cn(
@@ -63,7 +66,12 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
           Gastos en operaciones
         </h2>
 
-        <PeriodPicker defaultValue={timeFrame} sectionKey="payments_overview" />
+        <PeriodPicker
+          defaultValue={timeFrame}
+          items={fueldCard}
+          sectionKey="fuelCardID"
+          posibleTitle="Tarjeta"
+        />
       </div>
 
       <GastoTotalChart data={dataFormatted} />
@@ -77,7 +85,7 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
             )}
           </dt>
           <dd className="font-medium dark:text-dark-6">
-            Total gastado en mantenimientos
+            Total gastado carga de la tarjeta
           </dd>
         </div>
 
@@ -89,7 +97,7 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
             )}
           </dt>
           <dd className="font-medium dark:text-dark-6">
-            Total gastado en combustible
+            Total gastado en consumo de la tarjeta
           </dd>
         </div>
       </dl>
