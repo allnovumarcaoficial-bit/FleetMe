@@ -214,6 +214,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               placeholder="Introduce el nombre"
               value={formData.nombre || ''}
               handleChange={handleChange}
+              required
             />
             {errors.nombre && (
               <p className="mt-1 text-sm text-red-500">{errors.nombre}</p>
@@ -227,6 +228,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               placeholder="Introduce el Carnet de Identidad"
               value={formData.carnet || ''}
               handleChange={handleChange}
+              required
             />
             {errors.carnet && (
               <p className="mt-1 text-sm text-red-500">{errors.carnet}</p>
@@ -253,6 +255,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               placeholder="Introduzca su dirección"
               value={formData.address || ''}
               handleChange={handleChange}
+              required
             />
             {errors.address && (
               <p className="mt-1 text-sm text-red-500">{errors.address}</p>
@@ -279,6 +282,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               placeholder="Introduce la licencia"
               value={formData.licencia || ''}
               handleChange={handleChange}
+              required
             />
             {errors.licencia && (
               <p className="mt-1 text-sm text-red-500">{errors.licencia}</p>
@@ -298,6 +302,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
                   : ''
               }
               handleChange={handleChange}
+              required
             />
             {errors.fecha_vencimiento_licencia && (
               <p className="mt-1 text-sm text-red-500">
@@ -323,6 +328,7 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           <div>
             <Select
               label="Estado"
+              required
               items={
                 selectedFecha < new Date()
                   ? [{ value: 'Inactivo', label: 'Inactivo' }]

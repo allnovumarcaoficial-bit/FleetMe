@@ -594,6 +594,7 @@ const VehicleForm = ({
               placeholder="Introduce la marca"
               value={formData.marca || ''}
               handleChange={handleChange}
+              required
             />
             {errors.marca && (
               <p className="mt-1 text-sm text-red-500">{errors.marca}</p>
@@ -607,6 +608,7 @@ const VehicleForm = ({
               placeholder="Introduce el modelo"
               value={formData.modelo || ''}
               handleChange={handleChange}
+              required
             />
             {errors.modelo && (
               <p className="mt-1 text-sm text-red-500">{errors.modelo}</p>
@@ -620,6 +622,7 @@ const VehicleForm = ({
               placeholder="Introduce el VIN"
               value={formData.vin || ''}
               handleChange={handleChange}
+              required
             />
             {errors.vin && (
               <p className="mt-1 text-sm text-red-500">{errors.vin}</p>
@@ -633,6 +636,7 @@ const VehicleForm = ({
               placeholder="Introduce la matrícula"
               value={formData.matricula || ''}
               handleChange={handleChange}
+              required
             />
             {errors.matricula && (
               <p className="mt-1 text-sm text-red-500">{errors.matricula}</p>
@@ -650,6 +654,7 @@ const VehicleForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required={formData.estado === 'Activo'}
             />
             {errors.fecha_compra && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha_compra}</p>
@@ -669,6 +674,7 @@ const VehicleForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required={formData.estado === 'Activo'}
             />
             {errors.fecha_vencimiento_licencia_operativa && (
               <p className="mt-1 text-sm text-red-500">
@@ -690,6 +696,7 @@ const VehicleForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required={formData.estado === 'Activo'}
             />
             {errors.fecha_vencimiento_circulacion && (
               <p className="mt-1 text-sm text-red-500">
@@ -711,6 +718,7 @@ const VehicleForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required={formData.estado === 'Activo'}
             />
             {errors.fecha_vencimiento_somaton && (
               <p className="mt-1 text-sm text-red-500">
@@ -745,6 +753,7 @@ const VehicleForm = ({
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
               }
               name="estado"
+              required
             />
             {errors.estado && (
               <p className="mt-1 text-sm text-red-500">{errors.estado}</p>
@@ -776,6 +785,7 @@ const VehicleForm = ({
               onChange={(e) =>
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
               }
+              required
             />
             {errors.destino && (
               <p className="mt-1 text-sm text-red-500">{errors.destino}</p>
@@ -788,6 +798,7 @@ const VehicleForm = ({
                 options={municipalityOptions}
                 selectedValues={formData.listado_municipios || []}
                 onChange={handleMunicipiosChange}
+                required={showMunicipios}
               />
               {errors.listado_municipios && (
                 <p className="mt-1 text-sm text-red-500">
@@ -804,6 +815,7 @@ const VehicleForm = ({
               placeholder="Ej: Camión, Auto, Moto"
               value={formData.tipo_vehiculo || ''}
               handleChange={handleChange}
+              required
             />
             {errors.tipo_vehiculo && (
               <p className="mt-1 text-sm text-red-500">
@@ -870,6 +882,7 @@ const VehicleForm = ({
               value={String(formData.odometro || 0)}
               handleChange={handleChange}
               disabled={!!initialData}
+              required
             />
             {errors.odometro && (
               <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
@@ -884,6 +897,7 @@ const VehicleForm = ({
               value={String(formData.odometro_inicial || 0)}
               handleChange={handleChange}
               disabled={!!initialData}
+              required
             />
             {errors.odometro_inicial && (
               <p className="mt-1 text-sm text-red-500">
@@ -945,6 +959,7 @@ const VehicleForm = ({
                         formData.cantidad_conductores || 0
                       )
                     }
+                    required={(formData.cantidad_conductores || 0) > 0}
                   />
                   {errors.driverId && (
                     <p className="mt-1 text-sm text-red-500">
@@ -1033,6 +1048,7 @@ const VehicleForm = ({
                 onChange={(e) =>
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
                 }
+                required={!formData.es_electrico}
               />
             </div>
             <div>
@@ -1043,6 +1059,7 @@ const VehicleForm = ({
                 placeholder="Introduce la capacidad"
                 value={String(formData.capacidad_tanque || '')}
                 handleChange={handleChange}
+                required={!formData.es_electrico}
               />
             </div>
             <div>
@@ -1053,6 +1070,7 @@ const VehicleForm = ({
                 placeholder="Introduce el índice"
                 value={String(formData.indice_consumo || '')}
                 handleChange={handleChange}
+                required={!formData.es_electrico}
               />
             </div>
           </div>

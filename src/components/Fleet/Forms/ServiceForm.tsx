@@ -343,6 +343,7 @@ const ServiceForm = ({
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
               }
               name="tipoServicio"
+              required
             />
             {errors.tipoServicio && (
               <p className="mt-1 text-sm text-red-500">{errors.tipoServicio}</p>
@@ -358,6 +359,7 @@ const ServiceForm = ({
                 formData.fecha ? formData.fecha.toISOString().split('T')[0] : ''
               }
               handleChange={handleChange}
+              required
             />
             {errors.fecha && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
@@ -372,6 +374,7 @@ const ServiceForm = ({
               value={formData.vehicle?.odometro?.toString() || '0'}
               handleChange={handleChange}
               disabled={true}
+              required
             />
             {errors.odometroInicial && (
               <p className="mt-1 text-sm text-red-500">
@@ -390,6 +393,7 @@ const ServiceForm = ({
               disabled={
                 true ? formData.estado === ServicioEstado.Pendiente : false
               }
+              required={formData.estado === ServicioEstado.Completado}
             />
             {errors.odometroFinal && (
               <p className="mt-1 text-sm text-red-500">
@@ -421,6 +425,7 @@ const ServiceForm = ({
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
               }
               name="estado"
+              required
             />
             {errors.estado && (
               <p className="mt-1 text-sm text-red-500">{errors.estado}</p>
@@ -431,7 +436,7 @@ const ServiceForm = ({
               htmlFor="vehicleId"
               className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
             >
-              Vehículo
+              Vehículo <span className="text-red-500">*</span>
             </label>
             <select
               id="vehicleId"
@@ -439,6 +444,7 @@ const ServiceForm = ({
               value={formData.vehicleId || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
+              required
             >
               <option value="" disabled>
                 Selecciona un vehículo
@@ -467,6 +473,7 @@ const ServiceForm = ({
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
                 }
                 name="driver_id"
+                required={!!formData.vehicleId}
               />
               {errors.driver_id && (
                 <p className="mt-1 text-sm text-red-500">{errors.driver_id}</p>
@@ -483,6 +490,9 @@ const ServiceForm = ({
                 placeholder="Introduce la cantidad de pedidos"
                 value={formData.cantidadPedidos?.toString() || ''}
                 handleChange={handleChange}
+                required={
+                  formData.tipoServicio === ServicioTipo.EntregaDePedidos
+                }
               />
               {errors.cantidadPedidos && (
                 <p className="mt-1 text-sm text-red-500">
@@ -502,6 +512,7 @@ const ServiceForm = ({
                   placeholder="Introduce el origen"
                   value={formData.origen || ''}
                   handleChange={handleChange}
+                  required={formData.tipoServicio === ServicioTipo.Logistico}
                 />
                 {errors.origen && (
                   <p className="mt-1 text-sm text-red-500">{errors.origen}</p>
@@ -515,6 +526,7 @@ const ServiceForm = ({
                   placeholder="Introduce el destino"
                   value={formData.destino || ''}
                   handleChange={handleChange}
+                  required={formData.tipoServicio === ServicioTipo.Logistico}
                 />
                 {errors.destino && (
                   <p className="mt-1 text-sm text-red-500">{errors.destino}</p>
@@ -532,6 +544,7 @@ const ServiceForm = ({
                 placeholder="Introduce la descripción"
                 value={formData.descripcion || ''}
                 handleChange={handleChange}
+                required={formData.tipoServicio === ServicioTipo.Administrativo}
               />
               {errors.descripcion && (
                 <p className="mt-1 text-sm text-red-500">

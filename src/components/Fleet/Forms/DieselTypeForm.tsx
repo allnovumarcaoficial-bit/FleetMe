@@ -200,6 +200,7 @@ const DieselTypeForm = ({
               placeholder="Introduce el nombre del tipo de combustible"
               value={formData.nombre || ''}
               handleChange={handleChange}
+              required
             />
             {errors.nombre && (
               <p className="mt-1 text-sm text-red-500">{errors.nombre}</p>
@@ -213,6 +214,7 @@ const DieselTypeForm = ({
               placeholder="Introduzca el precio del combustible"
               value={formData.precio?.toString() || ''}
               handleChange={handleChange}
+              required
             />
             {errors.precio && (
               <p className="mt-1 text-sm text-red-500">{errors.precio}</p>
@@ -229,6 +231,7 @@ const DieselTypeForm = ({
                 : ''
             }
             handleChange={handleChange}
+            required
           />
           {errors.fechaUpdate && (
             <p className="mt-1 text-sm text-red-500">{errors.fechaUpdate}</p>
@@ -237,6 +240,7 @@ const DieselTypeForm = ({
             <div>
               <Select
                 label="Moneda"
+                required
                 items={Object.values(MonedaEnum) // Solo llaves strings
                   .map((moneda) => ({
                     value: moneda,

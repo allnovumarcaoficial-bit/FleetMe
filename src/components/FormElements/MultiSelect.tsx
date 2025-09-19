@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useRef, useState } from "react";
+'use client';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Option {
   value: string;
@@ -13,6 +13,7 @@ interface MultiSelectProps {
   selectedValues: string[];
   onChange: (values: string[]) => void;
   label: string;
+  required?: boolean;
 }
 
 const MultiSelect: React.FC<MultiSelectProps> = ({
@@ -20,6 +21,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   selectedValues,
   onChange,
   label,
+  required,
 }) => {
   const [internalOptions, setInternalOptions] = useState<Option[]>([]);
   const [show, setShow] = useState(false);
@@ -77,14 +79,15 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
         return;
       setShow(false);
     };
-    document.addEventListener("click", clickHandler);
-    return () => document.removeEventListener("click", clickHandler);
+    document.addEventListener('click', clickHandler);
+    return () => document.removeEventListener('click', clickHandler);
   });
 
   return (
     <div className="relative z-50">
       <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
         {label}
+        {required && <span className="text-red-500">*</span>}
       </label>
       <div>
         <div className="flex flex-col items-center">
@@ -134,7 +137,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                     {selectedValues.length === 0 && (
                       <div className="flex-1">
                         <input
-                          placeholder="Select an option"
+                          placeholder="Selecciona una opción"
                           className="h-full w-full appearance-none bg-transparent p-1 px-2 text-dark-5 outline-none dark:text-dark-6"
                           readOnly
                           value=""
@@ -170,7 +173,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
               <div className="w-full px-4">
                 <div
                   className={`absolute left-0 top-full z-40 w-full overflow-y-auto rounded bg-white shadow-1 dark:bg-dark-2 dark:shadow-card ${
-                    isOpen() ? "max-h-[160px]" : "hidden" // Set max-height for 4 items (approx 40px per item)
+                    isOpen() ? 'max-h-[160px]' : 'hidden' // Set max-height for 4 items (approx 40px per item)
                   }`}
                   ref={dropdownRef}
                 >
@@ -183,7 +186,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                         >
                           <div
                             className={`relative flex w-full items-center border-l-2 border-transparent p-2 pl-2 ${
-                              option.selected ? "border-primary" : ""
+                              option.selected ? 'border-primary' : ''
                             }`}
                           >
                             <div className="flex w-full items-center">

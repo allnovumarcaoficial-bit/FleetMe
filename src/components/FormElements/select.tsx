@@ -13,6 +13,7 @@ type PropsType = {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void; // Add onChange prop
   name: string; // Add name prop
   disabled?: boolean; // Add disabled prop
+  required?: boolean;
 } & (
   | { placeholder?: string; defaultValue: string }
   | { placeholder: string; defaultValue?: string }
@@ -29,6 +30,7 @@ export function Select({
   onChange, // Destructure onChange
   name, // Destructure name
   disabled, // Destructure disabled
+  required,
 }: PropsType) {
   const id = useId();
 
@@ -41,6 +43,7 @@ export function Select({
         className="block text-body-sm font-medium text-dark dark:text-white"
       >
         {label}
+        {required && <span className="text-red-500">*</span>}
       </label>
 
       <div className="relative">

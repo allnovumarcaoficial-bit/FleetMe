@@ -390,7 +390,7 @@ const MantenimientoForm = ({
               htmlFor="vehicleId"
               className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
             >
-              Vehículo
+              Vehículo <span className="text-red-500">*</span>
             </label>
             <select
               id="vehicleId"
@@ -399,6 +399,7 @@ const MantenimientoForm = ({
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
               disabled={!!selectedVehicleId} // Disable if vehicle is pre-selected
+              required
             >
               <option value="" disabled>
                 Selecciona un vehículo
@@ -419,7 +420,7 @@ const MantenimientoForm = ({
               htmlFor="tipo"
               className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
             >
-              Tipo de Mantenimiento
+              Tipo de Mantenimiento <span className="text-red-500">*</span>
             </label>
             <select
               id="tipo"
@@ -427,6 +428,7 @@ const MantenimientoForm = ({
               value={formData.tipo || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
+              required
             >
               <option value="" disabled>
                 Selecciona un tipo
@@ -447,7 +449,7 @@ const MantenimientoForm = ({
               htmlFor="estado"
               className="mb-3 block text-body-sm font-medium text-dark dark:text-white"
             >
-              Estado
+              Estado <span className="text-red-500">*</span>
             </label>
             <select
               id="estado"
@@ -455,6 +457,7 @@ const MantenimientoForm = ({
               value={formData.estado || ''}
               onChange={handleChange}
               className="w-full rounded-lg border border-stroke bg-transparent px-5.5 py-3 outline-none transition focus:border-primary active:border-primary dark:border-dark-3 dark:bg-dark-2 dark:focus:border-primary [&>option]:text-dark-5 dark:[&>option]:text-dark-6"
+              required
             >
               <option value="" disabled>
                 Selecciona un estado
@@ -478,6 +481,7 @@ const MantenimientoForm = ({
                 formData.fecha ? formData.fecha.toISOString().split('T')[0] : ''
               }
               handleChange={handleChange}
+              required
             />
             {errors.fecha && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
@@ -492,6 +496,7 @@ const MantenimientoForm = ({
               placeholder="Introduce el costo"
               value={formData.costo?.toString() || ''}
               handleChange={handleChange}
+              required
             />
             {errors.costo && (
               <p className="mt-1 text-sm text-red-500">{errors.costo}</p>
@@ -506,6 +511,7 @@ const MantenimientoForm = ({
               placeholder="Introduce la descripción del mantenimiento"
               value={formData.descripcion || ''}
               handleChange={handleChange}
+              required
             />
             {errors.descripcion && (
               <p className="mt-1 text-sm text-red-500">{errors.descripcion}</p>
@@ -523,7 +529,7 @@ const MantenimientoForm = ({
               >
                 <div className="mb-3 flex items-center justify-between">
                   <h5 className="font-medium text-dark dark:text-white">
-                    Pieza #{index + 1}
+                    Pieza #{index + 1} <span className="text-red-500">*</span>
                   </h5>
                   {(formData.lista_de_piezas as Piece[]).length > 1 && (
                     <button
@@ -575,6 +581,7 @@ const MantenimientoForm = ({
                         placeholder="Introduce el número de serie anterior"
                         value={piece.numero_serie_anterior || ''}
                         handleChange={(e) => handlePieceChange(index, e)}
+                        required={piece.cambio_de_pieza}
                       />
                       {errors[`numero_serie_anterior-${index}`] && (
                         <p className="mt-1 text-sm text-red-500">
@@ -590,6 +597,7 @@ const MantenimientoForm = ({
                         placeholder="Introduce el número de serie nueva"
                         value={piece.numero_serie_nueva || ''}
                         handleChange={(e) => handlePieceChange(index, e)}
+                        required={piece.cambio_de_pieza}
                       />
                       {errors[`numero_serie_nueva-${index}`] && (
                         <p className="mt-1 text-sm text-red-500">

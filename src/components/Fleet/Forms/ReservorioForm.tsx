@@ -200,6 +200,7 @@ const ReservorioForm = ({
               placeholder="Introduce el nombre del reservorio"
               value={formData.nombre || ''}
               handleChange={handleChange}
+              required
             />
             {errors.nombre && (
               <p className="mt-1 text-sm text-red-500">{errors.nombre}</p>
@@ -212,6 +213,7 @@ const ReservorioForm = ({
             placeholder="Introduzca la capacidad total"
             value={formData.capacidad_total?.toString() || ''}
             handleChange={handleChange}
+            required
           />
           {errors.capacidad_total && (
             <p className="mt-1 text-sm text-red-500">

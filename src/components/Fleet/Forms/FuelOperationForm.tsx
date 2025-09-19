@@ -705,6 +705,7 @@ const FuelOperationForm = ({
                 placeholder="Selecciona una tarjeta"
                 onChange={handleChange}
                 name="fuelCardId"
+                required={!esReservorio}
               />
             ) : (
               <Select
@@ -722,6 +723,7 @@ const FuelOperationForm = ({
                   }))
                 }
                 name="reservorioId"
+                required={esReservorio}
               />
             )}
             {!esReservorio && errors.fuelCardId && (
@@ -747,6 +749,7 @@ const FuelOperationForm = ({
               onChange={handleChange}
               name="tipoOperacion"
               disabled={esReservorio} // Deshabilitar si es reservorio para evitar cambios manuales
+              required
             />
             {errors.tipoOperacion && (
               <p className="mt-1 text-sm text-red-500">
@@ -766,6 +769,7 @@ const FuelOperationForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required
             />
             {errors.fecha && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
@@ -793,6 +797,9 @@ const FuelOperationForm = ({
                   value={operationLiters?.toString() || ''}
                   handleChange={handleChange}
                   disabled={formData.tipoOperacion === 'Carga'} // Deshabilitar si es carga
+                  required={
+                    esReservorio && formData.tipoOperacion === 'Consumo'
+                  }
                 />
                 {errors.valorOperacionLitros && (
                   <p className="mt-1 text-sm text-red-500">
@@ -835,6 +842,7 @@ const FuelOperationForm = ({
                   placeholder="Introduce el valor en dinero"
                   value={formData.valorOperacionDinero?.toString() || ''}
                   handleChange={handleChange}
+                  required={!esReservorio}
                 />
                 {errors.valorOperacionDinero && (
                   <p className="mt-1 text-sm text-red-500">
@@ -880,6 +888,7 @@ const FuelOperationForm = ({
                       placeholder="Introduce el valor en dinero"
                       value={formData.valorOperacionDinero?.toString() || ''}
                       handleChange={handleChange}
+                      required={!esReservorio}
                     />
                     {errors.valorOperacionDinero && (
                       <p className="mt-1 text-sm text-red-500">
@@ -941,6 +950,9 @@ const FuelOperationForm = ({
                       placeholder="Selecciona un tipo de combustible"
                       onChange={handleOperationsTipoChange}
                       name="tipoCombustible_id"
+                      required={
+                        !esReservorio && formData.tipoOperacion === 'Consumo'
+                      }
                     />
                     {errors.tipoCombustible_id && (
                       <p className="mt-1 text-sm text-red-500">
@@ -964,7 +976,7 @@ const FuelOperationForm = ({
 
               <div className="md:col-span-2">
                 <label className="mb-3 block text-body-sm font-medium text-dark dark:text-white">
-                  Destinos
+                  Destinos <span className="text-red-500">*</span>
                 </label>
 
                 <div className="space-y-4">
