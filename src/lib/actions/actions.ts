@@ -269,6 +269,8 @@ export async function getKilometrosRecorridos(fecha: Date) {
             id: true,
             matricula: true,
             odometro: true,
+            odometro_inicial: true,
+            modelo: true,
             mantenimientos: {
               where: {
                 fecha: {
@@ -285,12 +287,14 @@ export async function getKilometrosRecorridos(fecha: Date) {
         kilometrosRecorridos: 'asc',
       },
     });
+
     const kilometros = getKilometros.map((item) => ({
-      id: item.id,
-      matricula: item.vehicle?.matricula || 'Sin matrícula',
+      id: item.vehicle?.id || 0,
+      matricula: `${item.vehicle?.modelo || 'Sin modelo'}(${item.vehicle?.matricula || 'Sin matrícula'})`,
       createdAt: item.fecha,
       kilometrosRecorridos: item.kilometrosRecorridos || 0,
       odometro: item.vehicle?.odometro || 0,
+      odometroInicial: item.vehicle?.odometro_inicial || 0,
       gasto_mantenimientos: item.vehicle?.mantenimientos.reduce(
         (acc, curr) => acc + (curr.costo || 0),
         0
@@ -311,6 +315,7 @@ export async function getKilometrosRecorridos(fecha: Date) {
             matricula: matricula,
             kilometrosRecorridos: 0,
             odometro: Math.max(actual.odometro, 0),
+            odometroInicial: actual.odometroInicial,
             gasto_mantenimientos: actual.gasto_mantenimientos,
             liters: actual.liters,
           };
@@ -327,8 +332,34 @@ export async function getKilometrosRecorridos(fecha: Date) {
 
     // Convertir a array
     const resultadoArray = Object.values(resultado);
+    const vehicles = await prisma.vehicle.findMany({
+      include: {
+        mantenimientos: true,
+        fuelDistributions: true,
+      },
+    });
+    const idsEnResultado = new Set(resultadoArray.map((item) => item.id));
+    const vehiclesFormated = vehicles
+      .filter((veh) => !idsEnResultado.has(veh.id))
+      .map((veh) => ({
+        id: veh.id,
+        createdAt: veh.createdAt,
+        matricula: `${veh.modelo}(${veh.matricula})`,
+        kilometrosRecorridos: 0,
+        odometro: Math.max(veh.odometro || 0, 0),
+        odometroInicial: veh.odometro_inicial || 0,
+        gasto_mantenimientos: veh.mantenimientos.reduce(
+          (acc, curr) => acc + (curr.costo || 0),
+          0
+        ),
+        liters: veh.fuelDistributions.reduce(
+          (acc, curr) => acc + (curr.liters || 0),
+          0
+        ),
+      }));
+    const result = [...vehiclesFormated, resultadoArray].flat();
 
-    return resultadoArray;
+    return result;
   } catch (error) {
     console.error('Error fetching kilometros recorridos:', error);
     return NextResponse.json(
@@ -384,6 +415,7 @@ export async function getGastosMantenimiento_Combustible(params: {
       select: {
         id: true,
         matricula: true,
+        modelo: true,
         mantenimientos: {
           select: {
             costo: true,
@@ -432,11 +464,12 @@ export async function getGastosMantenimiento_Combustible(params: {
 
       return {
         vehicleId: vehicle.id,
-        matricula: vehicle.matricula,
+        matricula: `${vehicle.modelo}`,
         totalMantenimientos,
         totalCombustible,
       };
     });
+
     return resultado;
   } catch (error) {
     console.error(
