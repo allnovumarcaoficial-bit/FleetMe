@@ -335,13 +335,15 @@ const FuelOperationsTable = () => {
                         <span className="sr-only">Ver Operación</span>
                         <PreviewIcon />
                       </Link>
-                      {/* <Link
-                        href={`/fleet/fuel-operations/${operation.id}/edit`}
-                        className="hover:text-primary"
-                      >
-                        <span className="sr-only">Editar Operación</span>
-                        <PencilSquareIcon />
-                      </Link> */}
+                      {
+                        <Link
+                          href={`/fleet/fuel-operations/${operation.id}/edit`}
+                          className="hover:text-primary"
+                        >
+                          <span className="sr-only">Editar Operación</span>
+                          <PencilSquareIcon />
+                        </Link>
+                      }
                       <button
                         onClick={() => handleDelete(operation.id)}
                         className="hover:text-primary"
