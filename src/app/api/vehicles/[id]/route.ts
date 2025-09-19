@@ -79,7 +79,8 @@ export async function PUT(
       indice_consumo,
       driverIds,
       destino, // Nuevo campo
-      odometro, // Añadir el campo odometro
+      odometro, // Se ignora para no actualizarlo
+      odometro_inicial, // Se ignora para no actualizarlo
     } = body;
 
     if (
@@ -176,7 +177,6 @@ export async function PUT(
         capacidad_tanque,
         indice_consumo,
         destino, // Nuevo campo
-        odometro, // Añadir el campo odometro
         driver: {
           set: driverIds, // Usar 'set' para desvincular y vincular
         },

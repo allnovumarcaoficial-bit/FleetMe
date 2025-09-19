@@ -34,6 +34,7 @@ export interface Vehicle {
   modelo: string;
   vin: string;
   odometro: number;
+  odometro_inicial?: number;
   matricula: string;
   fecha_compra: Date | null;
   fecha_vencimiento_licencia_operativa: Date | null;
