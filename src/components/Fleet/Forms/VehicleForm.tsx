@@ -850,7 +850,7 @@ const VehicleForm = ({
           </div>
           <div>
             <InputGroup
-              label="Odómetro"
+              label="Odómetro Actual"
               name="odometro"
               type="number"
               placeholder="Introduce el odómetro"

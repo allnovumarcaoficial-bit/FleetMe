@@ -95,7 +95,7 @@ model Vehicle {
   cantidad_conductores                 Int?
   ciclo_mantenimiento_km               Int?
   odometro                             Int?
-  odometro_Actual                      Int?
+  odometro_inicial                     Int?
   es_electrico                         Boolean?
   cantidad_baterias                    Int?
   tipo_bateria                         String?
