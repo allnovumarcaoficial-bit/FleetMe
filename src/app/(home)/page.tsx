@@ -12,6 +12,7 @@ import { GastoTotal } from '@/components/Charts/GastoTotal';
 import { IndiceConsumo } from '@/components/Charts/indiceConsumo';
 import { TopChipSkeleton } from '@/components/Tables/chips-combustible/skeleton';
 import { TopKiloMSkeleton } from '@/components/Tables/kilometros-recorridos/skeleton';
+import { TopMantenimientoSkeleton } from '@/components/Tables/mantenimientoTable/skeleton';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -60,7 +61,7 @@ export default async function Home({ searchParams }: PropsType) {
         />
 
         <div className="col-span-12 xl:col-span-12">
-          <Suspense fallback={<TopChipSkeleton />}>
+          <Suspense fallback={<TopMantenimientoSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
