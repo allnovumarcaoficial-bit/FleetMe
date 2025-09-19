@@ -56,6 +56,7 @@ const VehicleForm = ({
       destino: 'Administrativo', // Nuevo campo
       driver: [],
       odometro: 0,
+      odometro_inicial: 0,
     };
 
     if (initialData) {
@@ -203,6 +204,18 @@ const VehicleForm = ({
           error = 'El odómetro debe ser un número.';
         } else if (value < 0) {
           error = 'El odómetro no puede ser negativo.';
+        } else if (
+          formData.odometro_inicial &&
+          value < formData.odometro_inicial
+        ) {
+          error = 'El odómetro actual no puede ser menor que el inicial.';
+        }
+        break;
+      case 'odometro_inicial':
+        if (isNaN(value)) {
+          error = 'El odómetro debe ser un número.';
+        } else if (value < 0) {
+          error = 'El odómetro no puede ser negativo.';
         }
         break;
       case 'cantidad_neumaticos':
@@ -250,7 +263,7 @@ const VehicleForm = ({
       ].includes(name)
     ) {
       newValue = value === '' ? null : parseInt(value, 10);
-    } else if (name === 'odometro') {
+    } else if (name === 'odometro' || name === 'odometro_inicial') {
       newValue = value === '' ? 0 : parseInt(value, 10);
     } else if (name === 'indice_consumo') {
       newValue = value === '' ? null : parseFloat(value);
@@ -856,10 +869,24 @@ const VehicleForm = ({
               placeholder="Introduce el odómetro"
               value={String(formData.odometro || 0)}
               handleChange={handleChange}
-              disabled={!!initialData}
             />
             {errors.odometro && (
               <p className="mt-1 text-sm text-red-500">{errors.odometro}</p>
+            )}
+          </div>
+          <div>
+            <InputGroup
+              label="Odómetro Inicial"
+              name="odometro_inicial"
+              type="number"
+              placeholder="Introduce el odómetro inicial"
+              value={String(formData.odometro_inicial || 0)}
+              handleChange={handleChange}
+            />
+            {errors.odometro_inicial && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.odometro_inicial}
+              </p>
             )}
           </div>
           <div>

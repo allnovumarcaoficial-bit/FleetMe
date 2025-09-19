@@ -166,8 +166,19 @@ export async function POST(request: Request) {
       indice_consumo,
       driverId,
       odometro,
+      odometro_inicial,
       destino, // Nuevo campo
     } = body;
+
+    if (odometro < odometro_inicial) {
+      return NextResponse.json(
+        {
+          error:
+            'El odómetro actual no puede ser menor que el odómetro inicial.',
+        },
+        { status: 400 }
+      );
+    }
 
     let finalEstado = estado;
     if (
@@ -257,7 +268,8 @@ export async function POST(request: Request) {
         capacidad_tanque,
         indice_consumo,
         driver: driverId ? { connect: { id: driverId } } : undefined,
-        odometro,
+        odometro: odometro || 0,
+        odometro_inicial: odometro_inicial || 0,
         destino, // Nuevo campo
       },
     });
