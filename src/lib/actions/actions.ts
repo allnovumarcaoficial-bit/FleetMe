@@ -51,6 +51,7 @@ export async function getVehicles() {
 
 export async function getTotalExpenses() {
   const startMonth = startOfMonth(new Date());
+  console.log(startMonth);
   const endMonth = endOfMonth(new Date());
   const startMonthBefore = startOfMonth(subMonths(new Date(), 1));
   const endMonthBefore = endOfMonth(subMonths(new Date(), 1));
@@ -62,7 +63,7 @@ export async function getTotalExpenses() {
           lte: endMonth,
         },
       },
-      _avg: {
+      _sum: {
         valorOperacionLitros: true,
       },
     });
@@ -73,12 +74,12 @@ export async function getTotalExpenses() {
           lte: endMonthBefore,
         },
       },
-      _avg: {
+      _sum: {
         valorOperacionLitros: true,
       },
     });
-    const avgThisMonth = operacionLThisMonth._avg.valorOperacionLitros || 0;
-    const avgBeforeMonth = saldoBeforeMonth._avg.valorOperacionLitros || 0;
+    const avgThisMonth = operacionLThisMonth._sum.valorOperacionLitros || 0;
+    const avgBeforeMonth = saldoBeforeMonth._sum.valorOperacionLitros || 0;
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
       value: avgThisMonth.toFixed(2),
@@ -96,30 +97,30 @@ export async function getTotalExpensesMoney() {
   const startMonthBefore = startOfMonth(subMonths(new Date(), 1));
   const endMonthBefore = endOfMonth(subMonths(new Date(), 1));
   try {
-    const operacionLThisMonth = await prisma.fuelOperation.aggregate({
+    const operacionLThisMonth = await prisma.fuelOperation.findMany({
       where: {
-        createdAt: {
+        fecha: {
           gte: startMonth,
           lte: endMonth,
         },
-      },
-      _avg: {
-        valorOperacionDinero: true,
+        tipoOperacion: 'Consumo',
       },
     });
-    const saldoBeforeMonth = await prisma.fuelOperation.aggregate({
+    const saldoBeforeMonth = await prisma.fuelOperation.findMany({
       where: {
-        createdAt: {
+        fecha: {
           gte: startMonthBefore,
           lte: endMonthBefore,
         },
-      },
-      _avg: {
-        valorOperacionDinero: true,
+        tipoOperacion: 'Consumo',
       },
     });
-    const avgThisMonth = operacionLThisMonth._avg.valorOperacionDinero || 0;
-    const avgBeforeMonth = saldoBeforeMonth._avg.valorOperacionDinero || 0;
+    const avgThisMonth = operacionLThisMonth.reduce((acc, curr) => {
+      return acc + (curr.valorOperacionDinero || 0);
+    }, 0);
+    const avgBeforeMonth = saldoBeforeMonth.reduce((acc, curr) => {
+      return acc + (curr.valorOperacionDinero || 0);
+    }, 0);
     const growthRate = (avgThisMonth + avgBeforeMonth) / 2;
     return {
       value: avgThisMonth.toFixed(2),
@@ -403,6 +404,7 @@ export async function getGastosMantenimiento_Combustible(params: {
               },
             },
           },
+
           where: {
             // Filtros opcionales para operaciones de combustible
             fuelOperation: {
@@ -415,7 +417,6 @@ export async function getGastosMantenimiento_Combustible(params: {
         },
       },
     });
-
     // Procesar los datos
     const resultado = operations.map((vehicle) => {
       const totalMantenimientos = vehicle.mantenimientos.reduce(
