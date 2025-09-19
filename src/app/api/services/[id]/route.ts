@@ -149,6 +149,34 @@ export async function DELETE(
       );
     }
 
+    const service = await prisma.servicio.findUnique({
+      where: { id },
+    });
+
+    if (!service) {
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 });
+    }
+
+    if (service.vehicleId) {
+      const vehicle = await prisma.vehicle.findUnique({
+        where: { id: service.vehicleId },
+      });
+
+      if (vehicle) {
+        await prisma.vehicle.update({
+          where: { id: service.vehicleId },
+          data: {
+            km_recorrido: {
+              decrement: service.kilometrosRecorridos || 0,
+            },
+            odometro: {
+              decrement: service.kilometrosRecorridos || 0,
+            },
+          },
+        });
+      }
+    }
+
     await prisma.servicio.delete({
       where: { id },
     });
