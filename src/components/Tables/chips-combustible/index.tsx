@@ -1,13 +1,3 @@
-export interface ChipCombustibleData {
-  id: number;
-  tipoOperacion: OperationTipo;
-  fecha: Date;
-  saldoInicio: number;
-  valorOperacionLitros: number;
-  saldoFinal: number;
-  tipoCombustible_id: number;
-  tipoCombustible: TipoCombustible;
-}
 import {
   Table,
   TableBody,
@@ -16,15 +6,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { compactFormat, standardFormat } from '@/lib/format-number';
 import { cn, getDateByMonth, getMonthName } from '@/lib/utils';
-import Image from 'next/image';
-import { getTopChannels } from '../fetch';
 import { PeriodPicker } from '@/components/period-picker';
 import { getChipFuel } from '@/lib/actions/actions';
 import { OperationTipo, TipoCombustible } from '@/types/fleet';
 import { formatDate } from 'date-fns';
+import { ExportChipCombustible } from './exportChip';
 
+export interface ChipCombustibleData {
+  id: number;
+  tipoOperacion: string;
+  fecha: Date;
+  saldoInicio: number | null;
+  valorOperacionLitros: number | null;
+  saldoFinal: number | null;
+  tipoCombustible_id: number | null;
+  tipoCombustible: TipoCombustible | null;
+  descripcion: string | null;
+}
 export async function ChipsCombustible({
   className,
   timeframe,
@@ -46,10 +45,8 @@ export async function ChipsCombustible({
     'Noviembre',
     'Diciembre',
   ];
-  console.log('timeframe', timeframe);
-  const date = getDateByMonth(timeframe || '');
+  const date = getDateByMonth(timeframe || 'Septiembre');
   const data = await getChipFuel(date);
-  console.log('data chips combustible', data);
   if (!Array.isArray(data)) {
     // Manejar el error en UI
     return <div>Error al cargar los vehículos</div>;
@@ -71,6 +68,9 @@ export async function ChipsCombustible({
           defaultValue={months[new Date().getMonth()]}
           sectionKey="chips_combustible"
         />
+      </div>
+      <div className="mb-4 mt-2">
+        <ExportChipCombustible data={data} />
       </div>
 
       <Table>
@@ -110,9 +110,11 @@ export async function ChipsCombustible({
 
               <TableCell>{chip.tipoCombustible?.nombre || ''}</TableCell>
 
-              <TableCell>{chip.valorOperacionLitros?.toFixed(2)}L</TableCell>
-              <TableCell>{chip.saldoInicio?.toFixed(2)}$</TableCell>
-              <TableCell>{chip.saldoFinal?.toFixed(2)}$</TableCell>
+              <TableCell>
+                {chip.valorOperacionLitros?.toFixed(2) || '0.00'}L
+              </TableCell>
+              <TableCell>{chip.saldoInicio?.toFixed(2) || '0.00'}$</TableCell>
+              <TableCell>{chip.saldoFinal?.toFixed(2) || '0.00'}$</TableCell>
             </TableRow>
           ))}
         </TableBody>

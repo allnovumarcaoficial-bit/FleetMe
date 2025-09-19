@@ -9,6 +9,17 @@ import {
 import { cn, getDateByMonth } from '@/lib/utils';
 import { PeriodPicker } from '@/components/period-picker';
 import { getKilometrosRecorridos } from '@/lib/actions/actions';
+import { ExportKM } from './exportKM';
+
+export interface KilometrosRecorridosData {
+  id: number;
+  matricula: string;
+  odometro: number | null;
+  createdAt: Date;
+  km_recorrido: number;
+  gasto_mantenimientos: number;
+  liters: number;
+}
 
 export async function KilometrosRecorridosTable({
   className,
@@ -73,6 +84,9 @@ export async function KilometrosRecorridosTable({
         />
       </div>
 
+      <div className="mb-4 mt-2">
+        <ExportKM data={data} />
+      </div>
       {/* Contenedor responsive con scroll horizontal */}
       <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
         <Table className="min-w-full">

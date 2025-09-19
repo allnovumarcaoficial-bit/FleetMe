@@ -21,7 +21,6 @@ import AdvancedTableFilter, {
 import { formatDate } from 'date-fns';
 import { PreviewIcon } from '@/components/Tables/icons';
 import { PencilSquareIcon, TrashIcon } from '@/assets/icons';
-import saveAs from 'file-saver';
 import { MenuDropDowndTable } from '@/components/Charts/chartDownload';
 import * as XLSX from 'xlsx';
 

@@ -225,6 +225,16 @@ export async function getChipFuel(fecha: Date) {
         tipoCombustible: true,
         tipoCombustible_id: true,
         descripcion: true,
+        operationReservorio: {
+          select: {
+            reservorio: {
+              select: {
+                nombre: true,
+              },
+            },
+            litros: true,
+          },
+        },
       },
     });
     return getchips;

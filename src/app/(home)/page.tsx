@@ -1,4 +1,3 @@
-import { TopChannelsSkeleton } from '@/components/Tables/top-channels/skeleton';
 import { createTimeFrameExtractor } from '@/utils/timeframe-extractor';
 import { Suspense } from 'react';
 import { OverviewCardsGroup } from './_components/overview-cards';
@@ -11,6 +10,8 @@ import { KilometrosRecorridos } from '@/components/Charts/km_recorridos';
 import { HistorialMantenimientoTable } from '@/components/Tables/mantenimientoTable';
 import { GastoTotal } from '@/components/Charts/GastoTotal';
 import { IndiceConsumo } from '@/components/Charts/indiceConsumo';
+import { TopChipSkeleton } from '@/components/Tables/chips-combustible/skeleton';
+import { TopKiloMSkeleton } from '@/components/Tables/kilometros-recorridos/skeleton';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -59,7 +60,7 @@ export default async function Home({ searchParams }: PropsType) {
         />
 
         <div className="col-span-12 xl:col-span-12">
-          <Suspense fallback={<TopChannelsSkeleton />}>
+          <Suspense fallback={<TopChipSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
@@ -68,7 +69,7 @@ export default async function Home({ searchParams }: PropsType) {
         </div>
 
         <div className="col-span-12 xl:col-span-12">
-          <Suspense fallback={<TopChannelsSkeleton />}>
+          <Suspense fallback={<TopKiloMSkeleton />}>
             <KilometrosRecorridosTable
               timeframe={
                 extractTimeFrame('kilometros_recorridos')?.split(':')[1]
@@ -79,12 +80,14 @@ export default async function Home({ searchParams }: PropsType) {
         </div>
 
         <div className="col-span-12 xl:col-span-12">
-          <HistorialMantenimientoTable
-            timeframe={
-              extractTimeFrame('historial_mantenimientos')?.split(':')[1]
-            }
-            key={extractTimeFrame('historial_mantenimientos')?.split(':')[1]}
-          />
+          <Suspense fallback={<TopKiloMSkeleton />}>
+            <HistorialMantenimientoTable
+              timeframe={
+                extractTimeFrame('historial_mantenimientos')?.split(':')[1]
+              }
+              key={extractTimeFrame('historial_mantenimientos')?.split(':')[1]}
+            />
+          </Suspense>
         </div>
       </div>
     </div>

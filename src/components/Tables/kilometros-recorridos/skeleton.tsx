@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -6,23 +6,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 
-export function TopChannelsSkeleton() {
+export function TopKiloMSkeleton() {
   return (
     <div className="rounded-[10px] bg-white px-7.5 pb-4 pt-7.5 shadow-1 dark:bg-gray-dark dark:shadow-card">
       <h2 className="mb-5.5 text-body-2xlg font-bold text-dark dark:text-white">
-        Top Channels
+        Kilómetros Recorridos
       </h2>
 
       <Table>
         <TableHeader>
           <TableRow className="border-none uppercase [&>th]:text-center">
-            <TableHead className="!text-left">Source</TableHead>
-            <TableHead>Visitors</TableHead>
-            <TableHead className="!text-right">Revenues</TableHead>
-            <TableHead>Sales</TableHead>
-            <TableHead>Conversion</TableHead>
+            <TableHead className="!text-left">Matrícula</TableHead>
+            <TableHead>Odómetro</TableHead>
+            <TableHead className="!text-right">Kilómetros Recorridos</TableHead>
+            <TableHead>Costo del Mantenimiento</TableHead>
+            <TableHead>Litros echados</TableHead>
           </TableRow>
         </TableHeader>
 

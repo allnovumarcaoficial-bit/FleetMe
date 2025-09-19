@@ -13,7 +13,25 @@ import {
   getMantenimientosTable,
 } from '@/lib/actions/actions';
 import { formatDate } from 'date-fns';
+import { ExportMantenimiento } from './exportMantenimiento';
 
+export interface MantenimientoData {
+  id: number;
+  tipo: string;
+  fecha: Date;
+  costo: number;
+  descripcion: string;
+  lista_de_piezas: string;
+  cambio_de_pieza: boolean;
+  estado: string;
+  numero_serie_anterior: string | null;
+  numero_serie_nueva: string | null;
+  vehicle: {
+    matricula: string;
+    km_recorrido: number;
+    odometro: number | null;
+  } | null;
+}
 export async function HistorialMantenimientoTable({
   className,
   timeframe,
@@ -87,6 +105,9 @@ export async function HistorialMantenimientoTable({
           {totalgastado.toFixed(2)}
         </p>
       </div>
+      <div className="mb-4 mt-2">
+        <ExportMantenimiento data={data} />
+      </div>
       <div className="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
         <Table className="min-w-full">
           <TableHeader className="bg-gray-50 dark:bg-gray-800">
@@ -140,10 +161,10 @@ export async function HistorialMantenimientoTable({
                   {mantenimiento.vehicle?.matricula}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {mantenimiento.vehicle?.km_recorrido.toFixed(2)}
+                  {mantenimiento.descripcion}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
-                  {mantenimiento.descripcion}
+                  {mantenimiento.vehicle?.km_recorrido.toFixed(2)}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-right font-semibold text-green-600 dark:text-green-400 sm:px-6">
                   {mantenimiento.costo.toFixed(2)}
