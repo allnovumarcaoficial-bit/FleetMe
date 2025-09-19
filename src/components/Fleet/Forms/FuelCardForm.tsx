@@ -197,6 +197,7 @@ const FuelCardForm = ({
               placeholder="Introduce el número de tarjeta"
               value={formData.numeroDeTarjeta || ''}
               handleChange={handleChange}
+              required
             />
             {errors.numeroDeTarjeta && (
               <p className="mt-1 text-sm text-red-500">
@@ -214,6 +215,7 @@ const FuelCardForm = ({
                 handleChange(e as React.ChangeEvent<HTMLSelectElement>)
               }
               name="tipoDeTarjeta"
+              required
             />
             {errors.tipoDeTarjeta && (
               <p className="mt-1 text-sm text-red-500">
@@ -250,6 +252,7 @@ const FuelCardForm = ({
                   handleChange(e as React.ChangeEvent<HTMLSelectElement>)
                 }
                 name="moneda"
+                required
               />
               {errors.moneda && (
                 <p className="mt-1 text-sm text-red-500">{errors.moneda}</p>
@@ -268,6 +271,7 @@ const FuelCardForm = ({
                   : ''
               }
               handleChange={handleChange}
+              required
             />
             {errors.fechaVencimiento && (
               <p className="mt-1 text-sm text-red-500">
