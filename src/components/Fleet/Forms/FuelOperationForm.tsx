@@ -11,7 +11,9 @@ import {
   FuelOperationType,
 } from '@/types/fleet';
 
-import InputGroup from '@/components/FormElements/InputGroup';
+import InputGroup, {
+  InputGroupNumber,
+} from '@/components/FormElements/InputGroup';
 import { Select } from '@/components/FormElements/select';
 import { Alert } from '@/components/ui-elements/alert';
 import { useRouter } from 'next/navigation';
@@ -1010,10 +1012,10 @@ const FuelOperationForm = ({
                       </div>
 
                       <div className="flex-1">
-                        <InputGroup
+                        <InputGroupNumber
                           label="Litros"
                           name={`destinationVehicle-${index}-litros`}
-                          type="number"
+                          type="text"
                           placeholder="Cantidad de litros"
                           value={dv.litros.toString()}
                           handleChange={(e) =>
@@ -1064,10 +1066,10 @@ const FuelOperationForm = ({
                       </div>
 
                       <div className="flex-1">
-                        <InputGroup
+                        <InputGroupNumber
                           label="Litros"
                           name={`destinationVehicle-${index}-litros`}
-                          type="number"
+                          type="text"
                           placeholder="Cantidad de litros"
                           value={dv.litros.toString()}
                           handleChange={(e) =>

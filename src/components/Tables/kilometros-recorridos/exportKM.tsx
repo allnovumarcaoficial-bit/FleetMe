@@ -24,7 +24,9 @@ export function ExportKM({ data }: { data: KilometrosRecorridosData[] }) {
     const datosFormateados = data.map((item) => ({
       Matrícula: item.matricula,
       Odómetro: item.odometro,
-      'Kilómetros Recorridos': item.km_recorrido,
+      'Kilómetros Recorridos': item.kilometrosRecorridos,
+      'odometro Inicial': item.odometroInicial,
+      'odometro Final': item.odometro,
       'Costo de Mantenimiento': item.gasto_mantenimientos,
       'Litros Echados': item.liters,
     }));

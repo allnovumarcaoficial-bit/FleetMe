@@ -12,6 +12,7 @@ import { GastoTotal } from '@/components/Charts/GastoTotal';
 import { IndiceConsumo } from '@/components/Charts/indiceConsumo';
 import { TopChipSkeleton } from '@/components/Tables/chips-combustible/skeleton';
 import { TopKiloMSkeleton } from '@/components/Tables/kilometros-recorridos/skeleton';
+import { TopMantenimientoSkeleton } from '@/components/Tables/mantenimientoTable/skeleton';
 
 export const metadata: Metadata = {
   title: 'Fleet Me',
@@ -34,8 +35,8 @@ export default async function Home({ searchParams }: PropsType) {
       <div className="mt-4 grid flex-1 grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
         <GastoTotal
           className="col-span-12 xl:col-span-7"
-          key={extractTimeFrame('gasto_total')}
-          timeFrame={extractTimeFrame('gasto_total')?.split(':')[1]}
+          key={extractTimeFrame('fuelCardID')}
+          timeFrame={extractTimeFrame('fuelCardID')?.split(':')[1]}
         />
         <KilometrosRecorridos
           key={extractTimeFrame('kilometros_recorridosChart')}
@@ -60,7 +61,7 @@ export default async function Home({ searchParams }: PropsType) {
         />
 
         <div className="col-span-12 xl:col-span-12">
-          <Suspense fallback={<TopChipSkeleton />}>
+          <Suspense fallback={<TopMantenimientoSkeleton />}>
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
