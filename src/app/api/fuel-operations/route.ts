@@ -303,6 +303,7 @@ export async function POST(request: Request) {
                 create: fuelDistributions.map((dist: any) => ({
                   vehicleId: dist.vehicleId,
                   liters: dist.liters,
+                  odometro_Vehicle: dist.odometro_Vehicle, // Save odometro_Vehicle
                 })),
               },
             }),

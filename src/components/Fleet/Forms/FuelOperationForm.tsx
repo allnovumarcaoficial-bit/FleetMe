@@ -589,6 +589,8 @@ const FuelOperationForm = ({
           fuelDistributions: destinationVehicles.map((dv) => ({
             vehicleId: dv.vehicleId,
             liters: dv.litros,
+            odometro_Vehicle: vehicles.find((v) => v.id === dv.vehicleId)
+              ?.odometro,
           })),
           operationReservorio: reservorioDestination.map((dr) => ({
             reservorio_id: dr.reservorio_id,
@@ -1121,6 +1123,21 @@ const FuelOperationForm = ({
                               e.target.value
                             )
                           }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <InputGroup
+                          label="Odómetro Actual"
+                          name={`destinationVehicle-${index}-odometro`}
+                          type="number"
+                          placeholder="Odómetro del vehículo"
+                          value={
+                            vehicles
+                              .find((v) => v.id === dv.vehicleId)
+                              ?.odometro?.toString() || ''
+                          }
+                          handleChange={() => {}} // Disabled
+                          disabled={true}
                         />
                       </div>
 
