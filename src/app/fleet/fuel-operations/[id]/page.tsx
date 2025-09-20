@@ -172,7 +172,8 @@ const ViewFuelOperationPage = ({
                         {dist.vehicle
                           ? `${dist.vehicle.marca} ${dist.vehicle.modelo} (${dist.vehicle.matricula})`
                           : 'Vehículo Desconocido'}{' '}
-                        - {dist.liters?.toFixed(2) || 'N/A'} Litros
+                        - {dist.liters?.toFixed(2) || 'N/A'} Litros (Odómetro:{' '}
+                        {dist.odometro_Vehicle || 'N/A'})
                       </li>
                     ))}
                     {fuelOperation.operationReservorio.map((op, index) => (
