@@ -11,6 +11,7 @@ import {
   FuelDistribution,
   OperationReservorio,
   Reservorio,
+  TipoCombustible, // Import TipoCombustible
 } from '@/types/fleet';
 import dayjs from 'dayjs';
 import { ShowcaseSection } from '@/components/Layouts/showcase-section';
@@ -30,6 +31,7 @@ const ViewFuelOperationPage = ({
         operationReservorio: (OperationReservorio & {
           reservorio: Reservorio;
         })[];
+        tipoCombustible: TipoCombustible; // Add tipoCombustible here
       })
     | null
   >(null);
@@ -141,6 +143,18 @@ const ViewFuelOperationPage = ({
                 <strong>Saldo Final (Litros):</strong>{' '}
                 {fuelOperation.saldoFinalLitros?.toFixed(2) || 'N/A'}
               </p>
+              <p>
+                <strong>Tipo de Combustible:</strong>{' '}
+                {fuelOperation.tipoCombustible?.nombre || 'N/A'}
+              </p>
+              <p>
+                <strong>Ubicación Cupet:</strong>{' '}
+                {fuelOperation.ubicacion_cupet || 'N/A'}
+              </p>
+              <p>
+                <strong>Descripción:</strong>{' '}
+                {fuelOperation.descripcion || 'N/A'}
+              </p>
             </div>
             {(fuelOperation.tipoOperacion === 'Consumo' ||
               fuelOperation.tipoOperacion === 'Carga') &&
@@ -155,8 +169,10 @@ const ViewFuelOperationPage = ({
                   <ul className="list-disc pl-5">
                     {fuelOperation.fuelDistributions.map((dist, index) => (
                       <li key={index} className="text-dark dark:text-white">
-                        {dist.vehicle?.matricula || 'Vehículo Desconocido'} -{' '}
-                        {dist.liters?.toFixed(2) || 'N/A'} Litros
+                        {dist.vehicle
+                          ? `${dist.vehicle.marca} ${dist.vehicle.modelo} (${dist.vehicle.matricula})`
+                          : 'Vehículo Desconocido'}{' '}
+                        - {dist.liters?.toFixed(2) || 'N/A'} Litros
                       </li>
                     ))}
                     {fuelOperation.operationReservorio.map((op, index) => (

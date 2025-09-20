@@ -21,6 +21,7 @@ export async function GET(
             reservorio: true,
           },
         },
+        tipoCombustible: true, // Include tipoCombustible
       },
     });
 

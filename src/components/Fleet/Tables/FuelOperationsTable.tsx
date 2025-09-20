@@ -321,9 +321,9 @@ const FuelOperationsTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.reservorio?.nombre ||
-                        operation.vehicle?.matricula ||
-                        'N/A'}
+                      {operation.vehicle
+                        ? `${operation.vehicle.marca} ${operation.vehicle.modelo} (${operation.vehicle.matricula})`
+                        : operation.reservorio?.nombre || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell className="xl:pr-7.5">

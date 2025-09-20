@@ -142,6 +142,8 @@ export async function POST(request: Request) {
       valorOperacionLitros, // Recibir del frontend
       saldoFinalLitros, // Recibir del frontend
       reservorioId, // Recibir del frontend para operaciones con reservorio
+      descripcion, // Recibir del frontend
+      ubicacion_cupet, // Recibir del frontend
     } = body;
 
     let fuelCard;
@@ -230,6 +232,27 @@ export async function POST(request: Request) {
           }
         }
       }
+
+      if (operationReservorio) {
+        for (const op of operationReservorio) {
+          const reservorio = await prisma.reservorio.findUnique({
+            where: { id: op.reservorio_id },
+          });
+          if (reservorio) {
+            const capacidadDisponible =
+              (reservorio.capacidad_total || 0) -
+              (reservorio.capacidad_actual || 0);
+            if (op.litros > capacidadDisponible) {
+              return NextResponse.json(
+                {
+                  message: `La cantidad de litros para el reservorio ${reservorio.nombre} supera la capacidad disponible (${capacidadDisponible.toFixed(2)} L).`,
+                },
+                { status: 400 }
+              );
+            }
+          }
+        }
+      }
     }
 
     const newFuelOperation = await prisma.$transaction(async (prisma) => {
@@ -266,6 +289,8 @@ export async function POST(request: Request) {
           valorOperacionLitros,
           saldoFinal,
           saldoFinalLitros,
+          descripcion, // Guardar en la base de datos
+          ubicacion_cupet, // Guardar en la base de datos
           ...(fuelCardId && {
             fuelCard: { connect: { id: fuelCardId } },
           }),
