@@ -159,6 +159,12 @@ export async function PUT(
         },
       },
     });
+    if (fuelCardId) {
+      await prisma.fuelCard.update({
+        where: { id: fuelCardId },
+        data: { updatedAt: new Date() },
+      });
+    }
 
     return NextResponse.json(updatedFuelOperation);
   } catch (error) {
