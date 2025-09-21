@@ -176,27 +176,40 @@ export async function getCarsAbastecidos() {
     return {};
   }
 }
-export type TypeEnum = 'marca' | 'modelo' | 'tipo_vehiculo';
+export type TypeEnum = 'Administrativo' | 'Logistico' | 'EntregaDePedidos';
 export async function getVehiculesByType({ type }: { type: TypeEnum }) {
   try {
-    const vehicles = await prisma.vehicle.groupBy({
-      by: [type],
-      _count: {
-        id: true,
+    const vehicules = await prisma.servicio.findMany({
+      where: {
+        tipoServicio: type,
       },
-      orderBy: {
-        _count: {
-          id: 'desc',
+      select: {
+        vehicle: {
+          select: {
+            id: true,
+            matricula: true,
+            marca: true,
+            modelo: true,
+          },
         },
       },
     });
-    const vehiculos = vehicles.map((vehiculo) => {
-      return {
-        name: vehiculo[type],
-        data: vehiculo._count.id,
-      };
-    });
-    return vehiculos;
+    const vehicleCounts = vehicules.reduce((acc: any, item) => {
+      const vehicleId = item.vehicle?.id || 0;
+      acc[vehicleId] = (acc[vehicleId] || 0) + 1;
+      return acc;
+    }, {});
+
+    const result = vehicules
+      .filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.vehicle?.id === item.vehicle?.id)
+      )
+      .map((item) => ({
+        name: item.vehicle?.marca,
+        data: vehicleCounts[item.vehicle?.id || 0] as number,
+      }));
+    return result;
   } catch (error) {
     console.error('Error fetching vehicules by type:', error);
     return NextResponse.json(
@@ -206,7 +219,53 @@ export async function getVehiculesByType({ type }: { type: TypeEnum }) {
   }
 }
 
-export async function getChipFuel(fecha: Date) {
+export async function getChipFuel(fecha: Date, fuelCardId: string) {
+  const startMonth = startOfMonth(fecha);
+  const endMonth = endOfMonth(fecha);
+  try {
+    const getchips = await prisma.fuelOperation.findMany({
+      where: {
+        fecha: {
+          gte: startMonth,
+          lte: endMonth,
+        },
+        fuelCard: {
+          id: parseInt(fuelCardId),
+        },
+      },
+      select: {
+        id: true,
+        tipoOperacion: true,
+        saldoInicio: true,
+        saldoFinal: true,
+        valorOperacionLitros: true,
+        fecha: true,
+        tipoCombustible: true,
+        tipoCombustible_id: true,
+        descripcion: true,
+        operationReservorio: {
+          select: {
+            reservorio: {
+              select: {
+                nombre: true,
+              },
+            },
+            litros: true,
+          },
+        },
+      },
+    });
+    return getchips;
+  } catch (error) {
+    console.error('Error fetching chip fuel:', error);
+    return NextResponse.json(
+      { error: 'Error fetching chip fuel' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function getChipFuelTotal(fecha: Date) {
   const startMonth = startOfMonth(fecha);
   const endMonth = endOfMonth(fecha);
   try {
@@ -415,7 +474,7 @@ export async function getGastosMantenimiento_Combustible(params: {
       select: {
         id: true,
         matricula: true,
-        modelo: true,
+        marca: true,
         mantenimientos: {
           select: {
             costo: true,
@@ -464,7 +523,7 @@ export async function getGastosMantenimiento_Combustible(params: {
 
       return {
         vehicleId: vehicle.id,
-        matricula: `${vehicle.modelo}`,
+        matricula: `${vehicle.marca}`,
         totalMantenimientos,
         totalCombustible,
       };
@@ -670,7 +729,9 @@ export async function getEventsCalendar() {
     events.push(
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
-        title: `Vencimiento de la circulación del vehículo ${item.matricula}`,
+        title: item.fecha_vencimiento_circulacion
+          ? `Vencimiento de la circulación del vehículo ${item.matricula}`
+          : `Vencimiento de la circulación del vehículo ${item.matricula}`,
         startDate: item.fecha_vencimiento_circulacion || new Date(),
         endDate: item.fecha_vencimiento_circulacion || new Date(),
         color: '#e32f21',
@@ -679,7 +740,9 @@ export async function getEventsCalendar() {
     events.push(
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
-        title: `Vencimiento de la licencia operativa del vehículo ${item.matricula}`,
+        title: item.fecha_vencimiento_licencia_operativa
+          ? `Vencimiento de la licencia operativa del vehículo ${item.matricula}`
+          : `No hay licencia operativa del vehículo ${item.matricula}`,
         startDate: item.fecha_vencimiento_licencia_operativa || new Date(),
         endDate: item.fecha_vencimiento_licencia_operativa || new Date(),
         color: '#e32f21',
@@ -688,7 +751,9 @@ export async function getEventsCalendar() {
     events.push(
       ...vehiculos.map((item) => ({
         id: item.id.toString(),
-        title: `Vencimiento del somatón del vehículo ${item.matricula}`,
+        title: item.fecha_vencimiento_somaton
+          ? `Vencimiento del somatón del vehículo ${item.matricula}`
+          : `No hay somaton del vehículo ${item.matricula}`,
         startDate: item.fecha_vencimiento_somaton || new Date(),
         endDate: item.fecha_vencimiento_somaton || new Date(),
         color: '#e32f21',

@@ -8,7 +8,11 @@ import {
 } from '@/components/ui/table';
 import { cn, getDateByMonth, getMonthName } from '@/lib/utils';
 import { PeriodPicker } from '@/components/period-picker';
-import { getChipFuel } from '@/lib/actions/actions';
+import {
+  getChipFuel,
+  getChipFuelTotal,
+  getFuelCardData,
+} from '@/lib/actions/actions';
 import { OperationTipo, TipoCombustible } from '@/types/fleet';
 import { formatDate } from 'date-fns';
 import { ExportChipCombustible } from './exportChip';
@@ -27,9 +31,11 @@ export interface ChipCombustibleData {
 export async function ChipsCombustible({
   className,
   timeframe,
+  fuelCardID,
 }: {
   className?: string;
   timeframe?: string;
+  fuelCardID?: string;
 }) {
   const months = [
     'Enero',
@@ -45,11 +51,29 @@ export async function ChipsCombustible({
     'Noviembre',
     'Diciembre',
   ];
-  const date = getDateByMonth(timeframe || 'Septiembre');
-  const data = await getChipFuel(date);
+  const date = getDateByMonth(timeframe || months[new Date().getMonth()]);
+  const fuelCardId = fuelCardID || '';
+  const fueldCard = (await getFuelCardData()).map(
+    (fueldCarde) => fueldCarde.numeroDeTarjeta
+  );
+  const data = fuelCardID
+    ? await getChipFuel(date, fuelCardId)
+    : await getChipFuelTotal(date);
   if (!Array.isArray(data)) {
     // Manejar el error en UI
     return <div>Error al cargar los vehículos</div>;
+  }
+  const selectedMonthParam = timeframe || months[new Date().getMonth()];
+  let selectedMonth = months[new Date().getMonth()];
+
+  if (selectedMonthParam && typeof selectedMonthParam === 'string') {
+    const parts = selectedMonthParam.split(':');
+    if (parts[0].length > 1) {
+      const monthFromParams = parts[0];
+      if (months.includes(monthFromParams)) {
+        selectedMonth = monthFromParams;
+      }
+    }
   }
 
   return (
@@ -63,11 +87,19 @@ export async function ChipsCombustible({
         <h2 className="mb-4 text-body-2xlg font-bold text-dark dark:text-white">
           Chips de combustible
         </h2>
-        <PeriodPicker
-          items={months}
-          defaultValue={months[new Date().getMonth()]}
-          sectionKey="chips_combustible"
-        />
+        <div className="flex flex-wrap justify-between gap-4">
+          <PeriodPicker
+            items={months}
+            defaultValue={selectedMonth}
+            sectionKey="chips_combustible"
+          />
+          <PeriodPicker
+            items={fueldCard}
+            defaultValue={fuelCardID}
+            sectionKey="fuelCardID"
+            posibleTitle="Tarjeta"
+          />
+        </div>
       </div>
       <div className="mb-4 mt-2">
         <ExportChipCombustible data={data} />

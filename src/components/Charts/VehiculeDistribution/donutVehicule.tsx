@@ -13,7 +13,7 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 
 type ViewType = 'marca' | 'modelo' | 'tipo_vehiculo';
 export interface CarData {
-  name: string | null;
+  name?: string;
   data: number;
 }
 interface PropsType {

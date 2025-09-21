@@ -66,7 +66,7 @@ export async function HistorialMantenimientoTable({
     return <div>Error al cargar los mantenimientos</div>;
   }
 
-  const selectedMonthParam = timeframe || 'agosto';
+  const selectedMonthParam = timeframe || months[new Date().getMonth()];
   let selectedMonth = months[new Date().getMonth()];
 
   if (selectedMonthParam && typeof selectedMonthParam === 'string') {
@@ -179,14 +179,7 @@ export async function HistorialMantenimientoTable({
                   {JSON.parse(mantenimiento.lista_de_piezas).map(
                     (pieza: any, index: any) => (
                       <div key={index} className="pieza-item">
-                        <strong>Name:</strong> {pieza.name}
-                        <br />
-                        <strong>Serie Anterior:</strong>{' '}
-                        {pieza.numero_serie_anterior || 'N/A'}
-                        <br />
-                        <strong>Serie Nueva:</strong>{' '}
-                        {pieza.numero_serie_nueva || 'N/A'}
-                        <hr />
+                        <strong>{pieza.name}</strong>
                       </div>
                     )
                   )}
