@@ -101,7 +101,16 @@ const FuelOperationsTable = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const result = await response.json();
-      setFuelOperations(result.data);
+      console.log(result.data);
+      const ordenadas = result.data.sort(
+        (a: FuelOperation, b: FuelOperation) => {
+          if (a.fuelCard.id !== b.fuelCard.id) {
+            return a.fuelCard.id - b.fuelCard.id;
+          }
+          return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+        }
+      );
+      setFuelOperations(ordenadas);
       setTotalFuelOperations(result.total);
       setTotalPages(Math.ceil(result.total / limit));
     } catch (e: any) {
