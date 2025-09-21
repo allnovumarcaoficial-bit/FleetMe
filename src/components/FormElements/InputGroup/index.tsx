@@ -17,6 +17,7 @@ type InputGroupProps = {
   iconPosition?: 'left' | 'right';
   height?: 'sm' | 'default';
   defaultValue?: string;
+  min?: string;
 };
 
 type InputGroupPropsPass = {
@@ -44,6 +45,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
   type,
   placeholder,
   required,
+  min,
   disabled,
   active,
   handleChange,
@@ -89,6 +91,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
           required={required}
           disabled={disabled}
           data-active={active}
+          min={min}
         />
 
         {icon}
