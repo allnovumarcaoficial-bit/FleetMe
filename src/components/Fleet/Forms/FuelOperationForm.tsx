@@ -650,6 +650,7 @@ const FuelOperationForm = ({
           fuelCardId: Number(value),
           fuelCard: selectedFuelCard,
           saldoInicio: selectedFuelCard.saldo || 1, // Actualiza odómetro automáticamente
+          fecha: selectedFuelCard.updatedAt,
         }));
       }
       return;
@@ -731,7 +732,7 @@ const FuelOperationForm = ({
                 }))}
                 value={formData.fuelCardId?.toString() || ''}
                 placeholder="Selecciona una tarjeta"
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 name="fuelCardId"
                 required={!esReservorio}
               />
@@ -798,6 +799,11 @@ const FuelOperationForm = ({
               }
               handleChange={handleChange}
               required
+              min={
+                formData.fecha
+                  ? dayjs(formData.fecha).format('YYYY-MM-DDTHH:mm')
+                  : undefined
+              }
             />
             {errors.fecha && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
