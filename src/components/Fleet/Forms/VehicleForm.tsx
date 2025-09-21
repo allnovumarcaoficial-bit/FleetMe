@@ -91,6 +91,7 @@ const VehicleForm = ({
   }>({ type: '', message: '' });
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [loading, setLoading] = useState(true);
+  const [docsVencidos, setDocsVencidos] = useState(false);
   const showMunicipios = formData.destino === 'Reparto';
   useEffect(() => {
     const fetchDependencies = async () => {
@@ -140,9 +141,38 @@ const VehicleForm = ({
   }, [
     formData.fecha_compra,
     formData.fecha_vencimiento_circulacion,
+    formData.fecha_vencimiento_somaton,
+  ]);
+
+  useEffect(() => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const licenciaVencida =
+      formData.fecha_vencimiento_licencia_operativa &&
+      new Date(formData.fecha_vencimiento_licencia_operativa) < hoy;
+    const circulacionVencida =
+      formData.fecha_vencimiento_circulacion &&
+      new Date(formData.fecha_vencimiento_circulacion) < hoy;
+    const somatonVencido =
+      formData.fecha_vencimiento_somaton &&
+      new Date(formData.fecha_vencimiento_somaton) < hoy;
+
+    if (licenciaVencida || circulacionVencida || somatonVencido) {
+      setDocsVencidos(true);
+      setFormData((prev) => ({
+        ...prev,
+        estado: 'Inactivo',
+      }));
+    } else {
+      setDocsVencidos(false);
+    }
+  }, [
+    formData.fecha_vencimiento_licencia_operativa,
     formData.fecha_vencimiento_circulacion,
     formData.fecha_vencimiento_somaton,
   ]);
+
   useEffect(() => {
     if (initialData) {
       setFormData((prev) => ({
@@ -733,7 +763,8 @@ const VehicleForm = ({
                 !formData.fecha_compra ||
                 !formData.fecha_vencimiento_circulacion ||
                 !formData.fecha_vencimiento_licencia_operativa ||
-                !formData.fecha_vencimiento_somaton
+                !formData.fecha_vencimiento_somaton ||
+                docsVencidos
                   ? [{ value: 'Inactivo', label: 'Inactivo' }]
                   : [
                       { value: 'Activo', label: 'Activo' },
@@ -744,7 +775,8 @@ const VehicleForm = ({
                 !formData.fecha_compra ||
                 !formData.fecha_vencimiento_circulacion ||
                 !formData.fecha_vencimiento_licencia_operativa ||
-                !formData.fecha_vencimiento_somaton
+                !formData.fecha_vencimiento_somaton ||
+                docsVencidos
                   ? 'Inactivo'
                   : formData.estado || 'Activo'
               }
