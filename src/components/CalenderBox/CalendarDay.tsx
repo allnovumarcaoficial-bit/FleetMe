@@ -20,11 +20,7 @@ export function CalendarDay({
   onEventClick,
 }: CalendarDayProps) {
   const dayEvents = events.filter((event) =>
-    isDateInRange(
-      date,
-      event.startDate || new Date(),
-      event.endDate || new Date()
-    )
+    isDateInRange(date, event.startDate, event.endDate)
   );
 
   return (
