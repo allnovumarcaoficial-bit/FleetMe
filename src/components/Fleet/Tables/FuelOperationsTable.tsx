@@ -196,8 +196,8 @@ const FuelOperationsTable = () => {
       'Saldo Inicial': !item.fuelCard?.numeroDeTarjeta
         ? `${item.saldoInicio?.toFixed(2)} L`
         : `$${item.saldoInicio?.toFixed(2)}`,
-      'Valor Dinero': item.valorOperacionDinero,
-      'Valor Litros': item.valorOperacionLitros,
+      'Valor Dinero': `$${item.valorOperacionDinero?.toFixed(2)}`,
+      'Valor Litros': `${item.valorOperacionLitros?.toFixed(2)} L`,
       'Saldo Final': !item.fuelCard?.numeroDeTarjeta
         ? `${item.saldoFinal?.toFixed(2)} L`
         : `$${item.saldoFinal?.toFixed(2)}`,
@@ -341,12 +341,14 @@ const FuelOperationsTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.valorOperacionDinero?.toFixed(2) || 'N/A'}
+                      {`$${operation.valorOperacionDinero?.toFixed(2)}` ||
+                        'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.valorOperacionLitros?.toFixed(2) || 'N/A'}
+                      {`${operation.valorOperacionLitros?.toFixed(2)} L` ||
+                        'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
