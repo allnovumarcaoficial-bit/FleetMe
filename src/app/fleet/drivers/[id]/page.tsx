@@ -157,7 +157,7 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
                 : 'N/A'}
             </p>
             <p>
-              <strong>Carnet Prosefinal:</strong>{' '}
+              <strong>Carnet Profesional:</strong>{' '}
               {driver.carnet_peritage ? 'Sí' : 'No'}
             </p>{' '}
             {driver.carnet_peritage && (
