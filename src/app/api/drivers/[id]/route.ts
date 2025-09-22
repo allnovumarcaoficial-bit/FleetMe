@@ -44,8 +44,11 @@ export async function PUT(request: Request, context: any) {
       fecha_vencimiento_licencia,
       carnet_peritage,
       estado, // Add estado field
-      vehicleId, // Optional: for connecting/disconnecting a vehicle
+      vehicleId,
+      fecha_vencimiento_carnet,
+      fecha_vencimiento_psicometrico,
     } = body;
+
     if (estado) {
       const validation = await canUpdateDriverStatus(id, estado);
       if (!validation.canUpdate) {
@@ -73,6 +76,8 @@ export async function PUT(request: Request, context: any) {
         nombre,
         licencia,
         fecha_vencimiento_licencia: parsedFechaVencimientoLicencia,
+        fecha_vencimiento_carnet,
+        fecha_vencimiento_psicometrico,
         carnet_peritage,
         estado, // Add estado to the update data
         ...(vehicleId !== undefined && { vehicle: vehicleUpdateData }),

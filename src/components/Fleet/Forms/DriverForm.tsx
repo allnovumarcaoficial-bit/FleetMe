@@ -31,6 +31,8 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
           fecha_vencimiento_licencia: null,
           carnet_peritage: false,
           estado: 'Activo', // Default to 'Activo'
+          fecha_vencimiento_psicometrico: undefined,
+          fecha_vencimiento_carnet: undefined,
         }
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -48,6 +50,13 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
         fecha_vencimiento_licencia: initialData.fecha_vencimiento_licencia
           ? new Date(initialData.fecha_vencimiento_licencia)
           : null,
+        fecha_vencimiento_carnet: initialData.fecha_vencimiento_carnet
+          ? new Date(initialData.fecha_vencimiento_carnet)
+          : undefined,
+        fecha_vencimiento_psicometrico:
+          initialData.fecha_vencimiento_psicometrico
+            ? new Date(initialData.fecha_vencimiento_psicometrico)
+            : undefined,
       }));
       setSelectedFecha(
         initialData.fecha_vencimiento_licencia
@@ -310,21 +319,6 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               </p>
             )}
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="carnet_peritage"
-              checked={formData.carnet_peritage || false}
-              onChange={handleChange}
-              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-            <label
-              htmlFor="carnet_peritage"
-              className="text-dark dark:text-white"
-            >
-              Tiene Carnet Profesional
-            </label>
-          </div>
           <div>
             <Select
               label="Estado"
@@ -353,6 +347,69 @@ const DriverForm = ({ initialData, onSuccess, onCancel }: DriverFormProps) => {
               <p className="mt-1 text-sm text-red-500">{errors.estado}</p>
             )}
           </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              name="carnet_peritage"
+              checked={formData.carnet_peritage || false}
+              onChange={handleChange}
+              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
+            />
+            <label
+              htmlFor="carnet_peritage"
+              className="text-dark dark:text-white"
+            >
+              Tiene Carnet Profesional
+            </label>
+          </div>
+          {formData.carnet_peritage && (
+            <>
+              <div>
+                <InputGroup
+                  label="Fecha de Vencimiento del psicométrico"
+                  name="fecha_vencimiento_psicometrico"
+                  type="date"
+                  placeholder="Selecciona la fecha"
+                  value={
+                    formData.fecha_vencimiento_psicometrico
+                      ? formData.fecha_vencimiento_psicometrico
+                          .toISOString()
+                          .split('T')[0]
+                      : ''
+                  }
+                  handleChange={handleChange}
+                  required
+                />
+                {errors.fecha_vencimiento_psicometrico && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.fecha_vencimiento_psicometrico}
+                  </p>
+                )}
+              </div>
+              <div>
+                <InputGroup
+                  label="Fecha de Vencimiento del carnet profesional"
+                  name="fecha_vencimiento_carnet"
+                  type="date"
+                  placeholder="Selecciona la fecha"
+                  value={
+                    formData.fecha_vencimiento_carnet
+                      ? formData.fecha_vencimiento_carnet
+                          .toISOString()
+                          .split('T')[0]
+                      : ''
+                  }
+                  handleChange={handleChange}
+                  required
+                />
+                {errors.fecha_vencimiento_carnet && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.fecha_vencimiento_carnet}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end gap-4">

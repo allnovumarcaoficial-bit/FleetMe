@@ -115,21 +115,23 @@ model Vehicle {
 }
 
 model Driver {
-  id                         Int        @id @default(autoincrement())
-  nombre                     String
-  licencia                   String     @unique
-  fecha_vencimiento_licencia DateTime
-  carnet_peritage            Boolean
-  phone                      String?
-  carnet                     String?
-  address                    String?
-  createdAt                  DateTime   @default(now())
-  updatedAt                  DateTime   @updatedAt
-  photo                      String?
-  estado                     String     @default("Activo")
-  vehicleId                  Int?
-  vehicle                    Vehicle?   @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
-  Servicio                   Servicio[]
+  id                                Int        @id @default(autoincrement())
+  nombre                            String
+  licencia                          String     @unique
+  fecha_vencimiento_licencia        DateTime
+  carnet_peritage                   Boolean
+  phone                             String?
+  carnet                            String?
+  address                           String?
+  fecha_vencimiento_carnet          DateTime?
+  fecha_vencimiento_psicometrico    DateTime?
+  createdAt                         DateTime   @default(now())
+  updatedAt                         DateTime   @updatedAt
+  photo                             String?
+  estado                            String     @default("Activo")
+  vehicleId                         Int?
+  vehicle                           Vehicle?   @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  Servicio                          Servicio[]
 }
 
 model Mantenimiento {

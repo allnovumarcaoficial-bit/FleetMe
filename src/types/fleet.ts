@@ -22,6 +22,8 @@ export interface Driver {
   phone?: string | null;
   createdAt: Date;
   updatedAt: Date;
+  fecha_vencimiento_carnet?: Date;
+  fecha_vencimiento_psicometrico?: Date;
   vehicleId?: number | null; // Foreign key to Vehicle
 }
 

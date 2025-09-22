@@ -157,9 +157,31 @@ const DriverDetailsPage = ({ params }: DriverDetailsPageProps) => {
                 : 'N/A'}
             </p>
             <p>
-              <strong>Carnet de Peritaje:</strong>{' '}
+              <strong>Carnet Prosefinal:</strong>{' '}
               {driver.carnet_peritage ? 'Sí' : 'No'}
-            </p>
+            </p>{' '}
+            {driver.carnet_peritage && (
+              <>
+                <p>
+                  <strong>Fecha de Vencimiento de Carnet Profesional:</strong>{' '}
+                  {driver.fecha_vencimiento_carnet
+                    ? format(
+                        new Date(driver.fecha_vencimiento_carnet),
+                        'dd/MM/yyyy'
+                      )
+                    : 'N/A'}
+                </p>
+                <p>
+                  <strong>Fecha de Vencimiento del Psicómetrico:</strong>{' '}
+                  {driver.fecha_vencimiento_psicometrico
+                    ? format(
+                        new Date(driver.fecha_vencimiento_psicometrico),
+                        'dd/MM/yyyy'
+                      )
+                    : 'N/A'}
+                </p>
+              </>
+            )}
             <p>
               <strong>Vehículo Asignado:</strong>{' '}
               {driver.vehicle
