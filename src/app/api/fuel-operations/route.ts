@@ -99,9 +99,14 @@ export async function GET(request: Request) {
         },
         operationReservorio: {
           include: {
-            reservorio: true,
+            reservorio: {
+              include: {
+                tipoCombustible: true,
+              },
+            },
           },
         },
+        tipoCombustible: true,
       },
     });
 
@@ -111,6 +116,7 @@ export async function GET(request: Request) {
       ...op,
       vehicle: op.fuelDistributions[0]?.vehicle || null,
       reservorio: op.operationReservorio[0]?.reservorio || null,
+      tipoCombustible: op.tipoCombustible,
     }));
 
     return NextResponse.json({
@@ -183,6 +189,19 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
+    } else if (reservorioId) {
+      const reservorio = await prisma.reservorio.findUnique({
+        where: { id: reservorioId },
+      });
+      if (!reservorio) {
+        return NextResponse.json(
+          { message: 'Reservoir not found' },
+          { status: 404 }
+        );
+      }
+      saldoInicio = reservorio.capacidad_actual;
+      saldoFinal =
+        (reservorio.capacidad_actual || 0) - (valorOperacionLitros || 0);
     } else {
       // Si no hay fuelCardId, la operación es con reservorio, y los saldos de tarjeta no aplican.
       saldoInicio = undefined;

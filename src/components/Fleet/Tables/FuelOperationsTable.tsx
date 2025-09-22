@@ -31,7 +31,11 @@ const FuelOperationsTable = () => {
     (FuelOperation & {
       fuelCard: FuelCard;
       vehicle: Vehicle | null;
-      reservorio: { nombre: string } | null;
+      reservorio: {
+        nombre: string;
+        tipoCombustible: { nombre: string } | null;
+      } | null;
+      tipoCombustible: { nombre: string } | null;
     })[]
   >([]);
   const [loading, setLoading] = useState(true);
@@ -51,12 +55,16 @@ const FuelOperationsTable = () => {
   const fuelOperationColumns: ColumnFilter[] = [
     { key: 'tipoOperacion', title: 'Tipo de Operación', type: 'text' },
     { key: 'fecha', title: 'Fecha', type: 'dateRange' },
-    { key: 'fuelCard.numeroDeTarjeta', title: 'Tarjeta', type: 'text' },
+    { key: 'fuelCard.numeroDeTarjeta', title: 'Origen', type: 'text' },
     { key: 'saldoInicio', title: 'Saldo Inicio', type: 'text' },
     { key: 'valorOperacionDinero', title: 'Valor Dinero', type: 'text' },
     { key: 'valorOperacionLitros', title: 'Valor Litros', type: 'text' },
     { key: 'saldoFinal', title: 'Saldo Final', type: 'text' },
-    { key: 'saldoFinalLitros', title: 'Saldo Final Litros', type: 'text' },
+    {
+      key: 'tipoCombustible.nombre',
+      title: 'Tipo de Combustible',
+      type: 'text',
+    },
     { key: 'vehicle.matricula', title: 'Destino', type: 'text' },
   ];
 
@@ -104,9 +112,12 @@ const FuelOperationsTable = () => {
       console.log(result.data);
       const ordenadas = result.data.sort(
         (a: FuelOperation, b: FuelOperation) => {
-          if (a.reservorio?.id && b.fuelCard.id) return 1;
-          if (a.fuelCard.id !== b.fuelCard.id) {
-            return a.fuelCard.id - b.fuelCard.id;
+          // Manejar casos donde fuelCard o fuelCard.id puedan ser null/undefined
+          const aId = a.fuelCard?.id ?? -1; // Asignar un valor para ordenar si es null
+          const bId = b.fuelCard?.id ?? -1; // Asignar un valor para ordenar si es null
+
+          if (aId !== bId) {
+            return aId - bId;
           }
           return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
         }
@@ -179,12 +190,20 @@ const FuelOperationsTable = () => {
     const datosFormateados = fuelOperations.map((item) => ({
       'Tipo de Operación': item.tipoOperacion,
       Fecha: new Date(item.fecha || '').toLocaleDateString('es-ES'),
-      Tarjeta: item.fuelCard.numeroDeTarjeta,
-      'Saldo Inicial': item.saldoInicio,
+      Origen: item.fuelCard?.numeroDeTarjeta
+        ? `Tarjeta ${item.fuelCard.numeroDeTarjeta}`
+        : item.reservorio?.nombre,
+      'Saldo Inicial': !item.fuelCard?.numeroDeTarjeta
+        ? `${item.saldoInicio?.toFixed(2)} L`
+        : `$${item.saldoInicio?.toFixed(2)}`,
       'Valor Dinero': item.valorOperacionDinero,
       'Valor Litros': item.valorOperacionLitros,
-      'Saldo Final': item.saldoFinal,
-      'Saldo Final Litros': item.saldoFinalLitros,
+      'Saldo Final': !item.fuelCard?.numeroDeTarjeta
+        ? `${item.saldoFinal?.toFixed(2)} L`
+        : `$${item.saldoFinal?.toFixed(2)}`,
+      'Tipo de Combustible': !item.fuelCard?.numeroDeTarjeta
+        ? item.reservorio?.tipoCombustible?.nombre || 'N/A'
+        : item.tipoCombustible?.nombre || 'N/A',
       'Vehículo destino': item.vehicle?.modelo || 'N/A',
     }));
 
@@ -262,15 +281,22 @@ const FuelOperationsTable = () => {
                   className="cursor-pointer"
                   onClick={() => handleSort('fuelCard.numeroDeTarjeta')}
                 >
-                  Tarjeta{' '}
+                  Origen{' '}
                   {orderBy === 'fuelCard.numeroDeTarjeta' &&
                     (orderDirection === 'asc' ? '▲' : '▼')}
                 </TableHead>
                 <TableHead>Saldo Inicio</TableHead>
-                <TableHead>Valor Dinero</TableHead>
-                <TableHead>Valor Litros</TableHead>
+                <TableHead>Valor Operación Dinero</TableHead>
+                <TableHead>Valor Operación Litros</TableHead>
                 <TableHead>Saldo Final</TableHead>
-                <TableHead>Saldo Final Litros</TableHead>
+                <TableHead
+                  className="cursor-pointer"
+                  onClick={() => handleSort('tipoCombustible.nombre')}
+                >
+                  Tipo de Combustible{' '}
+                  {orderBy === 'tipoCombustible.nombre' &&
+                    (orderDirection === 'asc' ? '▲' : '▼')}
+                </TableHead>
                 <TableHead
                   className="cursor-pointer"
                   onClick={() => handleSort('vehicle.matricula')}
@@ -301,12 +327,16 @@ const FuelOperationsTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.fuelCard?.numeroDeTarjeta || 'N/A'}
+                      {operation.fuelCard?.numeroDeTarjeta
+                        ? `Tarjeta ${operation.fuelCard.numeroDeTarjeta}`
+                        : operation.reservorio?.nombre || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.saldoInicio?.toFixed(2) || 'N/A'}
+                      {!operation.fuelCard?.numeroDeTarjeta
+                        ? `${operation.saldoInicio?.toFixed(2)} L`
+                        : `$${operation.saldoInicio?.toFixed(2)}` || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
@@ -321,12 +351,16 @@ const FuelOperationsTable = () => {
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.saldoFinal?.toFixed(2) || 'N/A'}
+                      {!operation.fuelCard?.numeroDeTarjeta
+                        ? `${operation.saldoFinal?.toFixed(2)} L`
+                        : `$${operation.saldoFinal?.toFixed(2)}` || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <p className="text-dark dark:text-white">
-                      {operation.saldoFinalLitros?.toFixed(2) || 'N/A'}
+                      {!operation.fuelCard?.numeroDeTarjeta
+                        ? operation.reservorio?.tipoCombustible?.nombre || 'N/A'
+                        : operation.tipoCombustible?.nombre || 'N/A'}
                     </p>
                   </TableCell>
                   <TableCell>
