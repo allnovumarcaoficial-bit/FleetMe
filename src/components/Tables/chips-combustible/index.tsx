@@ -31,11 +31,11 @@ export interface ChipCombustibleData {
 export async function ChipsCombustible({
   className,
   timeframe,
-  fuelCardID,
+  fuelCardIDChip,
 }: {
   className?: string;
   timeframe?: string;
-  fuelCardID?: string;
+  fuelCardIDChip?: string;
 }) {
   const months = [
     'Enero',
@@ -52,11 +52,11 @@ export async function ChipsCombustible({
     'Diciembre',
   ];
   const date = getDateByMonth(timeframe || months[new Date().getMonth()]);
-  const fuelCardId = fuelCardID || '';
+  const fuelCardId = fuelCardIDChip || '';
   const fueldCard = (await getFuelCardData()).map(
     (fueldCarde) => fueldCarde.numeroDeTarjeta
   );
-  const data = fuelCardID
+  const data = fuelCardIDChip
     ? await getChipFuel(date, fuelCardId)
     : await getChipFuelTotal(date);
   if (!Array.isArray(data)) {
@@ -95,7 +95,7 @@ export async function ChipsCombustible({
           />
           <PeriodPicker
             items={fueldCard}
-            defaultValue={fuelCardID}
+            defaultValue={fuelCardIDChip}
             sectionKey="fuelCardID"
             posibleTitle="Tarjeta"
           />

@@ -60,8 +60,8 @@ export function GastoTotalChart({ data }: PropsType) {
     // Obtener todas las fechas únicas
     const allDates = [
       ...new Set([
-        ...data.mantenimiento.map((item) => item.x),
-        ...data.combustible.map((item) => item.x),
+        ...data.mantenimiento.map((item) => item.x || 0),
+        ...data.combustible.map((item) => item.x || 0),
       ]),
     ].sort();
 
@@ -70,9 +70,9 @@ export function GastoTotalChart({ data }: PropsType) {
       ['Fecha', 'Carga', 'Consumo'], // Headers
       ...allDates.map((date) => {
         const mantenimientoValue =
-          data.mantenimiento.find((item) => item.x === date)?.y || '';
+          data.mantenimiento.find((item) => item.x === date)?.y || 0;
         const combustibleValue =
-          data.combustible.find((item) => item.x === date)?.y || '';
+          data.combustible.find((item) => item.x === date)?.y || 0;
         return [date, mantenimientoValue, combustibleValue];
       }),
     ]

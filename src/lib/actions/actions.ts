@@ -3,10 +3,19 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { de, id, tr } from 'date-fns/locale';
-import { endOfMonth, formatDate, startOfMonth, subMonths } from 'date-fns';
+import {
+  addDays,
+  endOfDay,
+  endOfMonth,
+  formatDate,
+  startOfDay,
+  startOfMonth,
+  subMonths,
+} from 'date-fns';
 import { CalendarEvent } from '@/types/calendar';
 import { parse } from 'path';
 import { KilometrosRecorridosData } from '@/components/Tables/kilometros-recorridos';
+import { getDateByMonth } from '../utils';
 export async function createDriver(id: number) {
   try {
     if (isNaN(id)) {
@@ -601,10 +610,18 @@ export async function getMantenimientoTotal(fecha: Date) {
 
 export async function getGastoCombustible_Total(
   fecha: Date,
-  fuelCardId: string
+  fuelCardId: string,
+  periodo: string
 ) {
-  const startMonth = startOfMonth(fecha);
-  const endMonth = endOfMonth(fecha);
+  let startMonth = new Date();
+  let endMonth = new Date();
+  if (periodo === 'Mensual') {
+    startMonth = startOfMonth(fecha);
+    endMonth = endOfMonth(fecha);
+  } else {
+    startMonth = startOfDay(fecha);
+    endMonth = endOfDay(fecha);
+  }
   try {
     const combustible = await prisma.fuelOperation.aggregate({
       where: {
@@ -630,10 +647,18 @@ export async function getGastoCombustible_Total(
 
 export async function getSaldoCombustible_Total(
   fecha: Date,
-  fuelCardId: string
+  fuelCardId: string,
+  periodo: string
 ) {
-  const startMonth = startOfMonth(fecha);
-  const endMonth = endOfMonth(fecha);
+  let startMonth = new Date();
+  let endMonth = new Date();
+  if (periodo === 'Mensual') {
+    startMonth = startOfMonth(fecha);
+    endMonth = endOfMonth(fecha);
+  } else {
+    startMonth = startOfDay(fecha);
+    endMonth = endOfDay(fecha);
+  }
   try {
     const combustible = await prisma.fuelOperation.aggregate({
       where: {
@@ -657,17 +682,80 @@ export async function getSaldoCombustible_Total(
   }
 }
 
-export async function getReporteGastos({ fuelCardId }: { fuelCardId: string }) {
+export async function getReporteGastos({
+  fuelCardId,
+  periodo,
+  mes,
+}: {
+  fuelCardId: string;
+  periodo: string;
+  mes: string;
+}) {
+  const months = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
   try {
     const mantenimientosGastos = [];
     const combustibleGastos = [];
-    for (let i = 0; i < 12; i++) {
-      const fecha = new Date();
-      fecha.setMonth(i);
-      const combustible = await getGastoCombustible_Total(fecha, fuelCardId);
-      const mantenimiento = await getSaldoCombustible_Total(fecha, fuelCardId);
-      mantenimientosGastos.push(mantenimiento);
-      combustibleGastos.push(combustible);
+    if (periodo === 'Mensual') {
+      for (let i = 0; i < 12; i++) {
+        const fecha = new Date();
+        fecha.setMonth(i);
+        const combustible = await getGastoCombustible_Total(
+          fecha,
+          fuelCardId,
+          periodo
+        );
+        const mantenimiento = await getSaldoCombustible_Total(
+          fecha,
+          fuelCardId,
+          periodo
+        );
+        mantenimientosGastos.push({
+          x: months[i].toUpperCase().slice(0, 3),
+          y: mantenimiento,
+        });
+        combustibleGastos.push({
+          x: months[i].toUpperCase().slice(0, 3),
+          y: combustible,
+        });
+      }
+    } else {
+      const fecha = getDateByMonth(mes);
+      let startMonth = startOfMonth(fecha);
+      const endMonth = endOfMonth(fecha);
+      while (startMonth <= endMonth) {
+        const combustible = await getGastoCombustible_Total(
+          startMonth,
+          fuelCardId,
+          periodo
+        );
+        const mantenimiento = await getSaldoCombustible_Total(
+          startMonth,
+          fuelCardId,
+          periodo
+        );
+        mantenimientosGastos.push({
+          x: formatDate(startMonth.toISOString(), 'dd/MM/yyyy'),
+          y: mantenimiento,
+        });
+        combustibleGastos.push({
+          x: formatDate(startMonth.toISOString(), 'dd/MM/yyyy'),
+          y: combustible,
+        });
+        startMonth = addDays(startMonth, 1);
+      }
     }
 
     return {

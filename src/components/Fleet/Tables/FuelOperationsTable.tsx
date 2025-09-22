@@ -104,6 +104,7 @@ const FuelOperationsTable = () => {
       console.log(result.data);
       const ordenadas = result.data.sort(
         (a: FuelOperation, b: FuelOperation) => {
+          if (a.reservorio?.id && b.fuelCard.id) return 1;
           if (a.fuelCard.id !== b.fuelCard.id) {
             return a.fuelCard.id - b.fuelCard.id;
           }

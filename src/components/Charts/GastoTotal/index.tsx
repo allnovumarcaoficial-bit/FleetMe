@@ -14,9 +14,16 @@ import { standardFormat } from '@/lib/format-number';
 type PropsType = {
   timeFrame?: string;
   className?: string;
+  periodo?: string;
+  mes?: string;
 };
 
-export async function GastoTotal({ className, timeFrame }: PropsType) {
+export async function GastoTotal({
+  className,
+  timeFrame,
+  periodo,
+  mes,
+}: PropsType) {
   const months = [
     'Enero',
     'Febrero',
@@ -32,24 +39,15 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
     'Diciembre',
   ];
   const fuelCardId = timeFrame || '';
+  const periodoID = periodo || 'Diario';
   const { mantenimientosGastos, combustibleGastos } = await getReporteGastos({
     fuelCardId,
-  });
-  const mantenimientoData2 = mantenimientosGastos.map((item, index) => {
-    return {
-      y: item,
-      x: months[index].toUpperCase().slice(0, 3),
-    };
-  });
-  const gastosCombustibleData = combustibleGastos.map((item, index) => {
-    return {
-      y: item,
-      x: months[index].toUpperCase().slice(0, 3),
-    };
+    periodo: periodoID,
+    mes: mes || months[new Date().getMonth()],
   });
   const dataFormatted = {
-    mantenimiento: mantenimientoData2,
-    combustible: gastosCombustibleData,
+    mantenimiento: mantenimientosGastos,
+    combustible: combustibleGastos,
   };
   const fueldCard = (await getFuelCardData()).map(
     (fueldCarde) => fueldCarde.numeroDeTarjeta
@@ -65,13 +63,28 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
         <h2 className="text-body-2xlg font-bold text-dark dark:text-white">
           Gastos en operaciones
         </h2>
-
-        <PeriodPicker
-          defaultValue={timeFrame}
-          items={fueldCard}
-          sectionKey="fuelCardID"
-          posibleTitle="Tarjeta"
-        />
+        <div className="flex flex-wrap justify-between gap-4">
+          <PeriodPicker
+            items={['Mensual', 'Diario']}
+            defaultValue={periodoID}
+            sectionKey="periodo"
+            posibleTitle="Periodo"
+          />
+          {periodo === 'Diario' && (
+            <PeriodPicker
+              items={months}
+              defaultValue={mes || months[new Date().getMonth()]}
+              sectionKey="mes"
+              posibleTitle="Seleccione un mes"
+            />
+          )}
+          <PeriodPicker
+            defaultValue={timeFrame}
+            items={fueldCard}
+            sectionKey="fuelCardID"
+            posibleTitle="Tarjeta"
+          />
+        </div>
       </div>
 
       <GastoTotalChart data={dataFormatted} />
@@ -81,7 +94,7 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
           <dt className="text-xl font-bold text-dark dark:text-white">
             $
             {standardFormat(
-              mantenimientoData2.reduce((acc, { y }) => acc + y, 0)
+              mantenimientosGastos.reduce((acc, { y }) => acc + y, 0)
             )}
           </dt>
           <dd className="font-medium dark:text-dark-6">
@@ -93,7 +106,7 @@ export async function GastoTotal({ className, timeFrame }: PropsType) {
           <dt className="text-xl font-bold text-dark dark:text-white">
             $
             {standardFormat(
-              gastosCombustibleData.reduce((acc, { y }) => acc + y, 0)
+              combustibleGastos.reduce((acc, { y }) => acc + y, 0)
             )}
           </dt>
           <dd className="font-medium dark:text-dark-6">

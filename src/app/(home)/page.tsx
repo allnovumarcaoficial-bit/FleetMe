@@ -45,6 +45,8 @@ export default async function Home({ searchParams }: PropsType) {
           className="col-span-12 xl:col-span-7"
           key={extractTimeFrame('fuelCardID')}
           timeFrame={extractTimeFrame('fuelCardID')?.split(':')[1]}
+          periodo={extractTimeFrame('periodo')?.split(':')[1]}
+          mes={extractTimeFrame('mes')?.split(':')[1]}
         />
 
         <CarDistribution
@@ -66,7 +68,7 @@ export default async function Home({ searchParams }: PropsType) {
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
-              fuelCardID={extractTimeFrame('fuelCardID')?.split(':')[1]}
+              fuelCardIDChip={extractTimeFrame('fuelCardIDChip')?.split(':')[1]}
             />
           </Suspense>
         </div>
