@@ -21,6 +21,8 @@ export const getTitle = (path: string): string => {
     '/fleet/reservorio/new': 'Crear Reservorio',
     '/fleet/fuel-operations': 'Operaciones de Combustible',
     '/fleet/fuel-operations/new': 'Crear Operación de Combustible',
+    '/ajustes': 'Ajustes de Saldo',
+    '/ajustes/new': 'Crear Ajuste de Saldo',
   };
 
   // Coincidencia para rutas estáticas

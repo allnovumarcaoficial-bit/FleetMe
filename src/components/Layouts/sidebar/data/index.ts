@@ -52,6 +52,10 @@ export const NAV_DATA = [
             title: 'Operaciones de Combustible',
             url: '/fleet/fuel-operations',
           },
+          {
+            title: 'Ajustes',
+            url: '/ajustes',
+          },
         ],
       },
     ],

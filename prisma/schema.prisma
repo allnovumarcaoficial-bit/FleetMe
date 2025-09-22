@@ -159,6 +159,7 @@ model FuelCard {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   fuelOperations   FuelOperation[] // Add relation to FuelOperation
+  ajustes          Ajuste[]
 }
 
 model Reservorio {
@@ -297,4 +298,22 @@ enum DestinoVehiculo {
   Administrativo
   Logistico
   Reparto
+}
+
+enum TipoAjuste {
+  CREDITO
+  DEBITO
+}
+
+model Ajuste {
+  id             String     @id @default(cuid())
+  tarjetaId      Int
+  tarjeta        FuelCard   @relation(fields: [tarjetaId], references: [id])
+  tipoOperacion  TipoAjuste
+  valorOperacion Float
+  descripcion    String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([tarjetaId])
 }
