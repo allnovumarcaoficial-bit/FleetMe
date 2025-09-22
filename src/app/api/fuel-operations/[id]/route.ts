@@ -21,6 +21,7 @@ export async function GET(
             reservorio: true,
           },
         },
+        tipoCombustible: true, // Include tipoCombustible
       },
     });
 
@@ -158,6 +159,12 @@ export async function PUT(
         },
       },
     });
+    if (fuelCardId) {
+      await prisma.fuelCard.update({
+        where: { id: fuelCardId },
+        data: { updatedAt: new Date() },
+      });
+    }
 
     return NextResponse.json(updatedFuelOperation);
   } catch (error) {
@@ -183,6 +190,11 @@ export async function DELETE(
       where: { id: operationId },
       include: {
         fuelCard: true,
+        operationReservorio: {
+          include: {
+            reservorio: true,
+          },
+        },
       },
     });
 
@@ -248,6 +260,31 @@ export async function DELETE(
             where: { id: fuelOperation.fuelCardId! },
             data: { saldo: newBalance },
           });
+        }
+      }
+
+      // Restaurar la capacidad del reservorio
+      if (fuelOperation.operationReservorio) {
+        for (const op of fuelOperation.operationReservorio) {
+          if (op.reservorio && op.litros) {
+            const currentCapacity = op.reservorio.capacidad_actual ?? 0;
+            let newCapacity;
+
+            if (op.operationType === 'Carga') {
+              // Si fue una carga al reservorio (destino), se RESTA al eliminar la operación
+              newCapacity = currentCapacity - op.litros;
+            } else if (op.operationType === 'Consumo') {
+              // Si fue un consumo del reservorio (origen), se SUMA al eliminar la operación
+              newCapacity = currentCapacity + op.litros;
+            }
+
+            if (newCapacity !== undefined) {
+              await prisma.reservorio.update({
+                where: { id: op.reservorio_id },
+                data: { capacidad_actual: newCapacity },
+              });
+            }
+          }
         }
       }
     });

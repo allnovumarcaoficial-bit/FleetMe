@@ -38,10 +38,10 @@ export async function IndiceConsumo({
         item.fecha?.toISOString() || new Date().toISOString(),
         'dd/MM/yyyy'
       ),
-      y: item.indiceConsumo,
+      y: item.indiceConsumo || 0,
     };
   });
-  const autos = (await getAllVehiculos()).map((vehiculo) => vehiculo.matricula);
+  const autos = (await getAllVehiculos()).map((vehiculo) => vehiculo.marca);
 
   return (
     <div

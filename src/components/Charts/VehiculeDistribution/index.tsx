@@ -8,20 +8,20 @@ import { PeriodPicker } from '@/components/period-picker';
 
 export async function CarDistribution({
   className,
-  timeFrame = 'Marca',
+  timeFrame = 'Administrativo',
 }: {
   className?: string;
   timeFrame: string;
 }) {
-  let type: TypeEnum = 'marca';
-  if (timeFrame === 'Marca') {
-    type = 'marca';
+  let type: TypeEnum = 'Administrativo';
+  if (timeFrame === 'Administrativo') {
+    type = 'Administrativo';
   }
-  if (timeFrame === 'Modelo') {
-    type = 'modelo';
+  if (timeFrame === 'Entrega de Pedidos') {
+    type = 'EntregaDePedidos';
   }
-  if (timeFrame === 'Tipo de Vehículo') {
-    type = 'tipo_vehiculo';
+  if (timeFrame === 'Logístico') {
+    type = 'Logistico';
   }
 
   const data = await getVehiculesByType({ type });
@@ -43,8 +43,8 @@ export async function CarDistribution({
         </h2>
 
         <PeriodPicker
-          items={['Marca', 'Modelo', 'Tipo de Vehículo']}
-          defaultValue={timeFrame || 'Marca'}
+          items={['Administrativo', 'Entrega de Pedidos', 'Logístico']}
+          defaultValue={timeFrame || 'Administrativo'}
           sectionKey="vehicule_distribution"
         />
       </div>

@@ -230,4 +230,5 @@ export interface FuelDistribution {
   vehicleId: number;
   vehicle?: Vehicle;
   liters: number;
+  odometro_Vehicle?: number | null; // Add odometro_Vehicle
 }

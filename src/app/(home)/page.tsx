@@ -33,17 +33,20 @@ export default async function Home({ searchParams }: PropsType) {
       </Suspense>
 
       <div className="mt-4 grid flex-1 grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-9 2xl:gap-7.5">
-        <GastoTotal
-          className="col-span-12 xl:col-span-7"
-          key={extractTimeFrame('fuelCardID')}
-          timeFrame={extractTimeFrame('fuelCardID')?.split(':')[1]}
-        />
         <KilometrosRecorridos
           key={extractTimeFrame('kilometros_recorridosChart')}
           timeFrame={
             extractTimeFrame('kilometros_recorridosChart')?.split(':')[1]
           }
-          className="col-span-12 xl:col-span-5"
+          className="col-span-12 xl:col-span-12"
+        />
+
+        <GastoTotal
+          className="col-span-12 xl:col-span-7"
+          key={extractTimeFrame('fuelCardID')}
+          timeFrame={extractTimeFrame('fuelCardID')?.split(':')[1]}
+          periodo={extractTimeFrame('periodo')?.split(':')[1]}
+          mes={extractTimeFrame('mes')?.split(':')[1]}
         />
 
         <CarDistribution
@@ -54,7 +57,7 @@ export default async function Home({ searchParams }: PropsType) {
           }
         />
         <IndiceConsumo
-          className="col-span-12 w-full xl:col-span-7"
+          className="col-span-12 w-full xl:col-span-12"
           key={extractTimeFrame('indice_consumo')}
           timeFrame={extractTimeFrame('indice_consumo')?.split(':')[1]}
           vehiculo_id={extractTimeFrame('vehiculo_id')?.split(':')[1]}
@@ -65,6 +68,7 @@ export default async function Home({ searchParams }: PropsType) {
             <ChipsCombustible
               key={extractTimeFrame('chips_combustible')}
               timeframe={extractTimeFrame('chips_combustible')?.split(':')[1]}
+              fuelCardIDChip={extractTimeFrame('fuelCardIDChip')?.split(':')[1]}
             />
           </Suspense>
         </div>

@@ -421,9 +421,33 @@ const FuelOperationForm = ({
     if (field === 'reservorio_id') {
       updatedReservorios[index].reservorio_id = value;
     } else {
-      updatedReservorios[index].litros = parseFloat(value) || 0; // Changed from '' to 0
+      updatedReservorios[index].litros = parseFloat(value) || 0;
     }
     setReservorioDestination(updatedReservorios);
+
+    // Validar la capacidad del reservorio
+    const reservorioId = updatedReservorios[index].reservorio_id;
+    if (reservorioId) {
+      const reservorio = reservorios.find((r) => r.id === reservorioId);
+      if (reservorio) {
+        const capacidadDisponible =
+          (reservorio.capacidad_total || 0) -
+          (reservorio.capacidad_actual || 0);
+        if (updatedReservorios[index].litros > capacidadDisponible) {
+          setErrors((prev) => ({
+            ...prev,
+            [`reservorioDestination-${index}`]: `La cantidad de litros supera la capacidad disponible del reservorio (${capacidadDisponible.toFixed(2)} L).`,
+          }));
+        } else {
+          setErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors[`reservorioDestination-${index}`];
+            return newErrors;
+          });
+        }
+      }
+    }
+
     setErrors((prev) => ({
       ...prev,
       reservorioDestination: validateField(
@@ -565,6 +589,8 @@ const FuelOperationForm = ({
           fuelDistributions: destinationVehicles.map((dv) => ({
             vehicleId: dv.vehicleId,
             liters: dv.litros,
+            odometro_Vehicle: vehicles.find((v) => v.id === dv.vehicleId)
+              ?.odometro,
           })),
           operationReservorio: reservorioDestination.map((dr) => ({
             reservorio_id: dr.reservorio_id,
@@ -624,6 +650,7 @@ const FuelOperationForm = ({
           fuelCardId: Number(value),
           fuelCard: selectedFuelCard,
           saldoInicio: selectedFuelCard.saldo || 1, // Actualiza odómetro automáticamente
+          fecha: selectedFuelCard.updatedAt,
         }));
       }
       return;
@@ -705,7 +732,7 @@ const FuelOperationForm = ({
                 }))}
                 value={formData.fuelCardId?.toString() || ''}
                 placeholder="Selecciona una tarjeta"
-                onChange={handleChange}
+                onChange={(e) => handleChange(e)}
                 name="fuelCardId"
                 required={!esReservorio}
               />
@@ -772,6 +799,11 @@ const FuelOperationForm = ({
               }
               handleChange={handleChange}
               required
+              min={
+                formData.fecha
+                  ? dayjs(formData.fecha).format('YYYY-MM-DDTHH:mm')
+                  : undefined
+              }
             />
             {errors.fecha && (
               <p className="mt-1 text-sm text-red-500">{errors.fecha}</p>
@@ -990,9 +1022,14 @@ const FuelOperationForm = ({
                           items={reservorios
                             .filter(
                               (r) =>
-                                !formData.tipoCombustible_id ||
-                                r.tipoCombustibleId ===
-                                  formData.tipoCombustible_id
+                                !reservorioDestination.some(
+                                  (dest) =>
+                                    dest.reservorio_id === r.id &&
+                                    dest.id !== dv.id
+                                ) &&
+                                (!formData.tipoCombustible_id ||
+                                  r.tipoCombustibleId ===
+                                    formData.tipoCombustible_id)
                             )
                             .map((r) => ({
                               value: r.id.toString(),
@@ -1026,6 +1063,11 @@ const FuelOperationForm = ({
                             )
                           }
                         />
+                        {errors[`reservorioDestination-${index}`] && (
+                          <p className="mt-1 text-sm text-red-500">
+                            {errors[`reservorioDestination-${index}`]}
+                          </p>
+                        )}
                       </div>
 
                       {reservorioDestination.length > 0 && (
@@ -1048,10 +1090,18 @@ const FuelOperationForm = ({
                       <div className="flex-1">
                         <Select
                           label={`Vehículo ${index + 1}`}
-                          items={vehicles.map((v) => ({
-                            value: v.id.toString(),
-                            label: v.matricula,
-                          }))}
+                          items={vehicles
+                            .filter(
+                              (v) =>
+                                !destinationVehicles.some(
+                                  (dest) =>
+                                    dest.vehicleId === v.id && dest.id !== dv.id
+                                )
+                            )
+                            .map((v) => ({
+                              value: v.id.toString(),
+                              label: `${v.marca} ${v.modelo} (${v.matricula})`,
+                            }))}
                           value={dv.vehicleId?.toString() || ''}
                           placeholder="Selecciona un vehículo"
                           onChange={(e) =>
@@ -1079,6 +1129,21 @@ const FuelOperationForm = ({
                               e.target.value
                             )
                           }
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <InputGroup
+                          label="Odómetro Actual"
+                          name={`destinationVehicle-${index}-odometro`}
+                          type="number"
+                          placeholder="Odómetro del vehículo"
+                          value={
+                            vehicles
+                              .find((v) => v.id === dv.vehicleId)
+                              ?.odometro?.toString() || ''
+                          }
+                          handleChange={() => {}} // Disabled
+                          disabled={true}
                         />
                       </div>
 

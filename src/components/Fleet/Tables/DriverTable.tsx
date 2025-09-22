@@ -278,7 +278,7 @@ const DriverTable = ({}: DriverTableProps) => {
                   className="cursor-pointer"
                   onClick={() => handleSort('carnet_peritage')}
                 >
-                  Carnet Peritaje{' '}
+                  Carnet Profesional{' '}
                   {sortBy === 'carnet_peritage' &&
                     (sortOrder === 'asc' ? '▲' : '▼')}
                 </TableHead>

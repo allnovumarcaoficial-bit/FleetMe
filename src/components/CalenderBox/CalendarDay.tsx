@@ -61,7 +61,9 @@ export function CalendarDay({
               }}
             >
               {isStartDate && (
-                <div className="truncate font-medium">{event.title}</div>
+                <div className="truncate font-medium">
+                  {event.title ? event.title : event.description}
+                </div>
               )}
               {isStartDate && !isEndDate && (
                 <div className="text-xs opacity-75">
